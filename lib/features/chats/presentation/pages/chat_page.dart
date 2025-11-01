@@ -1,0 +1,336 @@
+import 'dart:developer' as d;
+import 'dart:js_interop';
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hackathon/dependency_injection.g.dart';
+import 'package:hackathon/features/attendence/presentation/pages/check_in_page.dart';
+import 'package:hackathon/features/chats/data/data_sources/chat_data_source.dart';
+import 'package:hackathon/features/chats/data/data_sources/message_data_source.dart';
+import 'package:hackathon/features/chats/data/models/chat_model.dart';
+import 'package:hackathon/features/chats/data/models/message_model.dart';
+import 'package:hackathon/features/chats/domain/entities/chat_entity.dart';
+import 'package:hackathon/features/chats/domain/entities/message_entity.dart';
+import 'package:hackathon/features/chats/domain/use_cases/message_usecase.dart';
+import 'package:hackathon/features/chats/presentation/blocs/chat_bloc/chat_bloc_bloc.dart';
+import 'package:hackathon/features/chats/presentation/blocs/message_bloc/message_bloc.dart';
+import 'package:hackathon/features/chats/presentation/pages/call_page.dart';
+import 'package:hackathon/features/chats/presentation/widgets/chat_bubble.dart';
+import 'package:hackathon/features/chats/presentation/widgets/chat_tiles.dart';
+import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart';
+import 'package:hackathon/globals/constants/assets.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
+import 'package:hackathon/globals/constants/user.dart';
+import 'package:hackathon/widgets/custom_app_bar.dart';
+import 'package:hackathon/widgets/custom_drawer.dart';
+import 'package:hackathon/widgets/list_of_side_bar.dart';
+import 'package:in_app_notification/in_app_notification.dart';
+
+final _chatPageKey = GlobalKey<ScaffoldState>();
+
+class ChatPage extends StatefulWidget {
+  static const routePath = "/chats";
+  const ChatPage({super.key});
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  bool isChatSelected = false;
+  String selectedChatName = "";
+  ChatEntity? selectedChat;
+  late Stream chatStream;
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController controller = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    chatStream = getIt<ChatDataSource>().getChats();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final sheight = MediaQuery.sizeOf(context).height;
+    final swidth = MediaQuery.sizeOf(context).width;
+    return Container(
+      decoration: const BoxDecoration(
+          gradient: LinearGradient(colors: ColorPallete.background)),
+      child: Scaffold(
+        drawer: CustomDrawer(
+          selectedIndex: ListOfSideBar.sideBarItems.indexOf('Chat'),
+        ),
+        key: _chatPageKey,
+        backgroundColor: ColorPallete.transparent,
+        body: ListView(
+          children: [
+            _customChatBar(),
+            SizedBox(
+              height: sheight * 00.01,
+            ),
+            Row(
+              children: [
+                StreamBuilder(
+                  stream: chatStream,
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.hasError) {
+                      return Text(snapshot.error.toString());
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return SizedBox(
+                          width: swidth * 0.25,
+                          height: sheight * 0.87,
+                          child:
+                              const Center(child: CircularProgressIndicator()));
+                    }
+
+                    if (snapshot.hasData &&
+                        snapshot.connectionState == ConnectionState.active) {
+                      final state = snapshot.data!;
+
+                      final List<ChatModel> chats = state
+                          .map<ChatModel>((e) => ChatModel.fromMap(e))
+                          .toList();
+                      debugPrint(chats.toString());
+                      return Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                            color: ColorPallete.blackSecondary,
+                            borderRadius: BorderRadius.circular(5)),
+                        height: sheight * 0.87,
+                        width: swidth * 0.25,
+                        child: ListView.builder(
+                            itemCount: chats.length,
+                            itemBuilder: (context, index) {
+                              debugPrint(
+                                chats[index].id.toString(),
+                              );
+                              // d.debugPrint(User.user.id.toString(), );
+                              if (chats[index].id != User.user.id) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    if (selectedChat?.id == chats[index].id) {
+                                      setState(() {
+                                        isChatSelected = false;
+                                        selectedChatName = "";
+                                        selectedChat = null;
+                                      });
+                                      return;
+                                    }
+                                    setState(() {
+                                      isChatSelected = true;
+                                      selectedChatName = chats[index].firstName;
+                                      selectedChat = chats[index];
+                                    });
+                                  },
+                                  child: ChatTiles(
+                                    chatEntity: chats[index],
+                                  ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            }),
+                      );
+                    } else {
+                      return Text(snapshot.connectionState.toString());
+                    }
+                  },
+                ),
+                if (!isChatSelected)
+                  SizedBox(
+                    width: swidth * 0.2,
+                  ),
+                Visibility(
+                  visible: !isChatSelected,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(ImageAssets.chat),
+                      const Text(
+                          "“contacting others for help can make you more productive”")
+                    ],
+                  ),
+                ),
+                Visibility(
+                    visible: isChatSelected,
+                    child: Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: ColorPallete.blackTertiary,
+                            borderRadius: BorderRadius.circular(10)),
+                        height: sheight * 0.87,
+                        // width: swidth * 0.8,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Align(
+                              alignment: Alignment.topCenter,
+                              child: CustomAppBar(children: [
+                                const Icon(
+                                  Icons.person,
+                                ),
+                                Text(selectedChatName),
+                                const Spacer(),
+                                GestureDetector(
+                                  child: const Icon(Icons.call),
+                                  onTap: () {
+                                    context.push(CallPage.routePath, extra: {
+                                      "isCalling": false,
+                                      'chat': selectedChat
+                                    });
+                                  },
+                                ),
+                                SizedBox(
+                                  width: swidth * 0.02,
+                                )
+                              ]),
+                            ),
+                            if (isChatSelected)
+                              BlocListener<MessageBloc, MessageState>(
+                                listener: (context, state) {
+                                  if (state is MessageErrorState) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                state.errorModel.message)));
+                                  }
+                                },
+                                child: Expanded(
+                                    child: StreamBuilder(
+                                  stream: getIt<MessageDataSource>()
+                                      .getMessages(selectedChat!.id.toString()),
+                                  builder: ((BuildContext context,
+                                      AsyncSnapshot<dynamic> snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Text(snapshot.error.toString());
+                                    }
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    }
+                                    if (snapshot.hasData &&
+                                        snapshot.data != null) {
+                                      final List<MessageModel> data = snapshot
+                                          .data!
+                                          .map<MessageModel>(
+                                              (e) => MessageModel.fromMap(e))
+                                          .toList();
+                                      // _scrollController.jumpTo(_scrollController
+                                      //     .position.maxScrollExtent);
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                        _scrollController.jumpTo(
+                                          _scrollController
+                                              .position.maxScrollExtent,
+                                        );
+                                      });
+                                      return ListView.builder(
+                                        controller: _scrollController,
+                                        itemCount: data.length,
+                                        itemBuilder: (context, index) {
+                                          return ChatBubble(
+                                              chatMessageEntity: data[index]);
+                                        },
+                                      );
+                                    }
+                                    return const SizedBox();
+                                  }),
+                                )),
+                              ),
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      color: ColorPallete.grey,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Row(
+                                    children: [
+                                      Flexible(
+                                        flex: 3,
+                                        child: TextField(
+                                          controller: controller,
+                                          decoration: const InputDecoration(
+                                            border: InputBorder.none,
+                                          ),
+                                        ),
+                                      ),
+                                      Flexible(
+                                        flex: 1,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            GestureDetector(
+                                              child: const Icon(Icons.send),
+                                              onTap: () {
+                                                context.read<MessageBloc>().add(
+                                                    SendMessageEvent(
+                                                        messageParams: MessageParams(
+                                                            message: controller
+                                                                .text
+                                                                .trim(),
+                                                            senderId: User
+                                                                .user.id
+                                                                .toString(),
+                                                            receiverId:
+                                                                selectedChat!.id
+                                                                    .toString(),
+                                                            receiverName:
+                                                                selectedChat!
+                                                                    .firstName,
+                                                            isSender: true,
+                                                            timeStamp:
+                                                                DateTime.now(),
+                                                            senderName: User
+                                                                .user
+                                                                .firstName)));
+
+                                                controller.clear();
+                                              },
+                                            ),
+                                            const Icon(Icons.camera),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                            )
+                          ],
+                        ),
+                      ),
+                    ))
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  CustomAppBar _customChatBar() {
+    return CustomAppBar(children: [
+      if (!isChatSelected) const Text("Chats"),
+      if (isChatSelected) Text("Chats > $selectedChatName"),
+      const Spacer(),
+      IconButton(
+        onPressed: () {
+          _chatPageKey.currentState?.openDrawer();
+        },
+        icon: const Icon(
+          Icons.menu,
+          color: ColorPallete.white,
+        ),
+      ),
+    ]);
+  }
+}
