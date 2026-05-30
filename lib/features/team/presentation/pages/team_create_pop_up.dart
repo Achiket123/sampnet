@@ -31,8 +31,10 @@ class _TeamCreatePopUpState extends State<TeamCreatePopUp> {
   @override
   void initState() {
     super.initState();
-    context.read<ProjectBloc>().add(GetProjectEvent(token: User.token));
-    getEmployeesBloc.add(GetEmployees(token: User.token));
+    context
+        .read<ProjectBloc>()
+        .add(GetProjectEvent(token: getIt<User>().token!));
+    getEmployeesBloc.add(GetEmployees(token: getIt<User>().token!));
   }
 
   @override
@@ -414,8 +416,8 @@ class _TeamCreatePopUpState extends State<TeamCreatePopUp> {
                       params: CreateTeamParam(
                           name: _nameController.text,
                           description: _descriptionController.text,
-                          organisationId: User.organisation.id!,
-                          createdBy: User.user.id,
+                          organisationId: getIt<User>().organisation!.id!,
+                          createdBy: getIt<User>().user!.id,
                           isActive: true,
                           teamLead: teamLead!.id,
                           members: teamMembers.map((e) => e.id).toList(),

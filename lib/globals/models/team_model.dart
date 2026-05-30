@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/auth/domain/entity/user_entity.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/models/organisation_model.dart';
@@ -29,8 +31,9 @@ class Team extends Equatable {
     this.isActive = true,
   });
   factory Team.fromJson(Map<String, dynamic> json) {
+    debugPrint("TEAM: ${json.toString()}");
     return Team(
-      id: json['ID'],
+      id: json['id'],
       name: json['name'],
       teamLeader: json['team_lead_user'] != null
           ? UserModel.fromJson(json['team_lead_user'])
@@ -54,13 +57,13 @@ class Team extends Equatable {
   static final empty = Team(
     name: "New Team",
     organisationId: 0,
-    organisation: User.organisation,
+    organisation: getIt<User>().organisation!,
     createdBy: 0,
-    createdByUser: User.user,
+    createdByUser: getIt<User>().user!,
   );
   Map<String, dynamic> toJson() {
     return {
-      'ID': id,
+      'id': id,
       'name': name,
       'description': description,
       'organisation_id': organisationId,

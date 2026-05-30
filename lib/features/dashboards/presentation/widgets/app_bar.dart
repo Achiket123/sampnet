@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hackathon/dependency_injection.g.dart';
@@ -37,7 +36,7 @@ class _DashAppBarState extends State<DashAppBar> {
     debugPrint(
       "INIT STATE",
     );
-    attendenceBloc.add(AttendenceGetEvent(userId: User.user.id));
+    attendenceBloc.add(AttendenceGetEvent(userId: getIt<User>().user!.id));
   }
 
   @override
@@ -83,7 +82,7 @@ class _DashAppBarState extends State<DashAppBar> {
                       ),
                     ),
                     Text(
-                      User.user.firstName,
+                      getIt<User>().user!.firstName,
                     ),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -123,7 +122,7 @@ class _DashAppBarState extends State<DashAppBar> {
                               image: DecorationImage(
                                   image: NetworkImage(
                                     ApiConstants.getFileById(
-                                        User.user.profilePic),
+                                        getIt<User>().user!.profilePic),
                                   ),
                                   fit: BoxFit.cover)),
                           height: 40,

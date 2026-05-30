@@ -1,8 +1,9 @@
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/globals/constants/user.dart';
 
 class ApiConstants {
-  static const String baseUrl = "http://127.0.0.1:8000/api/v1";
-
+  static const String baseUrl = "/api/v1";
+  static const String websocketBaseUrl = "/api/v1";
   // Authentication Endpoints
   static const String signIn = "$baseUrl/auth/signin";
   static const String signUp = "$baseUrl/auth/signup";
@@ -20,7 +21,8 @@ class ApiConstants {
   // Employee Endpoints
   static const String isEmployee = "$baseUrl/employees/is-employee";
   static const String addEmployee = "$baseUrl/employees/add";
-  static String getEmployees = "$baseUrl/employees/get/${User.organisation.id}";
+  static String getEmployees =
+      "$baseUrl/employees/get/${getIt<User>().organisation!.id}";
   static const String getEmployeeById = "$baseUrl/employees/list";
   static const String updateEmployee = "$baseUrl/employees/update";
   static const String deleteEmployee = "$baseUrl/employees/delete";
@@ -36,7 +38,7 @@ class ApiConstants {
   static const String getProjectTasks = "$baseUrl/tasks/project";
   static const String getPersonalTasks = "$baseUrl/tasks/personal";
   static String getOrganisationTasks =
-      "$baseUrl/tasks/organisation/${User.organisation.id}";
+      "$baseUrl/tasks/organisation/${getIt<User>().organisation!.id}";
   static const String getTaskByTitle = "$baseUrl/tasks/title";
 
   // Team Endpoints
@@ -46,7 +48,7 @@ class ApiConstants {
   static const String deleteTeam = "$baseUrl/teams/delete";
   static const String getTeamById = "$baseUrl/teams";
   static String getTeamsByOrganisation =
-      "$baseUrl/teams/organisation/${User.organisation.id}";
+      "$baseUrl/teams/organisation/${getIt<User>().organisation!.id}";
   // Project Endpoints
   static const String getProjects = "$baseUrl/projects/organisation";
   static const String createProject = "$baseUrl/projects/create";
@@ -54,14 +56,29 @@ class ApiConstants {
   static const String deleteProject = "$baseUrl/projects";
   static const String getProjectById = "$baseUrl/projects";
   static String projectLessData =
-      "$baseUrl/projects/less-data/${User.organisation.id}";
+      "$baseUrl/projects/less-data/${getIt<User>().organisation!.id}";
 
   // Attendence Endpoints
   static const String attendenceCheckInUrl = "$baseUrl/attendence/create";
   static const String attendenceCheckOutUrl = "$baseUrl/attendence";
   static const String getAttendence = "$baseUrl/attendence";
+
+  // Chat Endpoints
+  static const String createChat = "/chats/create";
+  static const String getChats = "/chats";
+
+  // Message Endpoints
+  static const String sendMessage = "/messages/send";
+  static String getMessages(String peerId) => "/messages/$peerId";
+
+  // Call Endpoints
+  static const String upsertCall = "/calls/upsert";
+  static String updateCallOffer(String id) => "/calls/offer/$id";
+  static String getCall(String id) => "/calls/$id";
+  static String endCall(String id) => "/calls/end/$id";
+
   //ws:localhost:8000/ws/
-  static const String callingEndpoint = "ws://localhost:8000/api/v1/call/";
+  static const String callingEndpoint = "$websocketBaseUrl/call/";
 
   // Example for dynamically adding `id` to `getFile`
   static String getFileById(String id) => "$baseUrl/file/$id";

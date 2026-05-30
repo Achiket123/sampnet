@@ -12,15 +12,3 @@ class CreateTaskUseCase extends Usecase<TaskEntity, CreateTaskParams> {
     return await _taskRepository.createTask(params);
   }
 }
-
-class CreateTaskParams {
-  final String token;
-  final TaskEntity task;
-  CreateTaskParams({required this.token, required this.task});
-  Map<String, dynamic> toJson() {
-    return {
-      'token': token,
-      'task': task.toMap(),
-    };
-  }
-}

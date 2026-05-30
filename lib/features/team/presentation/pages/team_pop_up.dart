@@ -45,10 +45,11 @@ class TeamPopUp extends StatelessWidget {
                       "Team Lead :  ${state.teamMemory.team.createdByUser.firstName}",
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                    Text(
-                      "Created At: ${DateFormat.yMEd().format(state.teamMemory.team.createdAt!)}",
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
+                    if (state.teamMemory.team.createdAt != null)
+                      Text(
+                        "Created At: ${DateFormat.yMEd().format(state.teamMemory.team.createdAt!)}",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,

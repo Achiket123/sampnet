@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fpdart/fpdart.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/tasks/data/models/project_model.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/constants/user.dart';
@@ -19,7 +20,8 @@ class ProjectDataSourceImpl implements ProjectDataSource {
       String token) async {
     try {
       final response = await client.get(
-          Uri.parse("${ApiConstants.getProjects}/${User.employee.organisationId}"),
+          Uri.parse(
+              "${ApiConstants.getProjects}/${getIt<User>().employee!.organisationId}"),
           headers: {
             'Authorization': token,
           });

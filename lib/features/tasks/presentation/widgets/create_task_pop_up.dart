@@ -1,8 +1,10 @@
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/tasks/domain/entities/task_entity.dart';
 import 'package:hackathon/features/tasks/domain/use_cases/create_task_usecase.dart';
+import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/create_task_bloc/create_task_bloc.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/get_emp_bloc/get_employees_bloc.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/get_project_bloc/get_project_bloc.dart';
@@ -40,7 +42,7 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
     super.initState();
 
     BlocProvider.of<GetEmployeesBloc>(context)
-        .add(GetEmployees(token: User.token));
+        .add(GetEmployees(token: getIt<User>().token!));
   }
 
   @override
@@ -50,262 +52,278 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
     final taskStyle = Theme.of(context).textTheme.bodyMedium;
     return Container(
       constraints: const BoxConstraints(minWidth: 200, maxWidth: 600),
-      child: Column(
-        children: [
-          Container(
-            constraints: const BoxConstraints(minWidth: 200, maxWidth: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-              color: ColorPallete.blackPrimary,
-              borderRadius: BorderRadius.circular(10),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              constraints: const BoxConstraints(minWidth: 200, maxWidth: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: ColorPallete.blackPrimary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Center(child: Text('Create Task')),
             ),
-            child: const Center(child: Text('Create Task')),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: ColorPallete.blackSecondary,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: TextFormField(
-                      style: taskStyle,
-                      controller: _titleController,
-                      decoration: _buildInputDecoration('Title'),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: TextFormField(
-                      controller: _descriptionController,
-                      maxLines: 7,
-                      style: taskStyle,
-                      decoration: _buildInputDecoration('Description'),
-                    ),
-                  ),
-                  Wrap(
-                    direction: Axis.horizontal,
-                    spacing: 20,
-                    verticalDirection: VerticalDirection.down,
-                    children: [
-                      dateWidget(context, taskStyle!, width),
-                      BlocBuilder<GetEmployeesBloc, GetEmployeesState>(
-                        builder: (context, state) {
-                          if (state is GetEmployeesLoading) {
-                            return const Center(child: Text('Loading...'));
-                          } else if (state is GetEmployeesSuccess) {
-                            return dropdownWidget(context, taskStyle, width, [
-                              const DropdownMenuItem(
-                                  value: 'Assigned To',
-                                  child: Text('Assigned To')),
-                              ...state.employees.map((e) => DropdownMenuItem(
-                                  value: e.id.toString(),
-                                  child: Text('${e.firstName} ${e.lastName}'))),
-                            ], (value) {
-                              setState(() {
-                                assignedToID = int.parse(value);
-                                assignedTo = value;
-                              });
-                            }, assignedTo);
-                          }
-                          return const SizedBox();
-                        },
+            Container(
+              decoration: BoxDecoration(
+                color: ColorPallete.blackSecondary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      child: TextFormField(
+                        style: taskStyle,
+                        controller: _titleController,
+                        decoration: _buildInputDecoration('Title'),
                       ),
-                      dropdownWidget(context, taskStyle, width, [
-                        const DropdownMenuItem(
-                          value: 'Bug',
-                          child: Text('Bug'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      child: TextFormField(
+                        controller: _descriptionController,
+                        maxLines: 7,
+                        style: taskStyle,
+                        decoration: _buildInputDecoration('Description'),
+                      ),
+                    ),
+                    Wrap(
+                      direction: Axis.horizontal,
+                      spacing: 20,
+                      verticalDirection: VerticalDirection.down,
+                      children: [
+                        dateWidget(context, taskStyle!, width),
+                        BlocBuilder<GetEmployeesBloc, GetEmployeesState>(
+                          builder: (context, state) {
+                            if (state is GetEmployeesLoading) {
+                              return const Center(child: Text('Loading...'));
+                            } else if (state is GetEmployeesSuccess) {
+                              return dropdownWidget(context, taskStyle, width, [
+                                const DropdownMenuItem(
+                                    value: 'Assigned To',
+                                    child: Text('Assigned To')),
+                                ...state.employees.map((e) => DropdownMenuItem(
+                                    value: e.id.toString(),
+                                    child:
+                                        Text('${e.firstName} ${e.lastName}'))),
+                              ], (value) {
+                                setState(() {
+                                  assignedToID = int.parse(value);
+                                  assignedTo = value;
+                                });
+                              }, assignedTo);
+                            }
+                            return const SizedBox();
+                          },
                         ),
-                        const DropdownMenuItem(
-                            value: 'Feature', child: Text('Feature')),
-                        const DropdownMenuItem(
-                            value: 'Story', child: Text('Story')),
-                      ], (value) {
-                        setState(() {
-                          type = value;
-                        });
-                      }, type),
-                      dropdownWidget(context, taskStyle, width, [
-                        const DropdownMenuItem(
-                            value: 'Medium', child: Text('Medium')),
-                        const DropdownMenuItem(
-                            value: 'High', child: Text('High')),
-                        const DropdownMenuItem(
-                            value: 'Low', child: Text('Low')),
-                      ], (value) {
-                        setState(() {
-                          priority = value;
-                        });
-                      }, priority),
-                    ],
-                  ),
-                  Wrap(
-                    children: [
-                      tagWidget('Team Task', context, taskStyle, width, 0, () {
-                        typeOfTask = "Team Task";
-                        BlocProvider.of<TeamBloc>(context)
-                            .add(GetTeamEvent(token: User.token));
-                      }),
-                      tagWidget('Project Task', context, taskStyle, width, 1,
-                          () {
-                        typeOfTask = "Project Task";
-                        context
-                            .read<GetProjectBloc>()
-                            .add(GetProjects(token: User.token));
-                      }),
-                      tagWidget(
-                          'Personal Task', context, taskStyle, width, 2, () {}),
-                    ],
-                  ),
-                  BlocBuilder<GetProjectBloc, GetProjectState>(
-                    builder: (context, state) {
-                      if (state is GetProjectsSuccess) {
-                        final projects = state.projects;
+                        dropdownWidget(context, taskStyle, width, [
+                          const DropdownMenuItem(
+                            value: 'Bug',
+                            child: Text('Bug'),
+                          ),
+                          const DropdownMenuItem(
+                              value: 'Feature', child: Text('Feature')),
+                          const DropdownMenuItem(
+                              value: 'Story', child: Text('Story')),
+                        ], (value) {
+                          setState(() {
+                            type = value;
+                          });
+                        }, type),
+                        dropdownWidget(context, taskStyle, width, [
+                          const DropdownMenuItem(
+                              value: 'Medium', child: Text('Medium')),
+                          const DropdownMenuItem(
+                              value: 'High', child: Text('High')),
+                          const DropdownMenuItem(
+                              value: 'Low', child: Text('Low')),
+                        ], (value) {
+                          setState(() {
+                            priority = value;
+                          });
+                        }, priority),
+                      ],
+                    ),
+                    Wrap(
+                      children: [
+                        tagWidget('Team Task', context, taskStyle, width, 0,
+                            () {
+                          typeOfTask = "Team Task";
+                          BlocProvider.of<TeamBloc>(context)
+                              .add(GetTeamEvent(token: getIt<User>().token!));
+                        }),
+                        tagWidget('Project Task', context, taskStyle, width, 1,
+                            () {
+                          typeOfTask = "Project Task";
+                          context
+                              .read<GetProjectBloc>()
+                              .add(GetProjects(token: getIt<User>().token!));
+                        }),
+                        tagWidget('Personal Task', context, taskStyle, width, 2,
+                            () {}),
+                      ],
+                    ),
+                    BlocBuilder<GetProjectBloc, GetProjectState>(
+                      builder: (context, state) {
+                        if (state is GetProjectsSuccess) {
+                          final projects = state.projects;
 
-                        if (typeOfTask == "Project Task") {
-                          return Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: ColorPallete.offWhite,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: DropdownButton(
-                                value: teamID,
-                                borderRadius: BorderRadius.circular(20),
-                                dropdownColor: ColorPallete.offWhite,
-                                items: projects
-                                    .map((e) => DropdownMenuItem(
-                                          value: e.id,
-                                          child: Text(
-                                            e.name,
-                                            style: taskStyle.copyWith(
-                                                color: ColorPallete.black),
-                                          ),
-                                        ))
-                                    .toSet()
-                                    .toList(),
-                                onChanged: (val) {
-                                  setState(() {
-                                    teamID = val;
-                                  });
-                                }),
-                          );
+                          if (typeOfTask == "Project Task") {
+                            return Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: ColorPallete.offWhite,
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: DropdownButton(
+                                  value: teamID,
+                                  borderRadius: BorderRadius.circular(20),
+                                  dropdownColor: ColorPallete.offWhite,
+                                  items: projects
+                                      .map((e) => DropdownMenuItem(
+                                            value: e.id,
+                                            child: Text(
+                                              e.name,
+                                              style: taskStyle.copyWith(
+                                                  color: ColorPallete.black),
+                                            ),
+                                          ))
+                                      .toSet()
+                                      .toList(),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      teamID = val;
+                                    });
+                                  }),
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        } else if (state is GetProjectsFailure) {
+                          return Text(state.error.message);
                         } else {
                           return const SizedBox();
                         }
-                      } else if (state is GetProjectsFailure) {
-                        return Text(state.error.message);
-                      } else {
-                        return const SizedBox();
-                      }
-                    },
-                  ),
-                  BlocBuilder<TeamBloc, TeamState>(
-                    builder: (context, state) {
-                      if (state is TeamSuccessState) {
-                        final teams = state.teams.toSet().toList();
+                      },
+                    ),
+                    BlocBuilder<TeamBloc, TeamState>(
+                      builder: (context, state) {
+                        if (state is TeamSuccessState) {
+                          final teams = state.teams.toSet().toList();
 
-                        if (typeOfTask == "Team Task") {
-                          return Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: ColorPallete.offWhite,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: DropdownButton(
-                                value: teamID,
-                                borderRadius: BorderRadius.circular(20),
-                                dropdownColor: ColorPallete.offWhite,
-                                items: teams
-                                    .map((e) => DropdownMenuItem(
-                                          value: e.id,
-                                          child: Text(
-                                            e.name,
-                                            style: taskStyle.copyWith(
-                                                color: ColorPallete.black),
-                                          ),
-                                        ))
-                                    .toSet()
-                                    .toList(),
-                                onChanged: (val) {
-                                  setState(() {
-                                    teamID = val;
-                                  });
-                                }),
-                          );
+                          if (typeOfTask == "Team Task") {
+                            return Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: ColorPallete.offWhite,
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: DropdownButton(
+                                  value: teamID,
+                                  borderRadius: BorderRadius.circular(20),
+                                  dropdownColor: ColorPallete.offWhite,
+                                  items: teams
+                                      .map((e) => DropdownMenuItem(
+                                            value: e.id,
+                                            child: Text(
+                                              e.name,
+                                              style: taskStyle.copyWith(
+                                                  color: ColorPallete.black),
+                                            ),
+                                          ))
+                                      .toSet()
+                                      .toList(),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      teamID = val;
+                                    });
+                                  }),
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
                         } else {
                           return const SizedBox();
                         }
-                      } else {
-                        return const SizedBox();
-                      }
-                    },
-                  ),
-                  BlocConsumer<CreateTaskBloc, CreateTaskState>(
-                    listener: (context, state) {
-                      if (state is CreateTaskSuccess) {
-                        context
-                            .read<TaskBloc>()
-                            .add(FetchTasksEvent(token: User.token));
-                        ElegantNotification.success(
-                          description: const Text(
-                            "Task Created Successfully",
-                            style: TextStyle(color: ColorPallete.blackPrimary),
-                          ),
-                          position: Alignment.bottomRight,
-                          width: width * 0.5,
-                        ).show(context);
-                        Navigator.pop(context);
-                      } else if (state is CreateTaskFailure) {
-                        ElegantNotification.error(
-                          description: Text(
-                            state.error.message,
-                            style: const TextStyle(color: ColorPallete.blackPrimary),
-                          ),
-                          position: Alignment.bottomRight,
-                          width: width * 0.5,
-                        ).show(context);
-                      }
-                    },
-                    builder: (context, state) {
-                      if (state is CreateTaskLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      return CustomTextButton(
-                        width: width * 0.2,
-                        text: const Text('Create Task'),
-                        onTap: () {
-                          createTaskParams = CreateTaskParams(
-                              token: User.token,
-                              task: TaskEntity(
-                                  title: _titleController.text.trim(),
-                                  description:
-                                      _descriptionController.text.trim(),
-                                  dueDate: dueDate!,
-                                  assignedTo: assignedToID!,
-                                  assignedBy: User.user.id,
-                                  type: type,
-                                  priority: priority,
-                                  status: status,
-                                  teamId: teamID,
-                                  projectId: projectID,
-                                  organisationId: User.organisation.id!,
-                                  isPersonal: selectedTag == 'Personal Task'));
-                          BlocProvider.of<CreateTaskBloc>(context)
-                              .add(CreateTask(params: createTaskParams));
-                        },
-                      );
-                    },
-                  ),
-                ],
+                      },
+                    ),
+                    BlocConsumer<CreateTaskBloc, CreateTaskState>(
+                      listener: (context, state) {
+                        if (state is CreateTaskSuccess) {
+                          context.read<TaskBloc>().add(
+                              FetchTasksEvent(token: getIt<User>().token!));
+                          ElegantNotification.success(
+                            description: const Text(
+                              "Task Created Successfully",
+                              style:
+                                  TextStyle(color: ColorPallete.blackPrimary),
+                            ),
+                            position: Alignment.bottomRight,
+                            width: width * 0.5,
+                          ).show(context);
+                          Navigator.pop(context);
+                        } else if (state is CreateTaskFailure) {
+                          ElegantNotification.error(
+                            description: Text(
+                              state.error.message,
+                              style: const TextStyle(
+                                  color: ColorPallete.blackPrimary),
+                            ),
+                            position: Alignment.bottomRight,
+                            width: width * 0.5,
+                          ).show(context);
+                        }
+                      },
+                      builder: (context, state) {
+                        if (state is CreateTaskLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        return CustomTextButton(
+                          width: width * 0.2,
+                          text: const Text('Create Task'),
+                          onTap: () {
+                            try {
+                              debugPrint("${getIt<User>().user!.id}");
+                              debugPrint("${getIt<User>().organisation!.id}");
+                              debugPrint("${getIt<User>().token}");
+
+                              createTaskParams = CreateTaskParams(
+                                  token: getIt<User>().token!,
+                                  task: TaskEntity(
+                                      title: _titleController.text.trim(),
+                                      description:
+                                          _descriptionController.text.trim(),
+                                      dueDate: dueDate!,
+                                      assignedTo: assignedToID!,
+                                      assignedBy: getIt<User>().user!.id,
+                                      type: type,
+                                      priority: priority,
+                                      status: status,
+                                      teamId: teamID,
+                                      projectId: projectID,
+                                      organisationId:
+                                          getIt<User>().organisation!.id!,
+                                      isPersonal:
+                                          selectedTag == 'Personal Task'));
+                              BlocProvider.of<CreateTaskBloc>(context)
+                                  .add(CreateTask(params: createTaskParams));
+                            } catch (e) {
+                              debugPrint(e.toString());
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

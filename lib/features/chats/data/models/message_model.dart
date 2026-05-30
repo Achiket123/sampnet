@@ -17,7 +17,7 @@ class MessageModel extends MessageEntity {
     return MessageModel(
       roomId: json['room_id'].toString(),
       message: json['message'],
-      id: json['id'].toString(),
+      id: json['ID'].toString(),
       senderId: json['sender_id'].toString(),
       receiverId: json['receiver_id'].toString(),
       receiverName: json['receiver_name'].toString(),

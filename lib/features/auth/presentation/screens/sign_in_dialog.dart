@@ -2,10 +2,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/auth/domain/usecase/auth_params.dart';
 import 'package:hackathon/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hackathon/features/auth/presentation/screens/sign_up_dialog.dart';
 import 'package:hackathon/features/company/presentation/pages/register_company_page.dart';
+import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/widgets/auth_button.dart';
@@ -85,8 +87,13 @@ class _SignInScreenState extends State<SignInScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(state.message)));
                           } else if (state is AuthSignInSuccess) {
-                            User.user = state.user;
-                            context.go(RegisterCompanyPage.routePath);
+                            getIt<User>().user = state.auth.userEntity;
+                            if (getIt<User>().employee != null &&
+                                getIt<User>().organisation != null) {
+                              context.go(Dashboard.routePath);
+                            } else {
+                              context.go(RegisterCompanyPage.routePath);
+                            }
                           }
                         },
                         builder: (context, state) {

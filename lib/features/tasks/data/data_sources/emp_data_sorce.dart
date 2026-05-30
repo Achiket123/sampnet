@@ -24,12 +24,13 @@ class EmployeeDataSourceImpl implements EmployeeDataSource {
         'Authorization': token,
       });
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body)['users'];
-        debugPrint(
-          data.toString(),
-        );
+        debugPrint(response.body);
+        final decodedData = jsonDecode(response.body);
+
+        final List<dynamic> data = decodedData['users'];
+
         return right(data
-            .map<AssigneeModel>((e) => AssigneeModel.fromJson(e['User']))
+            .map<AssigneeModel>((e) => AssigneeModel.fromJson(e['user']))
             .toList());
       }
       return left(ErrorModel(message: response.body));

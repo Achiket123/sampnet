@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:hackathon/features/tasks/domain/entities/task_entity.dart';
 import 'package:hackathon/globals/models/organisation_model.dart';
 import 'package:hackathon/globals/models/project_model.dart';
@@ -48,8 +49,9 @@ class TaskModel extends TaskEntity {
   }
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
+    debugPrint("TASK DESIRIALIZE ${json.toString()}");
     return TaskModel(
-        id: json['ID'],
+        id: json['ID'] ?? json['id'],
         title: json['title'],
         description: json['description'],
         dueDate: DateTime.parse(json['due_date']),
@@ -64,7 +66,9 @@ class TaskModel extends TaskEntity {
         organisation: json['organisation'] != null
             ? Organisation.fromJson(json['organisation'])
             : null,
-        createdAt: DateTime.parse(json['CreatedAt']),
+        createdAt: json['CreatedAt'] != null
+            ? DateTime.parse(json['CreatedAt'] ?? json['created_at'])
+            : DateTime.now(),
         assignedUser: json['assigned_user'] != null
             ? UserModel.fromJson(json['assigned_user'])
             : null,

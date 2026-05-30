@@ -45,7 +45,6 @@ dependencies:
   flutter_svg:
   get_it:
   equatable:
-  supabase_flutter:
   flutter_dotenv:
   flutter_webrtc:
   in_app_notification:

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/attendence/data/models/attendence_model.dart';
 import 'package:hackathon/features/attendence/domain/use_cases/attendence_params.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
@@ -37,7 +38,7 @@ class AttendenceRemoteDataSourceImpl extends AttendenceRemoteDataSource {
       final response =
           await client.post(Uri.parse(ApiConstants.attendenceCheckInUrl),
               headers: {
-                'Authorization': User.token,
+                'Authorization': getIt<User>().token!,
               },
               body: jsonEncode(data));
       debugPrint(
@@ -72,9 +73,10 @@ class AttendenceRemoteDataSourceImpl extends AttendenceRemoteDataSource {
               organisationId: params.organisationId)
           .toMap();
       final response = await client.put(
-          Uri.parse("${ApiConstants.attendenceCheckOutUrl}/${User.user.id}"),
+          Uri.parse(
+              "${ApiConstants.attendenceCheckOutUrl}/${getIt<User>().user!.id}"),
           headers: {
-            'Authorization': User.token,
+            'Authorization': getIt<User>().token!,
           },
           body: jsonEncode(data));
       if (response.statusCode == 200) {
@@ -97,7 +99,7 @@ class AttendenceRemoteDataSourceImpl extends AttendenceRemoteDataSource {
     try {
       final response = await client
           .get(Uri.parse("${ApiConstants.getAttendence}/$userId"), headers: {
-        'Authorization': User.token,
+        'Authorization': getIt<User>().token!,
       });
 
       if (response.statusCode == 200) {
@@ -108,7 +110,7 @@ class AttendenceRemoteDataSourceImpl extends AttendenceRemoteDataSource {
         return right(AttendenceModel.fromJson(data));
       } else if (response.statusCode == 404) {
         return right(AttendenceModel(
-            userId: userId, organisationId: User.organisation.id!));
+            userId: userId, organisationId: getIt<User>().organisation!.id!));
       }
       return left(ErrorModel(message: response.body));
     } catch (e) {

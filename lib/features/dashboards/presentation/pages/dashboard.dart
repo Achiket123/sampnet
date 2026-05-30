@@ -40,17 +40,17 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     super.initState();
     final chatParam = ChatParams(
-      firstName: User.user.firstName,
-      lastName: User.user.lastName,
+      firstName: getIt<User>().user!.firstName,
+      lastName: getIt<User>().user!.lastName,
       numberOfMessage: 0,
-      email: User.user.email,
+      email: getIt<User>().user!.email,
     );
     context.read<AuthBloc>().add(GetTokenEvent());
 
     context
         .read<ValidateEmployeeBloc>()
-        .add(ValidateEmployee(token: User.token));
-    context.read<TaskBloc>().add(FetchTasksEvent(token: User.token));
+        .add(ValidateEmployee(token: getIt<User>().token!));
+    context.read<TaskBloc>().add(FetchTasksEvent(token: getIt<User>().token!));
     context.read<ChatBlocBloc>().add(CreateChatEvent(params: chatParam));
 
     WebRTCSignaling.listenForCalling(context);
@@ -150,10 +150,7 @@ class _DashboardState extends State<Dashboard> {
                                           }
                                           if (snapshot.hasData) {
                                             final state = snapshot.data!;
-                                            final List<ChatModel> chats = state
-                                                .map<ChatModel>(
-                                                    (e) => ChatModel.fromMap(e))
-                                                .toList();
+                                            final List<ChatModel> chats = state;
                                             return SizedBox(
                                               height: 500,
                                               child: ListView.builder(
@@ -277,7 +274,7 @@ class _DashboardState extends State<Dashboard> {
                     return const CircularProgressIndicator();
                   } else if (state is AuthGetTokenSuccess) {
                     return SelectableText(
-                      User.organisation.companyName,
+                      getIt<User>().organisation!.companyName,
                       maxLines: 1,
                       style: textTheme.headlineMedium!.copyWith(
                         fontSize: 40,
@@ -306,7 +303,7 @@ class _DashboardState extends State<Dashboard> {
                     return const CircularProgressIndicator();
                   } else if (state is AuthGetTokenSuccess) {
                     return SelectableText(
-                      User.organisation.primaryContactName,
+                      getIt<User>().organisation!.primaryContactName,
                       maxLines: 1,
                       style: textTheme.headlineMedium!.copyWith(
                         fontSize: 40,

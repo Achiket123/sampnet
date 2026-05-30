@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/chats/domain/entities/message_entity.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
 import 'package:hackathon/globals/constants/user.dart';
@@ -10,7 +11,8 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSender = chatMessageEntity.senderId == User.user.id.toString();
+    final isSender =
+        chatMessageEntity.senderId == getIt<User>().user!.id.toString();
     final testStyle = Theme.of(context)
         .textTheme
         .bodySmall!

@@ -1,5 +1,6 @@
 // Dart Model for UserModel
 
+import 'package:flutter/material.dart';
 import 'package:hackathon/features/auth/domain/entity/user_entity.dart';
 
 class UserModel extends UserEntity {
@@ -10,7 +11,7 @@ class UserModel extends UserEntity {
     required super.email,
     required super.phoneNumber,
     required super.isVerified,
-    required super.hashedPassword,
+    super.hashedPassword,
     required super.profilePic,
     required super.city,
     required super.country,
@@ -18,15 +19,21 @@ class UserModel extends UserEntity {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    debugPrint('DESIRIALIZE USER $json');
+
+    ///{id: 1, first_name: Achiket, last_name: Kumar, email: , phone_number: ,
+    // is_verified: false, profile_pic: , city: , country: , date_of_birth: 0001-01-01T00:00:00Z,
+    // last_login_at: 0001-01-01T00:00:00Z}
     return UserModel(
-      id: json['ID'] as int,
+      /// NEVER CHANGE THE ID to id it will break
+      id: json['ID'] ?? json['id'] as int,
       firstName: json['first_name'] as String,
       lastName: json['last_name'] as String,
       email: json['email'] as String,
       phoneNumber: json['phone_number'] as String,
       isVerified: json['is_verified'] as bool,
-      hashedPassword: json['HashedPassword'] as String,
-      profilePic: json['profile_id'] as String,
+      // hashedPassword: json['HashedPassword'] as String,
+      profilePic: json['profile_id'] ?? json['profile_pic'] as String,
       city: json['city'] as String,
       country: json['country'] as String,
       lastLoginAt: DateTime.parse(json['last_login_at'] as String),
@@ -35,7 +42,7 @@ class UserModel extends UserEntity {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'ID': id,
       'first_name': firstName,
       'last_name': lastName,
       'email': email,

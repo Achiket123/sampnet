@@ -5,7 +5,7 @@ class UserEntity {
   final String email;
   final String phoneNumber;
   final bool isVerified;
-  final String hashedPassword;
+  final String? hashedPassword;
   final String profilePic;
   final String city;
   final String country;
@@ -18,10 +18,16 @@ class UserEntity {
     required this.email,
     required this.phoneNumber,
     required this.isVerified,
-    required this.hashedPassword,
+    this.hashedPassword,
     required this.profilePic,
     required this.city,
     required this.country,
     required this.lastLoginAt,
   });
+}
+
+class AuthResponseEntity {
+  final UserEntity userEntity;
+  final String token;
+  AuthResponseEntity({required this.userEntity, required this.token});
 }

@@ -18,6 +18,7 @@ mixin Strings {
   static const String authBox = 'auth';
   static const String tokenKey = 'token';
   static const String employeeTokenKey = 'employeeToken';
+  static const String employeeKey = 'employee';
   static const String smallCompany = 'small';
   static const String mediumCompany = 'medium';
   static const String largeCompany = 'large';

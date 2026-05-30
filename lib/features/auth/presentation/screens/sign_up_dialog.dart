@@ -4,9 +4,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/auth/domain/usecase/auth_params.dart';
 import 'package:hackathon/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hackathon/features/company/presentation/pages/register_company_page.dart';
+import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart';
 import 'package:hackathon/features/upload_files/domain/use_cases/upload_file_usecase.dart';
 import 'package:hackathon/features/upload_files/presentation/bloc/upload_file_bloc.dart';
 import 'package:hackathon/globals/constants/assets.dart';
@@ -42,7 +44,7 @@ class SignUpDialogState extends State<SignUpDialog> {
   @override
   Widget build(BuildContext context) {
     final swidth = MediaQuery.of(context).size.width;
-    final sheight = MediaQuery.of(context).size.height;
+    // final sheight = MediaQuery.of(context).size.height;
     return Material(
       shadowColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
@@ -200,8 +202,13 @@ class SignUpDialogState extends State<SignUpDialog> {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(state.message)));
                           } else if (state is AuthSignUpSuccess) {
-                            User.user = state.user;
-                            context.go(RegisterCompanyPage.routePath);
+                            getIt<User>().user = state.auth.userEntity;
+                            if (getIt<User>().employee != null &&
+                                getIt<User>().organisation != null) {
+                              context.go(Dashboard.routePath);
+                            } else {
+                              context.go(RegisterCompanyPage.routePath);
+                            }
                           }
                         },
                         builder: (context, state) {

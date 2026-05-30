@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/tasks/data/models/team_model.dart';
 import 'package:hackathon/features/team/data/models/team_member.dart';
 import 'package:hackathon/features/team/data/models/team_memory.dart';
@@ -26,18 +28,21 @@ class TeamDataSourceImpl implements TeamDataSource {
   @override
   Future<Either<ErrorModel, List<Team>>> getTeams(String token) async {
     try {
+      debugPrint(getIt<User>().organisation.toString());
       final url = Uri.parse(ApiConstants.getTeamsByOrganisation);
       final response = await client.get(url, headers: {
         'Authorization': token,
       });
       if (response.statusCode == 200) {
+        debugPrint("TEAM RESP: ${response.toString()}");
         final data = jsonDecode(response.body)['teams'];
         TeamData.teams = data.map<Team>((e) => Team.fromJson(e)).toList();
-        print(TeamData.teams);
+        debugPrint("TEAM-DEBUG: ${TeamData.teams.toString()}");
         return right(TeamData.teams);
       }
       return left(ErrorModel(message: response.body));
     } catch (e) {
+      debugPrint(e.toString());
       return left(ErrorModel(message: e.toString()));
     }
   }
@@ -50,11 +55,11 @@ class TeamDataSourceImpl implements TeamDataSource {
         Uri.parse(ApiConstants.createTeam),
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "Authorization": User.token
+          "Authorization": getIt<User>().token!
         },
         body: jsonEncode(params.toJson()),
       );
-      print(params.members);
+      debugPrint(params.members.toString());
       if (response.statusCode == 200) {
         print("Response ${response.body}");
         final team = Team.fromJson(jsonDecode(response.body)['team']);
@@ -75,11 +80,11 @@ class TeamDataSourceImpl implements TeamDataSource {
     try {
       final url = Uri.parse("${ApiConstants.getTeamById}/$id");
       final response = await client.get(url, headers: {
-        'Authorization': User.token,
+        'Authorization': getIt<User>().token!,
       });
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
-        print(decodedData.toString());
+
         final data = decodedData['team'];
         final teamMember = decodedData['team_members']
             .map<TeamMember>((e) => TeamMember.fromJson(e))
@@ -101,7 +106,7 @@ class TeamDataSourceImpl implements TeamDataSource {
     try {
       final url = Uri.parse("${ApiConstants.deleteTeam}/$id");
       final response = await client.delete(url, headers: {
-        'Authorization': User.token,
+        'Authorization': getIt<User>().token!,
       });
       if (response.statusCode == 200) {
         return right(response.statusCode);
@@ -121,7 +126,7 @@ class TeamDataSourceImpl implements TeamDataSource {
       final response = await client.put(
         url,
         headers: {
-          'Authorization': User.token,
+          'Authorization': getIt<User>().token!,
         },
       );
       if (response.statusCode < 400) {

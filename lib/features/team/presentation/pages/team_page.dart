@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/team/presentation/blocs/team_bloc/team_bloc.dart';
 import 'package:hackathon/features/team/presentation/blocs/team_id_bloc/teamid_bloc.dart'
     as ti;
@@ -31,7 +32,7 @@ class _TeamPageState extends State<TeamPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    context.read<TeamBloc>().add(GetTeamEvent(token: User.token));
+    context.read<TeamBloc>().add(GetTeamEvent(token: getIt<User>().token!));
   }
 
   @override
@@ -84,8 +85,9 @@ class _TeamPageState extends State<TeamPage> {
               ),
               BlocConsumer<TeamBloc, TeamState>(
                 listener: (context, state) {
+                  debugPrint(state.toString());
                   if (state is TeamErrorState) {
-                    print(state.error.message);
+                    debugPrint(state.error.message);
                     ElegantNotification.error(
                             description: Text(
                               state.error.message,
@@ -97,6 +99,9 @@ class _TeamPageState extends State<TeamPage> {
                   }
                 },
                 builder: (context, state) {
+                  if (state is TeamLoadingState) {
+                    return CircularProgressIndicator();
+                  }
                   if (state is TeamSuccessState) {
                     return Wrap(children: [
                       for (var i in state.teams) TeamContainer(team: i)

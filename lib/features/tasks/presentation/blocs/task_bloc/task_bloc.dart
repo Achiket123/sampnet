@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:hackathon/features/tasks/domain/entities/task_entity.dart';
 import 'package:hackathon/features/tasks/domain/use_cases/fetch_task_usecase.dart';
 import 'package:hackathon/features/tasks/domain/use_cases/update_task_usecase.dart';
+import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:meta/meta.dart';
 

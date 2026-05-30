@@ -52,7 +52,7 @@ class TaskEntity extends Equatable {
       this.team});
   String toJson() {
     return jsonEncode({
-      'ID': id,
+      'id': id,
       'title': title,
       'description': description,
       'due_date': dueDate.toUtc().toIso8601String(),
@@ -73,7 +73,7 @@ class TaskEntity extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      'ID': id,
+      'id': id,
       'title': title,
       'description': description,
       'due_date': dueDate.toUtc().toIso8601String(),

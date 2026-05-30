@@ -1,4 +1,6 @@
 // Dart Model for Organisation
+import 'package:flutter/material.dart';
+
 class Organisation {
   final int? id;
   final String companyName;
@@ -46,9 +48,9 @@ class Organisation {
 
   // From JSON
   factory Organisation.fromJson(Map<String, dynamic> json) {
-    
+    debugPrint("Desializing Org: $json");
     return Organisation(
-      id: json['ID'] as int?,
+      id: json['id'] as int?,
       companyName: json['company_name'] as String,
       companyCode: json['company_code'] as String,
       primaryContactName: json['primary_contact_name'] as String,

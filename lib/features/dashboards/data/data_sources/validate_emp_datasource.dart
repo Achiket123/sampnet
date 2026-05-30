@@ -1,4 +1,5 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/dashboards/data/models/emp_model.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/constants/strings.dart';
@@ -26,8 +27,8 @@ class ValidateEmpDataSourceImpl with Strings implements ValidateEmpDataSource {
         final empToken = response.headers['authorization'];
 
         Hive.box(Strings.authBox).put(Strings.employeeTokenKey, empToken);
-        User.employeeToken = empToken!;
-        User.employee =
+        getIt<User>().employeeToken = empToken!;
+        getIt<User>().employee =
             EmpModel.fromJson(JwtToken.payload(empToken)['employee']);
         return right(true);
       }

@@ -91,9 +91,7 @@ class _ChatPageState extends State<ChatPage> {
                         snapshot.connectionState == ConnectionState.active) {
                       final state = snapshot.data!;
 
-                      final List<ChatModel> chats = state
-                          .map<ChatModel>((e) => ChatModel.fromMap(e))
-                          .toList();
+                      final List<ChatModel> chats = state;
                       debugPrint(chats.toString());
                       return Container(
                         padding: const EdgeInsets.all(20),
@@ -108,8 +106,8 @@ class _ChatPageState extends State<ChatPage> {
                               debugPrint(
                                 chats[index].id.toString(),
                               );
-                              // d.debugPrint(User.user.id.toString(), );
-                              if (chats[index].id != User.user.id) {
+                              // d.debugPrint(getIt<User>().user.id.toString(), );
+                              if (chats[index].id != getIt<User>().user!.id) {
                                 return GestureDetector(
                                   onTap: () {
                                     if (selectedChat?.id == chats[index].id) {
@@ -279,9 +277,11 @@ class _ChatPageState extends State<ChatPage> {
                                                             message: controller
                                                                 .text
                                                                 .trim(),
-                                                            senderId: User
-                                                                .user.id
-                                                                .toString(),
+                                                            senderId:
+                                                                getIt<User>()
+                                                                    .user!
+                                                                    .id
+                                                                    .toString(),
                                                             receiverId:
                                                                 selectedChat!.id
                                                                     .toString(),
@@ -291,8 +291,9 @@ class _ChatPageState extends State<ChatPage> {
                                                             isSender: true,
                                                             timeStamp:
                                                                 DateTime.now(),
-                                                            senderName: User
-                                                                .user
+                                                            senderName: getIt<
+                                                                    User>()
+                                                                .user!
                                                                 .firstName)));
 
                                                 controller.clear();

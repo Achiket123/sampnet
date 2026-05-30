@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/company/domain/use_cases/register_company_params.dart';
+import 'package:hackathon/features/dashboards/data/models/emp_model.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/constants/strings.dart';
 import 'package:hackathon/globals/constants/user.dart';
@@ -29,14 +31,23 @@ class CompanyRemoteDataSourceImpl implements CompanyRemoteDataSource {
       final response = await apiClient.post(
         Uri.parse(ApiConstants.registerOrganisation),
         headers: {
-          'Authorization': User.token,
+          'Authorization': getIt<User>().token!,
         },
         body: jsonEncode(params.toJson()),
       );
-      if (response.statusCode == 200) {
-        return Right(Organisation.fromJson(jsonDecode(response.body)));
+      if (response.statusCode >= 200) {
+        final data = jsonDecode(response.body);
+        Organisation org = Organisation.fromJson(data["organisation"]);
+        EmpModel emp = EmpModel.fromJson(data["employee"]);
+        getIt<User>().organisation = org;
+        getIt<User>().employee = emp;
+        await Hive.box(Strings.authBox)
+            .put(Strings.organisationKey, data["organisation"]);
+        await Hive.box(Strings.authBox)
+            .put(Strings.employeeKey, data["employee"]);
+        return Right(org);
       } else {
-        return Left(ErrorModel(message: response.body));
+        throw Exception(response.body);
       }
     } catch (e) {
       print(e);
@@ -50,21 +61,29 @@ class CompanyRemoteDataSourceImpl implements CompanyRemoteDataSource {
       final response = await apiClient.get(
         Uri.parse("${ApiConstants.getEmployeeById}/$employeeId"),
         headers: {
-          'Authorization': User.token,
+          'Authorization': getIt<User>().token!,
         },
       );
       if (response.statusCode == 200) {
-        User.organisation = Organisation.fromJson(
-            jsonDecode(response.body)["user"]["Organisation"]);
-        await Hive.box(Strings.authBox).put(Strings.organisationKey,
-            jsonDecode(response.body)["user"]["Organisation"]);
-        debugPrint(
-          "ORGANISATION",
-        );
+        final responseData = jsonDecode(response.body);
+        debugPrint(responseData.toString());
+        if (responseData["user"]["organisation"] != null) {
+          getIt<User>().organisation =
+              Organisation.fromJson(responseData["user"]["organisation"]);
+          await Hive.box(Strings.authBox).put(
+              Strings.organisationKey, responseData["user"]["organisation"]);
+        }
 
+        if (responseData["user"] != null) {
+          getIt<User>().employee = EmpModel.fromJson(responseData["user"]);
+          await Hive.box(Strings.authBox)
+              .put(Strings.employeeKey, responseData["user"]);
+        }
+
+        debugPrint("ORGANISATION AND EMPLOYEE DATA FETCHED");
         return right(null);
       } else {
-        return Left(ErrorModel(message: response.body));
+        throw Exception(response.body);
       }
     } catch (e) {
       print(e);

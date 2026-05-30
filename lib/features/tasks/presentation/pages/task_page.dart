@@ -38,7 +38,8 @@ class _TaskPageState extends State<TaskPage> {
   void initState() {
     super.initState();
     // if(awaitgetIt.allReady())
-    BlocProvider.of<TaskBloc>(context).add(FetchTasksEvent(token: User.token));
+    BlocProvider.of<TaskBloc>(context)
+        .add(FetchTasksEvent(token: getIt<User>().token!));
   }
 
   @override
@@ -89,7 +90,7 @@ class _TaskPageState extends State<TaskPage> {
               itemCount: state.tasks.length,
               itemBuilder: (context, index) {
                 if (state.tasks[index].status != "To Do" &&
-                    state.tasks[index].assignedTo == User.user.id) {
+                    state.tasks[index].assignedTo == getIt<User>().user!.id) {
                   return TaskHorizontalWidget(
                     task: state.tasks[index],
                   );
@@ -135,7 +136,8 @@ class _TaskPageState extends State<TaskPage> {
             },
             builder: (context, state) {
               if (state is TaskLoading) {
-                return const Center(child: CircularProgressIndicator.adaptive());
+                return const Center(
+                    child: CircularProgressIndicator.adaptive());
               }
               if (state is TaskSuccess) {
                 debugPrint(
@@ -357,7 +359,6 @@ class _TaskPageState extends State<TaskPage> {
               style: taskStyle.copyWith(fontSize: width * 0.015),
             ),
             onTap: () {
-              debugPrint('create task');
               showDialog(
                   context: context,
                   builder: (context) => Dialog(

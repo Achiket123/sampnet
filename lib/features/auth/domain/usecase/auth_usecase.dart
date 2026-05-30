@@ -5,21 +5,21 @@ import 'package:hackathon/features/auth/domain/usecase/auth_params.dart';
 import 'package:hackathon/globals/constants/usecase.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 
-class SignUpUsecase implements Usecase<UserEntity, SignUpParams> {
+class SignUpUsecase implements Usecase<AuthResponseEntity, SignUpParams> {
   final AuthRepository repository;
   SignUpUsecase({required this.repository});
 
   @override
-  Future<Either<ErrorModel, UserEntity>> call(SignUpParams params) =>
+  Future<Either<ErrorModel, AuthResponseEntity>> call(SignUpParams params) =>
       repository.signUp(params);
 }
 
-class SignInUsecase implements Usecase<UserEntity, SignInParams> {
+class SignInUsecase implements Usecase<AuthResponseEntity, SignInParams> {
   final AuthRepository repository;
   SignInUsecase({required this.repository});
 
   @override
-  Future<Either<ErrorModel, UserEntity>> call(SignInParams params) =>
+  Future<Either<ErrorModel, AuthResponseEntity>> call(SignInParams params) =>
       repository.signIn(params);
 }
 
@@ -32,11 +32,10 @@ class SaveTokenUsecase implements Usecase<void, String> {
       await repository.saveToken(token);
 }
 
-class GetTokenUsecase implements Usecase<String, void> {
+class GetTokenUsecase implements NonFutureUsecase<String, Null> {
   final AuthRepository repository;
   GetTokenUsecase({required this.repository});
 
   @override
-  Future<Either<ErrorModel, String>> call(void _) async =>
-      await repository.getToken();
+  Either<ErrorModel, String> call(Null _null) => repository.getToken();
 }

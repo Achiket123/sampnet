@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/dashboards/domain/entities/emp_entity.dart';
 import 'package:hackathon/globals/constants/user.dart';
 
@@ -20,10 +20,10 @@ class EmpModel extends EmployeeEntity {
     );
     return EmpModel(
       userId: json['user_id'],
-      user: User.user,
+      user: getIt<User>().user!,
       employmentId: json['employment_id'],
       organisationId: json['organisation_id'],
-      organisation: User.organisation,
+      organisation: getIt<User>().organisation!,
       type: json['type'],
       salary: json['salary'],
       lastLoginAt: DateTime.parse(json['last_login_at']),

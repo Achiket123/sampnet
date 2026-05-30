@@ -16,7 +16,7 @@ class ChatModel extends ChatEntity {
   @override
   Map<String, dynamic> toMap() {
     return {
-      "id": id,
+      "ID": id,
       "first_name": firstName,
       "last_name": lastName,
       "email": email,
@@ -61,7 +61,7 @@ class ChatGroupModel extends ChatGroupEntity {
   @override
   Map<String, dynamic> toMap() {
     return {
-      "id": id,
+      "ID": id,
       "first_name": firstName,
       "last_name": lastName,
       "last_message_timestamp": lastMessageTimestamp,

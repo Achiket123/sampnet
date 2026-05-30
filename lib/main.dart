@@ -46,7 +46,7 @@ import 'package:hackathon/globals/constants/strings.dart';
 import 'package:hackathon/globals/constants/styles.dart';
 import 'package:hackathon/services/routes.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart';
 
 // The main application widget
 main() async {
@@ -55,18 +55,6 @@ main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await dotenv.load(fileName: '.env');
-  debugPrint(dotenv.get(
-    "PROJECT_URL",
-  ));
-  // Initialize the Appwrite client
-  await Supabase.initialize(
-      url: dotenv.get(
-        "PROJECT_URL",
-      ),
-      anonKey: dotenv.get(
-        "ANON_PUBLIC",
-      ));
 
   // Initialize the Hive Flutter database
   await Hive.openBox(Strings.authBox);
@@ -77,8 +65,6 @@ main() async {
   // Run the application
   runApp(const MyApp());
 }
-
-final supabase = Supabase.instance.client;
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -101,6 +87,7 @@ class _MyAppState extends State<MyApp> {
         // The auth bloc
         BlocProvider(
           create: (context) => AuthBloc(
+            saveTokenUsecase: getIt<SaveTokenUsecase>(),
             signUpUsecase: getIt<SignUpUsecase>(),
             getTokenUsecase: getIt<GetTokenUsecase>(),
             signInUsecase: getIt<SignInUsecase>(),

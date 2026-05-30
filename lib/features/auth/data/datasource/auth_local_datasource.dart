@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/globals/constants/strings.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
@@ -11,7 +11,7 @@ import 'package:jwt_io/jwt_io.dart';
 
 abstract class AuthLocalDataSource {
   Future<Either<ErrorModel, void>> saveToken(String token);
-  Future<Either<ErrorModel, String>> getToken();
+  Either<ErrorModel, String> getToken();
 }
 
 class AuthLocalDataSourceImpl with Strings implements AuthLocalDataSource {
@@ -28,27 +28,29 @@ class AuthLocalDataSourceImpl with Strings implements AuthLocalDataSource {
   }
 
   @override
-  Future<Either<ErrorModel, String>> getToken() async {
+  Either<ErrorModel, String> getToken() {
     try {
-      final token = await hive.box(Strings.authBox).get(Strings.tokenKey);
+      final token =
+          hive.box(Strings.authBox).get(Strings.tokenKey, defaultValue: null);
+      debugPrint("TOKEN: ${token}");
       if (token == null) {
         return left(ServerError(message: 'Token not found'));
       } else if (JwtToken.isExpired(token)) {
         return left(ServerError(message: 'Token is expired'));
       } else {
-        User.organisation = Organisation.fromJson((Map<String, dynamic>.from(
-            Hive.box(Strings.authBox).get(Strings.organisationKey))));
-        User.user = UserModel.fromJson(JwtToken.payload(token)['user']);
+        debugPrint(JwtToken.payload(token).toString());
+
+        getIt<User>().user =
+            UserModel.fromJson(JwtToken.payload(token)['user']);
+        getIt<User>().token = token;
         debugPrint(
-          User.organisation.companyName,
-        );
-        debugPrint(
-          User.token,
+          getIt<User>().token,
         );
 
         return right(token);
       }
     } catch (e) {
+      debugPrint(e.toString());
       return left(ServerError(message: e.toString()));
     }
   }

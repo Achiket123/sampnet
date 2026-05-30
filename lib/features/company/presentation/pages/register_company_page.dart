@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hackathon/dependency_injection.g.dart';
+import 'package:hackathon/features/company/domain/use_cases/register_company_params.dart';
 import 'package:hackathon/features/company/presentation/blocs/register%20comapny%20bloc/register_company_bloc.dart';
 import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart';
+import 'package:hackathon/features/landing/landing.dart';
 import 'package:hackathon/features/upload_files/domain/use_cases/upload_file_usecase.dart';
 import 'package:hackathon/features/upload_files/presentation/bloc/upload_file_bloc.dart';
 import 'package:hackathon/globals/constants/assets.dart';
@@ -22,14 +25,55 @@ class RegisterCompanyPage extends StatefulWidget {
 }
 
 class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
+  late TextEditingController companyName;
+  late TextEditingController companyCode;
+  late TextEditingController primaryContactNumber;
+  late TextEditingController primaryEmail;
+  late TextEditingController phoneNumber;
+  late TextEditingController officeAddress;
+  late TextEditingController city;
+  late TextEditingController state;
+  late TextEditingController postalCode;
+  late TextEditingController country;
+  late TextEditingController industry;
+  late TextEditingController billingAddress;
+  late TextEditingController companySize;
+  late TextEditingController maxEmployee;
+  late TextEditingController planStatus;
+
   Uint8List? uploadedImage;
   int? fileId;
   @override
   void initState() {
+    debugPrint(getIt<User>().toString());
+    if (getIt<User>().token == null) {
+      Future.microtask(() {
+        if (mounted) {
+          context.go(LandingPage.routePath);
+        }
+      });
+    }
+
+    companyName = TextEditingController();
+    companyCode = TextEditingController();
+    primaryContactNumber = TextEditingController();
+    primaryEmail = TextEditingController();
+    phoneNumber = TextEditingController();
+    officeAddress = TextEditingController();
+    city = TextEditingController();
+    state = TextEditingController();
+    postalCode = TextEditingController();
+    country = TextEditingController();
+    industry = TextEditingController();
+    billingAddress = TextEditingController();
+    companySize = TextEditingController();
+    maxEmployee = TextEditingController();
+    planStatus = TextEditingController();
     super.initState();
+    debugPrint(getIt<User>().user!.id.toString());
     context
         .read<RegisterCompanyBloc>()
-        .add(FetchEmployeeData(User.user.id.toString()));
+        .add(FetchEmployeeData(getIt<User>().user!.id.toString()));
   }
 
   @override
@@ -48,8 +92,15 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
             width: MediaQuery.of(context).size.width,
             child: BlocConsumer<RegisterCompanyBloc, RegisterCompanyState>(
               listener: (context, state) {
-                if (state is FetchEmployeeDataSuccess) {
-                  context.go(Dashboard.routePath);
+                if (state is RegisterCompanySuccess ||
+                    state is FetchEmployeeDataSuccess) {
+                  debugPrint("FETCH EMPLOYEE");
+                  debugPrint(getIt<User>().toString());
+
+                  if (getIt<User>().employee != null &&
+                      getIt<User>().organisation != null) {
+                    context.go(Dashboard.routePath);
+                  }
                 }
                 if (state is FetchEmployeeDataFailure) {
                   showDialog(
@@ -98,7 +149,15 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                     color: ColorPallete.redPrimary,
                   ));
                 }
-                return const Center(child: Text("Something went wrong"));
+                if (state is RegisterCompanySuccess) {
+                  return const Center(
+                    child: Text("Registered Successfully"),
+                  );
+                }
+                return Center(
+                    child: Text(
+                  "Something went wrong : ${state}",
+                ));
               },
             ),
           )),
@@ -151,89 +210,124 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
               runSpacing: 20,
               alignment: WrapAlignment.center,
               children: [
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
                     style: TextStyle(color: ColorPallete.white),
                     label: "Company Name",
+                    controller: companyName,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Company Code",
+                    controller: companyCode,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Primary Contact Name",
+                    controller: primaryContactNumber,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Primary Email",
+                    controller: primaryEmail,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Phone Number",
+                    controller: phoneNumber,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Office Address",
+                    controller: officeAddress,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "City",
+                    controller: city,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "State",
+                    controller: state,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Postal Code",
+                    controller: postalCode,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Country",
+                    controller: country,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Industry",
+                    controller: industry,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Billing Address",
+                    controller: billingAddress,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Company Size",
+                    controller: companySize,
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
                     label: "Max Employees",
+                    controller: maxEmployee,
+                  ),
+                ),
+                SizedBox(
+                  width: 300,
+                  child: AuthCustomTextFormField(
+                    style: TextStyle(color: ColorPallete.white),
+                    label: "Plan Status",
+                    controller: planStatus,
                   ),
                 ),
                 SizedBox(
@@ -241,9 +335,33 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorPallete.redPrimary,
+                      foregroundColor: ColorPallete.white,
                     ),
                     onPressed: () {
                       // Handle registration
+                      if (fileId != null) {
+                        context
+                            .read<RegisterCompanyBloc>()
+                            .add(RegisterCompany(RegisterCompanyParams(
+                              companyName: companyName.text.trim(),
+                              companyCode: companyCode.text.trim(),
+                              primaryContactName:
+                                  primaryContactNumber.text.trim(),
+                              primaryEmail: primaryEmail.text.trim(),
+                              phoneNumber: phoneNumber.text.trim(),
+                              officeAddress: officeAddress.text.trim(),
+                              city: city.text.trim(),
+                              state: state.text.trim(),
+                              postalCode: postalCode.text.trim(),
+                              country: country.text.trim(),
+                              planStatus: planStatus.text.trim(),
+                              maxEmployees: int.parse(maxEmployee.text.trim()),
+                              companyLogo: fileId!,
+                              industry: industry.text.trim(),
+                              billingAddress: billingAddress.text.trim(),
+                              companySize: companySize.text.trim(),
+                            )));
+                      } else {}
                     },
                     child: const Padding(
                       padding: EdgeInsets.symmetric(
@@ -321,7 +439,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
               backgroundImage: AssetImage(ImageAssets.profile),
             );
           }
-          if (state is UploadFileSuccess || uploadedImage != null) {
+          if (uploadedImage != null) {
             return CircleAvatar(
               radius: 50,
               backgroundImage: MemoryImage(uploadedImage!),

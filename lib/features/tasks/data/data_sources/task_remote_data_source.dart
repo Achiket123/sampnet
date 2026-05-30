@@ -3,10 +3,13 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/tasks/data/models/task_model.dart';
 import 'package:hackathon/features/tasks/domain/entities/task_entity.dart';
 import 'package:hackathon/features/tasks/domain/use_cases/create_task_usecase.dart';
 import 'package:hackathon/features/tasks/domain/use_cases/update_task_usecase.dart';
+import 'package:hackathon/features/tasks/domain/entities/task_activity_entity.dart';
+import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/data/task_data.dart';
@@ -19,11 +22,14 @@ abstract class TaskRemoteDataSource {
   Future<Either<ErrorModel, List<TaskEntity>>> fetchTasks(String token);
   Future<Either<ErrorModel, List<TaskEntity>>> fetchTasksByOrganisationId(
       String token, String organisationId);
+  Future<Either<ErrorModel, List<TaskActivityEntity>>> fetchTaskActivity(
+      String token, String taskId);
 }
 
 abstract class UpdateTaskRemoteDataSource {
   Future<Either<ErrorModel, List<TaskEntity>>> updateTask(
       UpdateTaskParams params);
+  Future<Either<ErrorModel, Unit>> deleteTask(String token, String id);
 }
 
 class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
@@ -37,16 +43,13 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
       final response = await client.post(url,
           body: params.task.toJson(), headers: {'Authorization': params.token});
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        debugPrint(
-          response.body,
-        );
+        debugPrint("Tasks Resp ${response.body}");
         return right(TaskModel.fromJson(jsonDecode(response.body)["task"]));
       }
       throw Exception(response.body);
     } catch (e) {
       debugPrint(
         e.toString(),
-        
       );
       return left(ErrorModel(message: e.toString()));
     }
@@ -64,6 +67,7 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
       final url = Uri.parse(ApiConstants.getOrganisationTasks);
       final response = await client.get(url, headers: {'Authorization': token});
       if (response.statusCode >= 200 && response.statusCode < 300) {
+        debugPrint("Tasks Resp ${response.body}");
         final tasksData = jsonDecode(response.body)["tasks"];
         final tasks = tasksData
             .map<TaskModel>((task) => TaskModel.fromJson(task))
@@ -76,7 +80,6 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
     } catch (e) {
       debugPrint(
         e.toString(),
-        
       );
       return left(ErrorModel(message: e.toString()));
     }
@@ -86,6 +89,13 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
   Future<Either<ErrorModel, List<TaskModel>>> fetchTasksByOrganisationId(
       String token, String organisationId) {
     // TODO: implement fetchTasksByOrganisationId
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<ErrorModel, List<TaskActivityEntity>>> fetchTaskActivity(
+      String token, String taskId) {
+    // TODO: implement fetchTaskActivity
     throw UnimplementedError();
   }
 }
@@ -100,7 +110,8 @@ class UpdateTaskRemoteDataSourceImpl implements UpdateTaskRemoteDataSource {
     try {
       final url = "${ApiConstants.updateTask}/${params.id}";
       final response = await client.put(Uri.parse(url),
-          headers: {"Authorization": User.token}, body: params.toJson());
+          headers: {"Authorization": getIt<User>().token!},
+          body: params.toJson());
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final data = jsonDecode(response.body)['task'];
         final task = TaskModel.fromJson(data);
@@ -111,6 +122,21 @@ class UpdateTaskRemoteDataSourceImpl implements UpdateTaskRemoteDataSource {
       throw Exception(response.body);
     } catch (e) {
       print(e);
+      return left(ErrorModel(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ErrorModel, Unit>> deleteTask(String token, String id) async {
+    try {
+      final url = "${ApiConstants.deleteTask}/$id";
+      final response =
+          await client.delete(Uri.parse(url), headers: {"Authorization": token});
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return right(unit);
+      }
+      throw Exception(response.body);
+    } catch (e) {
       return left(ErrorModel(message: e.toString()));
     }
   }

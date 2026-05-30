@@ -1,7 +1,7 @@
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/globals/constants/user.dart';
 
 class RegisterCompanyParams {
- 
   final String companyName;
   final String companyCode;
   final String primaryContactName;
@@ -21,7 +21,7 @@ class RegisterCompanyParams {
 
   RegisterCompanyParams({
     required this.companyName,
-    required this.companyCode, 
+    required this.companyCode,
     required this.primaryContactName,
     required this.primaryEmail,
     required this.phoneNumber,
@@ -56,7 +56,7 @@ class RegisterCompanyParams {
       'industry': industry,
       'billing_address': billingAddress,
       'company_size': companySize,
-      'boss_id': User.user.id,
+      'boss_id': getIt<User>().user!.id,
     };
   }
 }

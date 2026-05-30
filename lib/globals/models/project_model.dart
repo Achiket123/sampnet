@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/auth/domain/entity/user_entity.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/models/organisation_model.dart';
@@ -61,12 +62,12 @@ class Project extends Equatable {
       endDate: DateTime.now(),
       organisationId: 3,
       teamId: 2,
-      createdBy: User.user.id,
-      createdByUser: User.user,
+      createdBy: getIt<User>().user!.id,
+      createdByUser: getIt<User>().user!,
       status: "Pending",
       priority: "Low",
       completionStatus: "Working",
-      organisation: User.organisation);
+      organisation: getIt<User>().organisation!);
 
   @override
   // TODO: implement props

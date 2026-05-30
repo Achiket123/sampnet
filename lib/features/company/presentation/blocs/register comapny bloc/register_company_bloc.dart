@@ -11,7 +11,9 @@ class RegisterCompanyBloc
     extends Bloc<RegisterCompanyEvent, RegisterCompanyState> {
   final RegisterCompanyUseCase _registerCompanyUseCase;
   final FetchEmployeeDataUseCase _fetchEmployeeDataUseCase;
-  RegisterCompanyBloc({required RegisterCompanyUseCase registerCompanyUseCase, required FetchEmployeeDataUseCase fetchEmployeeDataUseCase})
+  RegisterCompanyBloc(
+      {required RegisterCompanyUseCase registerCompanyUseCase,
+      required FetchEmployeeDataUseCase fetchEmployeeDataUseCase})
       : _registerCompanyUseCase = registerCompanyUseCase,
         _fetchEmployeeDataUseCase = fetchEmployeeDataUseCase,
         super(RegisterCompanyInitial()) {
@@ -20,13 +22,13 @@ class RegisterCompanyBloc
     });
 
     on<RegisterCompany>((event, emit) async {
-      final result = await _registerCompanyUseCase(event.params);
+      final result = await _registerCompanyUseCase.call(event.params);
       result.fold((l) => emit(RegisterCompanyFailure(l.message)),
           (r) => emit(RegisterCompanySuccess(r)));
     });
 
     on<FetchEmployeeData>((event, emit) async {
-      final result = await _fetchEmployeeDataUseCase(event.employeeId);
+      final result = await _fetchEmployeeDataUseCase.call(event.employeeId);
       result.fold((l) => emit(FetchEmployeeDataFailure(l.message)),
           (r) => emit(FetchEmployeeDataSuccess()));
     });

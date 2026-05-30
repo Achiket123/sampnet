@@ -44,7 +44,7 @@ import 'package:hackathon/features/team/data/datasources/team_project_data_sourc
 import 'package:hackathon/features/team/data/repo/team_repository_impl.dart';
 import 'package:hackathon/features/tasks/domain/repositories/emp_repository.dart';
 import 'package:hackathon/features/tasks/domain/repositories/project_repository.dart';
-import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart';
+import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart' hide TaskTeamRepository;
 import 'package:hackathon/features/team/domain/repo/team_project_repo.dart';
 import 'package:hackathon/features/team/domain/repo/team_repository.dart';
 import 'package:hackathon/features/tasks/domain/use_cases/create_task_usecase.dart';
@@ -68,6 +68,9 @@ import 'package:hackathon/features/upload_files/domain/repositories/upload_file_
 import 'package:hackathon/features/upload_files/domain/use_cases/upload_file_usecase.dart';
 import 'package:hackathon/features/upload_files/presentation/bloc/upload_file_bloc.dart';
 import 'package:hackathon/features/chats/domain/use_cases/message_usecase.dart';
+import 'package:hackathon/globals/constants/user.dart';
+import 'package:hackathon/services/api_client.dart';
+import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'features/team/data/repo/team_project_repo_impl.dart';
@@ -77,6 +80,10 @@ final getIt = GetIt.instance;
 void initDependencies() {
   // Http client
   getIt.registerLazySingleton(() => http.Client());
+
+  // Api Client
+  getIt.registerLazySingleton(
+      () => ApiClient(client: getIt(), baseUrl: ApiConstants.baseUrl));
 
   // Data Sources
 
@@ -113,9 +120,11 @@ void initDependencies() {
   getIt.registerLazySingleton<UpdateTaskRemoteDataSource>(
     () => UpdateTaskRemoteDataSourceImpl(client: getIt()),
   );
-  getIt.registerLazySingleton<ChatDataSource>(() => ChatDataSourceImpl());
+  getIt.registerLazySingleton<ChatDataSource>(
+      () => ChatDataSourceImpl(apiClient: getIt()));
 
-  getIt.registerLazySingleton<MessageDataSource>(() => MessageDataSourceImpl());
+  getIt.registerLazySingleton<MessageDataSource>(
+      () => MessageDataSourceImpl(apiClient: getIt()));
 
   getIt.registerLazySingleton<TeamDataSource>(
       () => TeamDataSourceImpl(client: getIt()));
@@ -250,9 +259,13 @@ void initDependencies() {
   getIt.registerLazySingleton<GetTeamByIdUseCase>(
       () => GetTeamByIdUseCase(teamRepository: getIt()));
 
+  getIt.registerLazySingleton<SaveTokenUsecase>(() => SaveTokenUsecase(
+        repository: getIt(),
+      ));
   // Blocs
   getIt.registerFactory<AuthBloc>(
     () => AuthBloc(
+      saveTokenUsecase: getIt(),
       signUpUsecase: getIt(),
       signInUsecase: getIt(),
       getTokenUsecase: getIt(),
@@ -310,4 +323,7 @@ void initDependencies() {
 
   getIt.registerFactory<TeamidBloc>(
       () => TeamidBloc(getTeamByIdUseCase: getIt()));
+
+  // User
+  getIt.registerLazySingleton<User>(() => User());
 }

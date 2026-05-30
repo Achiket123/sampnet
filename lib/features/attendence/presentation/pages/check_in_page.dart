@@ -122,13 +122,14 @@ class _CheckInPageState extends State<CheckInPage> {
                             attendanceService.add(AttendenceCheckInEvent(
                                 params: AttendenceParams(
                                     dateTime: dateTime,
-                                    userId: User.user.id,
-                                    organisationId: User.organisation.id!,
+                                    userId: getIt<User>().user!.id,
+                                    organisationId:
+                                        getIt<User>().organisation!.id!,
                                     picture: state.fileId)));
                             context
                                 .read<AttendenceBloc>()
                                 .add(AttendenceGetEvent(
-                                  userId: User.user.id,
+                                  userId: getIt<User>().user!.id,
                                 ));
                             clearStackAndPush(context, Dashboard.routePath);
                           },
@@ -152,7 +153,7 @@ class _CheckInPageState extends State<CheckInPage> {
                                   file: picture!,
                                   fileType: "image/jpeg",
                                   fileName:
-                                      "attendence_picture_${User.user.id}_${DateTime.now()}",
+                                      "attendence_picture_${getIt<User>().user!.id}_${DateTime.now()}",
                                   fileSize: picture!.length)));
                         },
                         child: MouseRegion(
