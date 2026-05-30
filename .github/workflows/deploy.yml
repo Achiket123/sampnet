@@ -23,6 +23,6 @@ jobs:
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
       - name: Deploy
         run: |
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
+          ssh ${{ variables.VPS_USER }}@${{ secrets.VPS_HOST }} "
           cd ~/sampnet && git pull && docker-compose up -d
           "
