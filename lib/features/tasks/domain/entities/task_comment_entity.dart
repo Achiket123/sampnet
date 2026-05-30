@@ -1,9 +1,11 @@
 import 'package:equatable/equatable.dart';
 
 class TaskCommentEntity extends Equatable {
-  final String id;
-  final String taskId;
-  final String userId;
+  final int id;
+  final int taskId;
+  final int userId;
+  final String userFirstName;
+  final String userLastName;
   final String content;
   final DateTime createdAt;
 
@@ -11,10 +13,14 @@ class TaskCommentEntity extends Equatable {
     required this.id,
     required this.taskId,
     required this.userId,
+    required this.userFirstName,
+    required this.userLastName,
     required this.content,
     required this.createdAt,
   });
 
+  String get displayName => "$userFirstName $userLastName";
+
   @override
-  List<Object?> get props => [id, taskId, userId, content, createdAt];
+  List<Object?> get props => [id, taskId, userId, userFirstName, userLastName, content, createdAt];
 }

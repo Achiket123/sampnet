@@ -1,8 +1,7 @@
-import 'package:fpdart/fpdart.dart';
-import 'package:hackathon/features/tasks/domain/entities/task_attachment_entity.dart';
-import 'package:hackathon/globals/error_handling/error_model.dart';
+import '../entities/task_attachment_entity.dart';
 
 abstract class TaskAttachmentRepository {
-  Future<Either<ErrorModel, List<TaskAttachmentEntity>>> getTaskAttachments(String token, String taskId);
-  Future<Either<ErrorModel, TaskAttachmentEntity>> addTaskAttachment(String token, String taskId, String filePath);
+  Future<TaskAttachmentEntity> attachFile(int taskId, int fileId, int uploadedBy, String fileName);
+  Future<List<TaskAttachmentEntity>> getAttachments(int taskId);
+  Future<void> removeAttachment(int taskId, int attachmentId);
 }

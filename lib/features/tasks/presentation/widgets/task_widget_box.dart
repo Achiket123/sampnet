@@ -77,12 +77,7 @@ class _TaskWidgetBoxState extends State<TaskWidgetBox> {
         ),
       ),
       child: GestureDetector(
-        onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) =>
-                  Dialog(child: TaskHorizontalWidget(task: widget.task)));
-        },
+        onTap: () => context.push('/task-detail/${widget.task.id}'),
         child: MouseRegion(
           onEnter: (_) => setState(() => isHovered = true),
           onExit: (_) => setState(() => isHovered = false),

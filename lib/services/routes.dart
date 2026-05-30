@@ -12,6 +12,7 @@ import 'package:hackathon/features/dashboards/data/models/emp_model.dart';
 import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart';
 import 'package:hackathon/features/landing/landing.dart';
 import 'package:hackathon/features/tasks/presentation/pages/task_page.dart';
+import 'package:hackathon/features/tasks/presentation/pages/task_detail_page.dart';
 import 'package:hackathon/features/team/presentation/pages/team_page.dart';
 import 'package:hackathon/globals/constants/strings.dart';
 import 'package:hackathon/globals/constants/user.dart';

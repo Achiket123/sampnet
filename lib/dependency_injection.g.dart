@@ -44,7 +44,7 @@ import 'package:hackathon/features/team/data/datasources/team_project_data_sourc
 import 'package:hackathon/features/team/data/repo/team_repository_impl.dart';
 import 'package:hackathon/features/tasks/domain/repositories/emp_repository.dart';
 import 'package:hackathon/features/tasks/domain/repositories/project_repository.dart';
-import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart' hide TaskTeamRepository;
+import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart';
 import 'package:hackathon/features/team/domain/repo/team_project_repo.dart';
 import 'package:hackathon/features/team/domain/repo/team_repository.dart';
 import 'package:hackathon/features/tasks/domain/use_cases/create_task_usecase.dart';
@@ -119,6 +119,12 @@ void initDependencies() {
   );
   getIt.registerLazySingleton<UpdateTaskRemoteDataSource>(
     () => UpdateTaskRemoteDataSourceImpl(client: getIt()),
+  );
+  getIt.registerLazySingleton<TaskCommentRemoteDataSource>(
+    () => TaskCommentRemoteDataSource(apiClient: getIt()),
+  );
+  getIt.registerLazySingleton<TaskAttachmentRemoteDataSource>(
+    () => TaskAttachmentRemoteDataSource(apiClient: getIt()),
   );
   getIt.registerLazySingleton<ChatDataSource>(
       () => ChatDataSourceImpl(apiClient: getIt()));
@@ -235,6 +241,24 @@ void initDependencies() {
   );
   getIt.registerLazySingleton<FetchTaskUsecase>(
     () => FetchTaskUsecase(getIt()),
+  );
+  getIt.registerLazySingleton<AddTaskCommentUseCase>(
+    () => AddTaskCommentUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetTaskCommentsUseCase>(
+    () => GetTaskCommentsUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<DeleteTaskCommentUseCase>(
+    () => DeleteTaskCommentUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<AddTaskAttachmentUseCase>(
+    () => AddTaskAttachmentUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetTaskAttachmentsUseCase>(
+    () => GetTaskAttachmentsUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<RemoveTaskAttachmentUseCase>(
+    () => RemoveTaskAttachmentUseCase(repository: getIt()),
   );
   getIt.registerLazySingleton<StreamChatUsecase>(
       () => StreamChatUsecase(chatRepository: getIt()));

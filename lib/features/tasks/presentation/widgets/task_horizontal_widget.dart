@@ -25,10 +25,12 @@ class _TaskHorizontalWidgetState extends State<TaskHorizontalWidget> {
         Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white);
     final textStyle =
         Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.black);
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: Draggable(
-        feedback: Material(
+    return GestureDetector(
+      onTap: () => context.push('/task-detail/${widget.task.id}'),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Draggable(
+          feedback: Material(
           color: Colors.transparent,
           child: Container(
             padding: const EdgeInsets.all(16.0),
