@@ -1,4 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:hackathon/globals/error_handling/error_model.dart';
+import 'package:hackathon/features/tasks/domain/entities/task_entity.dart';
+import 'package:hackathon/features/tasks/domain/entities/task_comment_entity.dart';
+import 'package:hackathon/features/tasks/domain/entities/task_attachment_entity.dart';
 import 'package:hackathon/features/tasks/domain/use_cases/fetch_task_usecase.dart';
 import 'package:hackathon/features/tasks/domain/use_cases/update_task_usecase.dart';
 import 'package:hackathon/features/tasks/domain/use_cases/add_task_comment_usecase.dart';
@@ -52,9 +57,9 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
         getTaskAttachmentsUsecase.call(event.taskId),
       ]);
 
-      final taskResult = results[0];
-      final commentsResult = results[1];
-      final attachmentsResult = results[2];
+      final taskResult = results[0] as Either<ErrorModel, TaskEntity>;
+      final commentsResult = results[1] as List<TaskCommentEntity>;
+      final attachmentsResult = results[2] as List<TaskAttachmentEntity>;
 
       emit(state.copyWith(
         isLoadingTask: false,
@@ -63,8 +68,8 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
         task: taskResult.fold((l) {
           throw Exception(l.message);
         }, (r) => r),
-        comments: commentsResult as dynamic,
-        attachments: attachmentsResult as dynamic,
+        comments: commentsResult,
+        attachments: attachmentsResult,
       ));
     } catch (e) {
       emit(state.copyWith(

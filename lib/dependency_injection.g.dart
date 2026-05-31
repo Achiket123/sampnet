@@ -73,6 +73,32 @@ import 'package:hackathon/services/api_client.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:hackathon/features/tasks/data/data_sources/task_comment_remote_data_source.dart';
+import 'package:hackathon/features/tasks/data/data_sources/task_attachment_remote_data_source.dart';
+import 'package:hackathon/features/tasks/data/repository/task_comment_repository_impl.dart';
+import 'package:hackathon/features/tasks/data/repository/task_attachment_repository_impl.dart';
+import 'package:hackathon/features/tasks/domain/repositories/task_comment_repository.dart';
+import 'package:hackathon/features/tasks/domain/repositories/task_attachment_repository.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/add_task_comment_usecase.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/get_task_comments_usecase.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/delete_task_comment_usecase.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/add_task_attachment_usecase.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/get_task_attachments_usecase.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/remove_task_attachment_usecase.dart';
+import 'package:hackathon/features/tasks/presentation/blocs/task_detail_bloc/task_detail_bloc.dart';
+import 'package:hackathon/features/tasks/data/data_sources/task_comment_remote_data_source.dart';
+import 'package:hackathon/features/tasks/data/data_sources/task_attachment_remote_data_source.dart';
+import 'package:hackathon/features/tasks/data/repository/task_comment_repository_impl.dart';
+import 'package:hackathon/features/tasks/data/repository/task_attachment_repository_impl.dart';
+import 'package:hackathon/features/tasks/domain/repositories/task_comment_repository.dart';
+import 'package:hackathon/features/tasks/domain/repositories/task_attachment_repository.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/add_task_comment_usecase.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/get_task_comments_usecase.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/delete_task_comment_usecase.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/add_task_attachment_usecase.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/get_task_attachments_usecase.dart';
+import 'package:hackathon/features/tasks/domain/use_cases/remove_task_attachment_usecase.dart';
+import 'package:hackathon/features/tasks/presentation/blocs/task_detail_bloc/task_detail_bloc.dart';
 import 'features/team/data/repo/team_project_repo_impl.dart';
 
 final getIt = GetIt.instance;
@@ -174,6 +200,12 @@ void initDependencies() {
   );
   getIt.registerLazySingleton<UpdateTaskRepository>(
     () => UpdateTaskRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<TaskCommentRepository>(
+    () => TaskCommentRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<TaskAttachmentRepository>(
+    () => TaskAttachmentRepositoryImpl(remoteDataSource: getIt()),
   );
   getIt.registerLazySingleton<ChatRepository>(
       () => ChatRepositoryImpl(dataSource: getIt()));

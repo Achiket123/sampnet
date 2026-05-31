@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hackathon/features/attendence/presentation/pages/check_in_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hackathon/features/tasks/domain/entities/task_entity.dart';
-import 'package:hackathon/features/tasks/domain/use_cases/update_task_usecase.dart';
 import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/task_bloc/task_bloc.dart';
-import 'package:hackathon/features/tasks/presentation/widgets/task_horizontal_widget.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class TaskWidgetBox extends StatefulWidget {

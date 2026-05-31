@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hackathon/features/attendence/presentation/pages/check_in_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hackathon/features/tasks/domain/entities/task_entity.dart';
-import 'package:hackathon/features/tasks/domain/use_cases/update_task_usecase.dart';
 import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/task_bloc/task_bloc.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
@@ -31,17 +30,17 @@ class _TaskHorizontalWidgetState extends State<TaskHorizontalWidget> {
         cursor: SystemMouseCursors.click,
         child: Draggable(
           feedback: Material(
-          color: Colors.transparent,
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            color: Colors.blue,
-            child: Text(
-              widget.task.title,
-              style: const TextStyle(color: Colors.white),
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              color: Colors.blue,
+              child: Text(
+                widget.task.title,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           ),
-        ),
-        child: Container(
+          child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: ColorPallete.offWhite,
