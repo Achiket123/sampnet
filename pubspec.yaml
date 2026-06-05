@@ -41,6 +41,8 @@ dependencies:
   fpdart:
   jwt_io:
   flutter_bloc:
+  bloc:
+  meta:
   flutter_web_frame:
   flutter_svg:
   get_it:
@@ -56,10 +58,14 @@ dependencies:
   flutter_web_notification_platform:
   sqflite:
   url_launcher: ^6.3.1
+  stream_transform: ^2.1.1
+  rxdart: ^0.27.7
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mocktail: ^1.0.4
+  bloc_test: ^9.1.7
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

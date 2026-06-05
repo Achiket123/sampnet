@@ -32,7 +32,8 @@ final _chatPageKey = GlobalKey<ScaffoldState>();
 
 class ChatPage extends StatefulWidget {
   static const routePath = "/chats";
-  const ChatPage({super.key});
+  final ChatEntity? initialChat;
+  const ChatPage({super.key, this.initialChat});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -42,13 +43,18 @@ class _ChatPageState extends State<ChatPage> {
   bool isChatSelected = false;
   String selectedChatName = "";
   ChatEntity? selectedChat;
-  late Stream chatStream;
+  late Stream<List<ChatModel>> chatStream;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController controller = TextEditingController();
   @override
   void initState() {
     super.initState();
     chatStream = getIt<ChatDataSource>().getChats();
+    if (widget.initialChat != null) {
+      isChatSelected = true;
+      selectedChat = widget.initialChat;
+      selectedChatName = "${widget.initialChat!.firstName} ${widget.initialChat!.lastName}";
+    }
   }
 
   @override
@@ -72,9 +78,9 @@ class _ChatPageState extends State<ChatPage> {
             ),
             Row(
               children: [
-                StreamBuilder(
+                StreamBuilder<List<ChatModel>>(
                   stream: chatStream,
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  builder: (BuildContext context, AsyncSnapshot<List<ChatModel>> snapshot) {
                     if (snapshot.hasError) {
                       return Text(snapshot.error.toString());
                     }
@@ -91,7 +97,7 @@ class _ChatPageState extends State<ChatPage> {
                         snapshot.connectionState == ConnectionState.active) {
                       final state = snapshot.data!;
 
-                      final List<ChatModel> chats = state;
+                      final List<ChatModel> chats = List<ChatModel>.from(state);
                       debugPrint(chats.toString());
                       return Container(
                         padding: const EdgeInsets.all(20),
@@ -200,11 +206,11 @@ class _ChatPageState extends State<ChatPage> {
                                   }
                                 },
                                 child: Expanded(
-                                    child: StreamBuilder(
+                                    child: StreamBuilder<List<MessageModel>>(
                                   stream: getIt<MessageDataSource>()
                                       .getMessages(selectedChat!.id.toString()),
                                   builder: ((BuildContext context,
-                                      AsyncSnapshot<dynamic> snapshot) {
+                                      AsyncSnapshot<List<MessageModel>> snapshot) {
                                     if (snapshot.hasError) {
                                       return Text(snapshot.error.toString());
                                     }
@@ -215,11 +221,7 @@ class _ChatPageState extends State<ChatPage> {
                                     }
                                     if (snapshot.hasData &&
                                         snapshot.data != null) {
-                                      final List<MessageModel> data = snapshot
-                                          .data!
-                                          .map<MessageModel>(
-                                              (e) => MessageModel.fromMap(e))
-                                          .toList();
+                                      final List<MessageModel> data = List<MessageModel>.from(snapshot.data!);
                                       // _scrollController.jumpTo(_scrollController
                                       //     .position.maxScrollExtent);
                                       WidgetsBinding.instance

@@ -1,11 +1,7 @@
-import 'dart:developer';
-
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hackathon/dependency_injection.g.dart';
-import 'package:hackathon/features/auth/domain/entity/user_entity.dart';
-import 'package:hackathon/features/tasks/domain/entities/task_entity.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/task_bloc/task_bloc.dart';
 import 'package:hackathon/features/tasks/presentation/widgets/create_task_pop_up.dart';
 import 'package:hackathon/widgets/task_button.dart';
@@ -13,8 +9,6 @@ import 'package:hackathon/features/tasks/presentation/widgets/task_horizontal_wi
 import 'package:hackathon/features/tasks/presentation/widgets/task_widget_box.dart';
 import 'package:hackathon/features/tasks/presentation/widgets/task_widget_holder.dart';
 import 'package:hackathon/globals/constants/user.dart';
-import 'package:hackathon/globals/data/task_data.dart';
-import 'package:hackathon/globals/models/user_model.dart';
 import 'package:hackathon/widgets/custom_drawer.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
 import 'package:hackathon/widgets/custom_app_bar.dart';
@@ -39,7 +33,7 @@ class _TaskPageState extends State<TaskPage> {
     super.initState();
     // if(awaitgetIt.allReady())
     BlocProvider.of<TaskBloc>(context)
-        .add(FetchTasksEvent(token: getIt<User>().token!));
+        .add(FetchTasksEvent(token: getIt<User>().employeeToken ?? getIt<User>().token!));
   }
 
   @override
@@ -361,7 +355,7 @@ class _TaskPageState extends State<TaskPage> {
             onTap: () {
               showDialog(
                   context: context,
-                  builder: (context) => Dialog(
+                  builder: (context) => const Dialog(
                       backgroundColor: ColorPallete.transparent,
                       child: CreateTaskPopUp()));
             },

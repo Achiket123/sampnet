@@ -10,7 +10,7 @@ import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:hackathon/services/api_client.dart';
 
 abstract class MessageDataSource {
-  Stream getMessages(String id);
+  Stream<List<MessageModel>> getMessages(String id);
   Future<Either<ErrorModel, MessageModel>> sendMessage(MessageParams message);
 }
 
@@ -19,19 +19,23 @@ class MessageDataSourceImpl implements MessageDataSource {
   MessageDataSourceImpl({required this.apiClient});
 
   @override
-  Stream getMessages(String id) async* {
-    yield* Stream.periodic(const Duration(seconds: 3)).asyncMap((_) async {
+  Stream<List<MessageModel>> getMessages(String id) async* {
+    yield* Stream.periodic(const Duration(seconds: 3)).asyncMap<List<MessageModel>>((_) async {
       try {
         final response = await apiClient.get(ApiConstants.getMessages(id));
         if (response.statusCode == 200) {
-          final List<dynamic> data = jsonDecode(response.body);
-          return data.map((doc) => MessageModel.fromMap(doc)).toList()
-            ..sort((a, b) => a.timeStamp.compareTo(b.timeStamp));
+          final decoded = jsonDecode(response.body);
+          final List<dynamic> data = decoded is Map && decoded.containsKey('messages')
+              ? (decoded['messages'] ?? [])
+              : (decoded is List ? decoded : []);
+          final List<MessageModel> msgList = data.map((doc) => MessageModel.fromMap(doc)).toList();
+          msgList.sort((a, b) => a.timeStamp.compareTo(b.timeStamp));
+          return msgList;
         }
-        return [];
+        return <MessageModel>[];
       } catch (e) {
         debugPrint(e.toString());
-        return [];
+        return <MessageModel>[];
       }
     });
   }
@@ -51,7 +55,11 @@ class MessageDataSourceImpl implements MessageDataSource {
           await apiClient.post(ApiConstants.sendMessage, body: data);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return right(MessageModel.fromMap(jsonDecode(response.body)));
+        final decoded = jsonDecode(response.body);
+        final Map<String, dynamic> msgData = decoded is Map && decoded.containsKey('message')
+            ? decoded['message']
+            : decoded;
+        return right(MessageModel.fromMap(msgData));
       } else {
         return left(ErrorModel(message: 'Failed to send message'));
       }

@@ -40,7 +40,9 @@ import 'package:hackathon/features/team/presentation/blocs/team_bloc/team_bloc.d
 import 'package:hackathon/features/team/presentation/blocs/team_id_bloc/teamid_bloc.dart';
 import 'package:hackathon/features/upload_files/domain/use_cases/upload_file_usecase.dart';
 import 'package:hackathon/features/upload_files/presentation/bloc/upload_file_bloc.dart';
-import 'package:hackathon/firebase_options.dart'; //hello world how are you?? I am doing great what about you??
+import 'package:hackathon/features/notifications/presentation/blocs/notifications_bloc/notifications_bloc.dart';
+import 'package:hackathon/firebase_options.dart';
+ //hello world how are you?? I am doing great what about you??
 import 'package:hackathon/globals/constants/globals.dart';
 import 'package:hackathon/globals/constants/strings.dart';
 import 'package:hackathon/globals/constants/styles.dart';
@@ -173,7 +175,10 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         BlocProvider(
-            create: (context) => TeamidBloc(getTeamByIdUseCase: getIt()))
+            create: (context) => TeamidBloc(getTeamByIdUseCase: getIt())),
+        BlocProvider(
+          create: (context) => getIt<NotificationsBloc>(),
+        ),
       ],
       child: MaterialApp.router(
         key: navigatorKey,

@@ -20,7 +20,7 @@ class ChatModel extends ChatEntity {
       "first_name": firstName,
       "last_name": lastName,
       "email": email,
-      "last_message_timestamp": lastMessageTimestamp!.toUtc().toIso8601String(),
+      "last_message_timestamp": lastMessageTimestamp?.toUtc().toIso8601String(),
       "number_of_message": numberOfMessage
     };
   }

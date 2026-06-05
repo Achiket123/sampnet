@@ -147,25 +147,7 @@ class _DashBoardButtonState extends State<DashBoardButton> {
           scale: scale,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            constraints: const BoxConstraints(
-                maxWidth: 150, minWidth: 120, minHeight: 55),
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: isHovered
-                    ? [
-                        BoxShadow(
-                          color: Colors.white.withOpacity(0.3),
-                          blurRadius: 12,
-                          spreadRadius: 2,
-                        )
-                      ]
-                    : null,
-                gradient: LinearGradient(
-                    colors: widget.isSelected
-                        ? ColorPallete.buttonGradient
-                        : ColorPallete.background,
-                    transform: const GradientRotation(90))),
+            
             child: Center(
                 child: Text(
               widget.text,

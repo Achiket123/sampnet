@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hackathon/features/tasks/domain/entities/task_attachment_entity.dart';
+import 'package:hackathon/features/upload_files/domain/use_cases/upload_file_usecase.dart';
+import 'package:hackathon/features/upload_files/presentation/bloc/upload_file_bloc.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:html' as html;
+import 'dart:typed_data';
 
 class TaskAttachmentSection extends StatefulWidget {
   final List<TaskAttachmentEntity> attachments;
@@ -93,12 +98,33 @@ class _TaskAttachmentSectionState extends State<TaskAttachmentSection> {
         else
           ElevatedButton.icon(
             onPressed: () {
-              // The logic to trigger file picker and UploadFileBloc is handled in the Page listener
-              // This button just signals the intent if needed, or we can make it a specific trigger.
-              // For now, we follow the instruction that the page coordinates the two BLoCs.
-              // I will use a dummy trigger or just let the page handle it.
-              // Actually, I'll add a placeholder or a real trigger if I can.
-              // Let's assume the onAddAttachment callback is used after the upload completes.
+              html.FileUploadInputElement uploadInput =
+                  html.FileUploadInputElement();
+              uploadInput.click();
+
+              uploadInput.onChange.listen((e) {
+                final files = uploadInput.files;
+                if (files != null && files.length == 1) {
+                  final file = files[0];
+                  html.FileReader reader = html.FileReader();
+
+                  reader.onLoadEnd.listen((e) {
+                    if (!mounted) return;
+                    final params = UploadFileParams(
+                      file: (reader.result as Uint8List),
+                      fileType: file.type,
+                      fileName: file.name,
+                      fileSize: file.size,
+                    );
+
+                    context
+                        .read<UploadFileBloc>()
+                        .add(UploadFileBlocEvent(file: params));
+                  });
+
+                  reader.readAsArrayBuffer(file);
+                }
+              });
             },
             icon: const Icon(Icons.upload_file),
             label: const Text("Upload Attachment"),

@@ -20,7 +20,7 @@ class TaskCommentBloc extends Bloc<TaskCommentEvent, TaskCommentState> {
         super(TaskCommentInitial()) {
     on<FetchTaskCommentsEvent>((event, emit) async {
       emit(TaskCommentLoading());
-      final result = await _getTaskCommentsUseCase(event.token, event.taskId);
+      final result = await _getTaskCommentsUseCase(event.taskId);
       result.fold(
         (l) => emit(TaskCommentError(error: l)),
         (r) => emit(TaskCommentsLoaded(comments: r)),
@@ -28,7 +28,7 @@ class TaskCommentBloc extends Bloc<TaskCommentEvent, TaskCommentState> {
     });
 
     on<AddCommentEvent>((event, emit) async {
-      final result = await _addTaskCommentUseCase(event.token, event.taskId, event.content);
+      final result = await _addTaskCommentUseCase(event.taskId, event.userId, event.content);
       result.fold(
         (l) => emit(TaskCommentError(error: l)),
         (r) {

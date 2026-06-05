@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'onboarding_event.dart';
 import 'onboarding_state.dart';
@@ -18,6 +19,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         final progress = await getOnboardingProgressUseCase(event.userId);
         emit(OnboardingLoaded(progress));
       } catch (e) {
+        debugPrint("ONBOARDING ERROR: ${e.toString()}");
         emit(OnboardingError(e.toString()));
       }
     });
@@ -27,6 +29,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         await updateOnboardingProgressUseCase(event.progress);
         emit(OnboardingLoaded(event.progress));
       } catch (e) {
+        debugPrint("ONBOARDING ERROR: ${e.toString()}");
         emit(OnboardingError(e.toString()));
       }
     });

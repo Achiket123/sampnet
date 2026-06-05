@@ -21,11 +21,11 @@ class EmpModel extends EmployeeEntity {
     return EmpModel(
       userId: json['user_id'],
       user: getIt<User>().user!,
-      employmentId: json['employment_id'],
+      employmentId: json['employment_id'] ?? 0,
       organisationId: json['organisation_id'],
       organisation: getIt<User>().organisation!,
-      type: json['type'],
-      salary: json['salary'],
+      type: json['type'] ?? 'employee',
+      salary: json['salary'] ?? '',
       lastLoginAt: DateTime.parse(json['last_login_at']),
     );
   }

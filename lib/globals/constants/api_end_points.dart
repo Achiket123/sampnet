@@ -2,8 +2,8 @@ import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/globals/constants/user.dart';
 
 class ApiConstants {
-  static const String baseUrl = "/api/v1";
-  static const String websocketBaseUrl = "/api/v1";
+  static const String baseUrl = "http://localhost:8000/api/v1";
+  static const String websocketBaseUrl = "ws://localhost:8000/api/v1";
   // Authentication Endpoints
   static const String signIn = "$baseUrl/auth/signin";
   static const String signUp = "$baseUrl/auth/signup";
@@ -40,6 +40,7 @@ class ApiConstants {
   static String getOrganisationTasks =
       "$baseUrl/tasks/organisation/${getIt<User>().organisation!.id}";
   static const String getTaskByTitle = "$baseUrl/tasks/title";
+  static String getTaskActivity(String taskId) => "$baseUrl/tasks/$taskId/activity";
 
   // Team Endpoints
   static const String getTeams = "$baseUrl/teams/get";
@@ -50,13 +51,27 @@ class ApiConstants {
   static String getTeamsByOrganisation =
       "$baseUrl/teams/organisation/${getIt<User>().organisation!.id}";
   // Project Endpoints
-  static const String getProjects = "$baseUrl/projects/organisation";
-  static const String createProject = "$baseUrl/projects/create";
-  static const String updateProject = "$baseUrl/projects";
-  static const String deleteProject = "$baseUrl/projects";
-  static const String getProjectById = "$baseUrl/projects";
-  static String projectLessData =
-      "$baseUrl/projects/less-data/${getIt<User>().organisation!.id}";
+  static const String projectsRoot = "/projects";
+  static const String getProjects = "/projects";
+  static const String createProject = "/projects";
+  static String updateProject(int id) => "/projects/$id";
+  static String deleteProject(int id) => "/projects/$id";
+  static String getProjectById(int id) => "/projects/$id";
+  static const String projectLessData = "/projects/less-data";
+
+  // Milestone Endpoints
+  static String createMilestone(int projectId) => "/projects/$projectId/milestones";
+  static String updateMilestone(int projectId, int milestoneId) => "/projects/$projectId/milestones/$milestoneId";
+  static String deleteMilestone(int projectId, int milestoneId) => "/projects/$projectId/milestones/$milestoneId";
+
+  // Notification Endpoints
+  static const String notifications = "/notifications";
+  static String markNotificationRead(int id) => "$notifications/$id/read";
+  static const String markAllNotificationsRead = "$notifications/read-all";
+
+  // Onboarding Endpoints
+  static String getOnboardingProgress(String userId) => "/onboarding/$userId";
+  static const String updateOnboardingProgress = "/onboarding/update";
 
   // Attendence Endpoints
   static const String attendenceCheckInUrl = "$baseUrl/attendence/create";
@@ -84,4 +99,16 @@ class ApiConstants {
   static String getFileById(String id) => "$baseUrl/file/$id";
   static String updateEmployeeById(String id) =>
       "$baseUrl/employees/update/$id";
+
+  // Leave Endpoints
+  static const String leaveRequest = "/leave/request";
+  static const String myLeaves = "/leave/my";
+  static String organisationLeaves(int orgId) => "/leave/organisation/$orgId";
+  static String leaveById(int id) => "/leave/$id";
+  static String approveLeave(int id) => "/leave/$id/approve";
+  static String rejectLeave(int id) => "/leave/$id/reject";
+  static String cancelLeave(int id) => "/leave/$id/cancel";
+
+  // Search Endpoints
+  static const String globalSearch = "/search";
 }

@@ -11,7 +11,7 @@ class ChatRepositoryImpl implements ChatRepository {
   ChatRepositoryImpl({required this.dataSource});
   
   @override
-  Stream  getChats() => dataSource.getChats();
+  Stream<List<ChatModel>> getChats() => dataSource.getChats();
 
   @override
   Future<Either<ErrorModel, ChatModel>> createChat(ChatParams chat) =>

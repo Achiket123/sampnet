@@ -1,26 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/attendence/presentation/pages/check_in_page.dart';
 import 'package:hackathon/features/attendence/presentation/pages/check_out_page.dart';
 import 'package:hackathon/features/auth/domain/usecase/auth_usecase.dart';
 import 'package:hackathon/features/chats/data/models/chat_model.dart';
+import 'package:hackathon/features/chats/domain/entities/chat_entity.dart';
 import 'package:hackathon/features/chats/presentation/pages/call_page.dart';
 import 'package:hackathon/features/chats/presentation/pages/chat_page.dart';
 import 'package:hackathon/features/company/presentation/pages/register_company_page.dart';
 import 'package:hackathon/features/dashboards/data/models/emp_model.dart';
 import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart';
+import 'package:hackathon/features/employees/presentation/pages/employees_list_page.dart';
+import 'package:hackathon/features/employees/presentation/pages/employee_profile_page.dart';
 import 'package:hackathon/features/landing/landing.dart';
+import 'package:hackathon/features/leave/presentation/pages/leave_management_page.dart';
+import 'package:hackathon/features/leave/presentation/pages/leave_request_page.dart';
+import 'package:hackathon/features/notifications/presentation/pages/notification_preferences_page.dart';
 import 'package:hackathon/features/tasks/presentation/pages/task_page.dart';
 import 'package:hackathon/features/tasks/presentation/pages/task_detail_page.dart';
 import 'package:hackathon/features/team/presentation/pages/team_page.dart';
+import 'package:hackathon/features/projects/presentation/pages/projects_list_page.dart';
+import 'package:hackathon/features/projects/presentation/pages/project_detail_page.dart';
 import 'package:hackathon/globals/constants/strings.dart';
+import 'package:hackathon/features/search/presentation/pages/global_search_page.dart';
+import 'package:hackathon/features/resources/presentation/pages/resources_page.dart';
+import 'package:hackathon/features/calendar/presentation/pages/personal_calendar_page.dart';
+import 'package:hackathon/features/calendar/presentation/pages/team_calendar_page.dart';
+
+// Research Module Imports
+import 'package:hackathon/features/research/domain/entities/research_entry_entity.dart';
+import 'package:hackathon/features/research/presentation/pages/research_list_page.dart';
+import 'package:hackathon/features/research/presentation/pages/research_detail_page.dart';
+import 'package:hackathon/features/research/presentation/pages/create_edit_research_page.dart';
+import 'package:hackathon/features/research/presentation/blocs/research_list_bloc/research_list_bloc.dart';
+import 'package:hackathon/features/research/presentation/blocs/research_detail_bloc/research_detail_bloc.dart';
+import 'package:hackathon/features/projects/presentation/blocs/project_bloc/project_bloc.dart';
+import 'package:hackathon/features/projects/presentation/blocs/project_bloc/project_event.dart';
+import 'package:hackathon/features/team/presentation/blocs/team_bloc/team_bloc.dart';
+
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/models/organisation_model.dart';
 import 'package:hackathon/globals/models/user_model.dart';
 import 'package:hackathon/widgets/error_page.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:jwt_io/jwt_io.dart';
+import 'package:hackathon/services/websocket_service.dart';
 
 final GoRouter route = GoRouter(
   initialLocation: initRoute(),
@@ -61,6 +87,21 @@ final GoRouter route = GoRouter(
       ),
     ),
     GoRoute(
+      path: EmployeesListPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const EmployeesListPage(),
+      ),
+    ),
+    GoRoute(
+      path: '${EmployeeProfilePage.routePath}/:employeeId',
+      builder: safeBuilder(
+        (context, state) {
+          final id = int.tryParse(state.pathParameters['employeeId'] ?? '0') ?? 0;
+          return EmployeeProfilePage(employeeId: id);
+        },
+      ),
+    ),
+    GoRoute(
       path: RegisterCompanyPage.routePath,
       builder: safeBuilder(
         (context, state) => const RegisterCompanyPage(),
@@ -75,13 +116,55 @@ final GoRouter route = GoRouter(
     GoRoute(
       path: ChatPage.routePath,
       builder: safeBuilder(
-        (context, state) => const ChatPage(),
+        (context, state) {
+          final extra = state.extra;
+          ChatEntity? initialChat;
+          if (extra is ChatEntity) {
+            initialChat = extra;
+          } else if (extra is Map<String, dynamic> && extra.containsKey('chat')) {
+            initialChat = extra['chat'] as ChatEntity?;
+          }
+          return ChatPage(initialChat: initialChat);
+        },
       ),
     ),
     GoRoute(
       path: TeamPage.routePath,
       builder: safeBuilder(
         (context, state) => const TeamPage(),
+      ),
+    ),
+    GoRoute(
+      path: LeaveManagementPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const LeaveManagementPage(),
+      ),
+    ),
+    GoRoute(
+      path: LeaveRequestPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const LeaveRequestPage(),
+      ),
+    ),
+    GoRoute(
+      path: ProjectsListPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const ProjectsListPage(),
+      ),
+    ),
+    GoRoute(
+      path: '${ProjectDetailPage.routePath}/:projectId',
+      builder: safeBuilder(
+        (context, state) {
+          final id = int.tryParse(state.pathParameters['projectId'] ?? '0') ?? 0;
+          return ProjectDetailPage(projectId: id);
+        },
+      ),
+    ),
+    GoRoute(
+      path: NotificationPreferencesPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const NotificationPreferencesPage(),
       ),
     ),
     GoRoute(
@@ -117,6 +200,93 @@ final GoRouter route = GoRouter(
           return CallPage(
             chatEntity: ChatModel.fromEntity(extra['chat']),
             isCalling: extra['isCalling'],
+          );
+        },
+      ),
+    ),
+    GoRoute(
+      path: TaskDetailPage.routeName,
+      builder: (context, state) {
+        return TaskDetailPage(
+            taskId:
+                int.tryParse(state.pathParameters["taskId"].toString()) ?? 0);
+      },
+    ),
+    GoRoute(
+      path: ResourcesPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const ResourcesPage(),
+      ),
+    ),
+    GoRoute(
+      path: GlobalSearchPage.routePath,
+      builder: safeBuilder(
+        (context, state) {
+          final query =
+              state.extra is String ? state.extra as String : '';
+          return GlobalSearchPage(initialQuery: query);
+        },
+      ),
+    ),
+    GoRoute(
+      path: PersonalCalendarPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const PersonalCalendarPage(),
+      ),
+    ),
+    GoRoute(
+      path: TeamCalendarPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const TeamCalendarPage(),
+      ),
+    ),
+    GoRoute(
+      path: ResearchListPage.routePath,
+      builder: safeBuilder(
+        (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+                create: (context) => getIt<ResearchListBloc>()
+                  ..add(const LoadResearchList(isRefresh: true))),
+            BlocProvider(create: (context) => getIt<ResearchDetailBloc>()),
+          ],
+          child: const ResearchListPage(),
+        ),
+      ),
+    ),
+    GoRoute(
+      path: '${ResearchDetailPage.routePath}/:researchId',
+      builder: safeBuilder(
+        (context, state) {
+          final id =
+              int.tryParse(state.pathParameters['researchId'] ?? '0') ?? 0;
+          return BlocProvider(
+            create: (context) =>
+                getIt<ResearchDetailBloc>()..add(GetResearchDetail(id: id)),
+            child: ResearchDetailPage(researchId: id),
+          );
+        },
+      ),
+    ),
+    GoRoute(
+      path: CreateEditResearchPage.routePath,
+      builder: safeBuilder(
+        (context, state) {
+          final extra = state.extra;
+          ResearchEntryEntity? entry;
+          if (extra is ResearchEntryEntity) {
+            entry = extra;
+          }
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                  create: (context) =>
+                      getIt<ProjectsBloc>()..add(LoadProjectsEvent())),
+              BlocProvider(
+                  create: (context) => getIt<TeamBloc>()..add(GetTeamEvent(token: ''))),
+              BlocProvider(create: (context) => getIt<ResearchDetailBloc>()),
+            ],
+            child: CreateEditResearchPage(entryToEdit: entry),
           );
         },
       ),
@@ -160,6 +330,7 @@ String? handleRouteGuard(GoRouterState state) {
 
     final path = response.fold<String>(
       (l) {
+        getIt<WebsocketService>().disconnect();
         return LandingPage.routePath;
       },
       handleToken,
@@ -179,6 +350,7 @@ String? handleRouteGuard(GoRouterState state) {
     debugPrint(e.toString());
     debugPrint(stack.toString());
 
+    getIt<WebsocketService>().disconnect();
     return LandingPage.routePath;
   }
 }
@@ -192,6 +364,7 @@ String initRoute() {
     final path = response.fold<String>(
       (l) {
         debugPrint("ERROR ${l.message}");
+        getIt<WebsocketService>().disconnect();
         return LandingPage.routePath;
       },
       handleToken,
@@ -205,6 +378,7 @@ String initRoute() {
     debugPrint(e.toString());
     debugPrint(stack.toString());
 
+    getIt<WebsocketService>().disconnect();
     return LandingPage.routePath;
   }
 }
@@ -225,6 +399,7 @@ String handleToken(dynamic token) {
     debugPrint("HANDLING TOKEN");
     if (token == null || JwtToken.isExpired(token)) {
       debugPrint("TOKEN EXPIRED OR NULL");
+      getIt<WebsocketService>().disconnect();
       return LandingPage.routePath;
     }
 
@@ -247,11 +422,36 @@ String handleToken(dynamic token) {
     if (getIt<User>().employeeToken != null &&
         !JwtToken.isExpired(getIt<User>().employeeToken!)) {
       final empPayload = JwtToken.payload(getIt<User>().employeeToken!);
-      getIt<User>().employee = EmpModel.fromJson(empPayload['employee']);
+      Map<String, dynamic>? empJson;
+      if (empPayload['employee'] != null) {
+        empJson = Map<String, dynamic>.from(empPayload['employee']);
+      } else if (empPayload['manager'] != null) {
+        empJson = Map<String, dynamic>.from(empPayload['manager']);
+      } else if (empPayload['boss'] != null) {
+        empJson = Map<String, dynamic>.from(empPayload['boss']);
+        empJson['type'] = 'boss';
+        empJson['employment_id'] = 0;
+        empJson['salary'] = '0';
+      }
+      if (empJson != null) {
+        getIt<User>().employee = EmpModel.fromJson(empJson);
+      } else {
+        getIt<User>().employee = null;
+      }
     } else {
-      final employeeDataRaw = Hive.box(Strings.authBox).get(Strings.employeeKey);
+      final employeeDataRaw =
+          Hive.box(Strings.authBox).get(Strings.employeeKey);
       if (employeeDataRaw != null && getIt<User>().organisation != null) {
         final employeeData = Map<String, dynamic>.from(employeeDataRaw);
+        if (employeeData['type'] == null) {
+          if (employeeData.containsKey('salary')) {
+            employeeData['type'] = 'manager'; // or default to manager/employee
+          } else {
+            employeeData['type'] = 'boss';
+            employeeData['employment_id'] = 0;
+            employeeData['salary'] = '0';
+          }
+        }
         getIt<User>().employee = EmpModel.fromJson(employeeData);
       } else {
         getIt<User>().employee = null;
@@ -259,15 +459,18 @@ String handleToken(dynamic token) {
     }
 
     if (getIt<User>().employee != null && getIt<User>().organisation != null) {
+      getIt<WebsocketService>().connect();
       return Dashboard.routePath;
     }
 
+    getIt<WebsocketService>().disconnect();
     return RegisterCompanyPage.routePath;
   } catch (e, stack) {
     debugPrint("HANDLE TOKEN ERROR");
     debugPrint(e.toString());
     debugPrint(stack.toString());
 
+    getIt<WebsocketService>().disconnect();
     return LandingPage.routePath;
   }
 }

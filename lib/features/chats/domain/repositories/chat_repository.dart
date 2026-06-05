@@ -5,7 +5,7 @@ import 'package:hackathon/features/chats/domain/use_cases/chat_usecase.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 
 abstract class ChatRepository {
-  Stream  getChats();
+  Stream<List<ChatModel>> getChats();
   Future<Either<ErrorModel, ChatModel>> createChat(ChatParams chat);
-   Future<Either<ErrorModel, List<ChatModel>>> getChat();
+  Future<Either<ErrorModel, List<ChatModel>>> getChat();
 }

@@ -30,7 +30,7 @@ class ChatEntity extends Equatable {
       "last_name": lastName,
       "last_message": lastMessage,
       "email": email,
-      "last_message_timestamp": lastMessageTimestamp!.toUtc().toIso8601String(),
+      "last_message_timestamp": lastMessageTimestamp?.toUtc().toIso8601String(),
       "number_of_message": numberOfMessage
     };
   }

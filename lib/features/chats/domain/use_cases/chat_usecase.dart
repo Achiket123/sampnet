@@ -5,12 +5,12 @@ import 'package:hackathon/features/chats/domain/repositories/chat_repository.dar
 import 'package:hackathon/globals/constants/usecase.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 
-class StreamChatUsecase implements StreamUsecase<Stream, Null> {
+class StreamChatUsecase implements StreamUsecase<Stream<List<ChatModel>>, Null> {
   final ChatRepository chatRepository;
 
   StreamChatUsecase({required this.chatRepository});
   @override
-    Stream  call(Null params) => chatRepository.getChats();
+  Stream<List<ChatModel>> call(Null params) => chatRepository.getChats();
 }
 
 class CreateChatUsecase implements Usecase<ChatModel, ChatParams> {
@@ -33,16 +33,18 @@ class GetChatUsecase implements Usecase<List<ChatModel>, Null> {
 }
 
 class ChatParams {
+  final int? id;
   final String firstName;
   final String lastName;
   final DateTime? lastMessageTimestamp;
   final int? numberOfMessage;
-  final   String email;
+  final String email;
 
   ChatParams(
-      {required this.firstName,
+      {this.id,
+      required this.firstName,
       required this.lastName,
       this.lastMessageTimestamp,
-      this.numberOfMessage= 0,
+      this.numberOfMessage = 0,
       required this.email});
 }

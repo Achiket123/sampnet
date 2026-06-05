@@ -10,7 +10,8 @@ class ApiClient {
   ApiClient({required http.Client client, required this.baseUrl}) : _client = client;
 
   Map<String, String> _getHeaders() {
-    final token = Hive.box(Strings.authBox).get(Strings.tokenKey);
+    final empToken = Hive.box(Strings.authBox).get(Strings.employeeTokenKey);
+    final token = empToken ?? Hive.box(Strings.authBox).get(Strings.tokenKey);
     return {
       'Authorization': token ?? '',
       'Content-Type': 'application/json',

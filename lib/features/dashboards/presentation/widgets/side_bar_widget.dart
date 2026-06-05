@@ -3,10 +3,19 @@ import 'package:go_router/go_router.dart';
 import 'package:hackathon/features/chats/presentation/pages/chat_page.dart';
 import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart';
 import 'package:hackathon/features/dashboards/presentation/widgets/custom_button.dart';
+import 'package:hackathon/features/employees/presentation/pages/employees_list_page.dart';
+import 'package:hackathon/features/leave/presentation/pages/leave_management_page.dart';
 import 'package:hackathon/features/tasks/presentation/pages/task_page.dart';
 import 'package:hackathon/features/team/presentation/pages/team_page.dart';
+import 'package:hackathon/features/projects/presentation/pages/projects_list_page.dart';
+import 'package:hackathon/features/research/presentation/pages/research_list_page.dart';
 import 'package:hackathon/globals/constants/styles.dart';
 import 'package:hackathon/widgets/list_of_side_bar.dart';
+import 'package:hackathon/dependency_injection.g.dart';
+import 'package:hackathon/globals/constants/user.dart';
+import 'package:hackathon/features/employees/presentation/pages/employee_profile_page.dart';
+import 'package:hackathon/features/resources/presentation/pages/resources_page.dart';
+import 'package:hackathon/features/calendar/presentation/pages/personal_calendar_page.dart';
 
 // ignore: must_be_immutable
 class SideBarWidget extends StatefulWidget {
@@ -53,6 +62,24 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                   context.go(ChatPage.routePath);
                 } else if (index == 3) {
                   context.go(TeamPage.routePath);
+                } else if (index == 4) {
+                  context.go(LeaveManagementPage.routePath);
+                } else if (index == 6) {
+                  context.go(ResourcesPage.routePath);
+                } else if (index == 7) {
+                  final userRole = getIt<User>().role;
+                  if (userRole == 'employee') {
+                    final userId = getIt<User>().user?.id ?? 0;
+                    context.go('${EmployeeProfilePage.routePath}/$userId');
+                  } else {
+                    context.go(EmployeesListPage.routePath);
+                  }
+                } else if (index == 8) {
+                  context.go(ResearchListPage.routePath);
+                } else if (index == 9) {
+                  context.go(ProjectsListPage.routePath);
+                } else if (index == 10) {
+                  context.go(PersonalCalendarPage.routePath);
                 } else {
                   _changeIndex(index);
                 }

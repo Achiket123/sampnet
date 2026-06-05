@@ -53,7 +53,9 @@ class _TaskCommentSectionState extends State<TaskCommentSection> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
-                    child: Text(comment.userFirstName.isNotEmpty ? comment.userFirstName[0] : "?"),
+                    child: Text(comment.userFirstName.isNotEmpty
+                        ? comment.userFirstName[0]
+                        : "?"),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -65,11 +67,14 @@ class _TaskCommentSectionState extends State<TaskCommentSection> {
                           children: [
                             Text(
                               comment.displayName,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              DateFormat('MMM dd, hh:mm a').format(comment.createdAt),
-                              style: const TextStyle(fontSize: 12, color: Colors.grey),
+                              DateFormat('MMM dd, hh:mm a')
+                                  .format(comment.createdAt),
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.grey),
                             ),
                           ],
                         ),
@@ -80,7 +85,8 @@ class _TaskCommentSectionState extends State<TaskCommentSection> {
                   ),
                   if (comment.userId == widget.currentUserId)
                     IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                      icon:
+                          const Icon(Icons.delete, color: Colors.red, size: 20),
                       onPressed: () => widget.onDeleteComment(comment.id),
                     ),
                 ],
@@ -94,6 +100,7 @@ class _TaskCommentSectionState extends State<TaskCommentSection> {
             Expanded(
               child: TextField(
                 controller: _controller,
+                style: TextStyle(color: Colors.white),
                 decoration: const InputDecoration(
                   hintText: "Add a comment...",
                   border: OutlineInputBorder(),

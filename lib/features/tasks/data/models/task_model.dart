@@ -6,7 +6,7 @@ import 'package:hackathon/globals/models/team_model.dart';
 import 'package:hackathon/globals/models/user_model.dart';
 
 class TaskModel extends TaskEntity {
-  TaskModel(
+  const TaskModel(
       {required super.id,
       required super.title,
       required super.description,

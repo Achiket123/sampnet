@@ -7,6 +7,9 @@ import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:hackathon/dependency_injection.g.dart';
+import 'package:hackathon/globals/constants/user.dart';
+
 abstract class EmployeeDataSource {
   Future<Either<ErrorModel, List<AssigneeModel>>> getEmployees(String token);
 }
@@ -19,9 +22,10 @@ class EmployeeDataSourceImpl implements EmployeeDataSource {
   Future<Either<ErrorModel, List<AssigneeModel>>> getEmployees(
       String token) async {
     try {
+      final activeToken = getIt<User>().employeeToken ?? token;
       final url = Uri.parse(ApiConstants.getEmployees);
       final response = await apiService.get(url, headers: {
-        'Authorization': token,
+        'Authorization': activeToken,
       });
       if (response.statusCode == 200) {
         debugPrint(response.body);
@@ -35,7 +39,7 @@ class EmployeeDataSourceImpl implements EmployeeDataSource {
       }
       return left(ErrorModel(message: response.body));
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return left(ErrorModel(message: 'Something went wrong'));
     }
   }

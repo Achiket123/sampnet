@@ -12,11 +12,9 @@ part 'get_employees_state.dart';
 
 class GetEmployeesBloc extends Bloc<GetEmployeesEvent, GetEmployeesState> {
   final GetEmployeesUseCase _getEmployeesUseCase;
-  final GetProjectUseCase _getProjectUseCase;  
   final TaskGetTeamUsecase _getTeamUseCase;
   GetEmployeesBloc({required GetEmployeesUseCase getEmployeesUseCase, required GetProjectUseCase getProjectUseCase, required TaskGetTeamUsecase getTeamUseCase}) :
     _getEmployeesUseCase = getEmployeesUseCase,
-    _getProjectUseCase = getProjectUseCase,
     _getTeamUseCase = getTeamUseCase,
     super(GetEmployeesInitial()) {
     on<GetEmployeesEvent>((event, emit) {

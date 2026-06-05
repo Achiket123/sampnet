@@ -48,7 +48,7 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
 
   Future<void> _onLoadTaskDetail(LoadTaskDetail event, Emitter<TaskDetailState> emit) async {
     emit(state.copyWith(isLoadingTask: true, isLoadingComments: true, isLoadingAttachments: true));
-    final token = getIt<User>().token!;
+    final token = getIt<User>().employeeToken ?? getIt<User>().token!;
     
     try {
       final results = await Future.wait([
@@ -58,18 +58,18 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
       ]);
 
       final taskResult = results[0] as Either<ErrorModel, TaskEntity>;
-      final commentsResult = results[1] as List<TaskCommentEntity>;
-      final attachmentsResult = results[2] as List<TaskAttachmentEntity>;
+      final commentsResult = results[1] as Either<ErrorModel, List<TaskCommentEntity>>;
+      final attachmentsResult = results[2] as Either<ErrorModel, List<TaskAttachmentEntity>>;
 
       emit(state.copyWith(
         isLoadingTask: false,
         isLoadingComments: false,
         isLoadingAttachments: false,
-        task: taskResult.fold((l) {
-          throw Exception(l.message);
-        }, (r) => r),
-        comments: commentsResult,
-        attachments: attachmentsResult,
+        task: taskResult.fold((l) => throw Exception(l.message), (r) => r),
+        comments: commentsResult.fold((l) => [], (r) => r),
+        attachments: attachmentsResult.fold((l) => [], (r) => r),
+        commentError: commentsResult.fold((l) => l.message, (r) => null),
+        attachmentError: attachmentsResult.fold((l) => l.message, (r) => null),
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -104,10 +104,13 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
 
     try {
       final result = await addTaskCommentUsecase.call(state.task!.id!, userId, event.content);
-      emit(state.copyWith(
-        isSubmittingComment: false,
-        comments: [...state.comments, result],
-      ));
+      result.fold(
+        (l) => emit(state.copyWith(isSubmittingComment: false, commentError: l.message)),
+        (r) => emit(state.copyWith(
+          isSubmittingComment: false,
+          comments: [...state.comments, r],
+        )),
+      );
     } catch (e) {
       emit(state.copyWith(isSubmittingComment: false, commentError: e.toString()));
     }
@@ -117,11 +120,14 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     if (state.task == null) return;
     
     try {
-      await deleteTaskCommentUsecase.call(state.task!.id!, event.commentId);
-      emit(state.copyWith(
-        comments: state.comments.where((c) => c.id != event.commentId).toList(),
-        clearCommentError: true,
-      ));
+      final result = await deleteTaskCommentUsecase.call(state.task!.id!, event.commentId);
+      result.fold(
+        (l) => emit(state.copyWith(commentError: l.message)),
+        (r) => emit(state.copyWith(
+          comments: state.comments.where((c) => c.id != event.commentId).toList(),
+          clearCommentError: true,
+        )),
+      );
     } catch (e) {
       emit(state.copyWith(commentError: e.toString()));
     }
@@ -135,10 +141,13 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
 
     try {
       final result = await addTaskAttachmentUsecase.call(state.task!.id!, event.fileId, userId, event.fileName);
-      emit(state.copyWith(
-        isUploadingAttachment: false,
-        attachments: [...state.attachments, result],
-      ));
+      result.fold(
+        (l) => emit(state.copyWith(isUploadingAttachment: false, attachmentError: l.message)),
+        (r) => emit(state.copyWith(
+          isUploadingAttachment: false,
+          attachments: [...state.attachments, r],
+        )),
+      );
     } catch (e) {
       emit(state.copyWith(isUploadingAttachment: false, attachmentError: e.toString()));
     }
@@ -148,11 +157,14 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     if (state.task == null) return;
 
     try {
-      await removeTaskAttachmentUsecase.call(state.task!.id!, event.attachmentId);
-      emit(state.copyWith(
-        attachments: state.attachments.where((a) => a.id != event.attachmentId).toList(),
-        clearAttachmentError: true,
-      ));
+      final result = await removeTaskAttachmentUsecase.call(state.task!.id!, event.attachmentId);
+      result.fold(
+        (l) => emit(state.copyWith(attachmentError: l.message)),
+        (r) => emit(state.copyWith(
+          attachments: state.attachments.where((a) => a.id != event.attachmentId).toList(),
+          clearAttachmentError: true,
+        )),
+      );
     } catch (e) {
       emit(state.copyWith(attachmentError: e.toString()));
     }

@@ -33,8 +33,8 @@ class _TeamCreatePopUpState extends State<TeamCreatePopUp> {
     super.initState();
     context
         .read<ProjectBloc>()
-        .add(GetProjectEvent(token: getIt<User>().token!));
-    getEmployeesBloc.add(GetEmployees(token: getIt<User>().token!));
+        .add(GetProjectEvent(token: getIt<User>().employeeToken ?? getIt<User>().token!));
+    getEmployeesBloc.add(GetEmployees(token: getIt<User>().employeeToken ?? getIt<User>().token!));
   }
 
   @override

@@ -32,7 +32,7 @@ class _TeamPageState extends State<TeamPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    context.read<TeamBloc>().add(GetTeamEvent(token: getIt<User>().token!));
+    context.read<TeamBloc>().add(GetTeamEvent(token: getIt<User>().employeeToken ?? getIt<User>().token!));
   }
 
   @override

@@ -8,6 +8,8 @@ import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
 import 'package:hackathon/globals/constants/styles.dart';
 import 'package:hackathon/features/dashboards/presentation/widgets/custom_button.dart';
+import 'package:hackathon/features/notifications/presentation/widgets/notification_bell_widget.dart';
+import 'package:hackathon/features/search/presentation/widgets/search_overlay_widget.dart';
 import 'package:hackathon/globals/constants/user.dart';
 
 class DashAppBar extends StatefulWidget {
@@ -81,38 +83,16 @@ class _DashAppBarState extends State<DashAppBar> {
                         ],
                       ),
                     ),
+                    const SearchOverlayWidget(),
+                    const SizedBox(width: 15),
                     Text(
                       getIt<User>().user!.firstName,
                     ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: ColorPallete.white,
-                          borderRadius: BorderRadius.circular(6)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "You have a Notification",
-                            style: textTheme.displayMedium!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          Text("You have a Notification",
-                              overflow: TextOverflow.clip,
-                              style: textTheme.displayMedium!
-                                  .copyWith(fontSize: 8))
-                        ],
-                      ),
-                    ),
+                    const NotificationBellWidget(),
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const CircleAvatar(
-                          child: Icon(Icons.notification_add),
-                        ),
                         const SizedBox(
                           width: 10,
                         ),

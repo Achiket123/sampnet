@@ -9,7 +9,7 @@ abstract class TaskAttachmentEvent extends Equatable {
 
 class FetchTaskAttachmentsEvent extends TaskAttachmentEvent {
   final String token;
-  final String taskId;
+  final int taskId;
 
   const FetchTaskAttachmentsEvent({required this.token, required this.taskId});
 
@@ -18,12 +18,18 @@ class FetchTaskAttachmentsEvent extends TaskAttachmentEvent {
 }
 
 class AddAttachmentEvent extends TaskAttachmentEvent {
-  final String token;
-  final String taskId;
-  final String filePath;
+  final int taskId;
+  final int fileId;
+  final int uploadedBy;
+  final String fileName;
 
-  const AddAttachmentEvent({required this.token, required this.taskId, required this.filePath});
+  const AddAttachmentEvent({
+    required this.taskId,
+    required this.fileId,
+    required this.uploadedBy,
+    required this.fileName,
+  });
 
   @override
-  List<Object?> get props => [token, taskId, filePath];
+  List<Object?> get props => [taskId, fileId, uploadedBy, fileName];
 }

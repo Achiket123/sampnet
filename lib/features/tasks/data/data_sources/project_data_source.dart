@@ -1,12 +1,14 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/tasks/data/models/project_model.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
-import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:hackathon/dependency_injection.g.dart';
+import 'package:hackathon/globals/constants/user.dart';
 
 abstract class ProjectDataSource {
   Future<Either<ErrorModel, List<ProjectModel>>> getProjects(String token);
@@ -19,11 +21,12 @@ class ProjectDataSourceImpl implements ProjectDataSource {
   Future<Either<ErrorModel, List<ProjectModel>>> getProjects(
       String token) async {
     try {
+      final activeToken = getIt<User>().employeeToken ?? token;
       final response = await client.get(
           Uri.parse(
-              "${ApiConstants.getProjects}/${getIt<User>().employee!.organisationId}"),
+              "${ApiConstants.baseUrl}${ApiConstants.getProjects}"),
           headers: {
-            'Authorization': token,
+            'Authorization': activeToken,
           });
       if (response.statusCode == 200) {
         final List<ProjectModel> projects = List<ProjectModel>.from(
@@ -31,11 +34,11 @@ class ProjectDataSourceImpl implements ProjectDataSource {
                 .map((project) => ProjectModel.fromJson(project)));
         return right(projects);
       } else {
-        print(response.body);
+        debugPrint(response.body);
         return left(ErrorModel(message: response.body));
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return left(ErrorModel(message: e.toString()));
     }
   }

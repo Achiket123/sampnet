@@ -11,7 +11,7 @@ import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:hackathon/services/api_client.dart';
 
 abstract class ChatDataSource {
-  Stream getChats();
+  Stream<List<ChatModel>> getChats();
   Future<Either<ErrorModel, ChatModel>> createChat(ChatParams chat);
   Future<Either<ErrorModel, List<ChatModel>>> getChat();
 }
@@ -21,24 +21,32 @@ class ChatDataSourceImpl implements ChatDataSource {
   ChatDataSourceImpl({required this.apiClient});
 
   @override
-  Stream getChats() async* {
+  Stream<List<ChatModel>> getChats() async* {
     debugPrint("Chat data source called");
 
-    yield* Stream.periodic(const Duration(seconds: 3)).asyncMap((_) async {
+    yield* Stream.periodic(const Duration(seconds: 3)).asyncMap<List<ChatModel>>((_) async {
       try {
         final response = await apiClient.get(
             '${ApiConstants.getChats}?organisation_id=${getIt<user.User>().organisation!.id}');
         if (response.statusCode == 200) {
           debugPrint(response.body);
           final List<dynamic> data = jsonDecode(response.body)['chats'];
-          return data.map((doc) => ChatModel.fromMap(doc)).toList()
-            ..sort((a, b) =>
-                b.lastMessageTimestamp!.compareTo(a.lastMessageTimestamp!));
+          debugPrint(data.toString());
+          final List<ChatModel> chatList = data.map<ChatModel>((doc) => ChatModel.fromMap(doc)).toList();
+          chatList.sort((a, b) {
+            final aTime = a.lastMessageTimestamp;
+            final bTime = b.lastMessageTimestamp;
+            if (aTime == null && bTime == null) return 0;
+            if (aTime == null) return 1;
+            if (bTime == null) return -1;
+            return bTime.compareTo(aTime);
+          });
+          return chatList;
         }
-        return [];
+        return <ChatModel>[];
       } catch (e) {
         debugPrint(e.toString());
-        return [];
+        return <ChatModel>[];
       }
     });
   }
@@ -46,19 +54,20 @@ class ChatDataSourceImpl implements ChatDataSource {
   @override
   Future<Either<ErrorModel, ChatModel>> createChat(ChatParams chat) async {
     try {
+      final chatId = chat.id ?? getIt<user.User>().user!.id;
       final chatData = {
-        'ID': getIt<user.User>().user!.id,
+        'ID': chatId,
         'first_name': chat.firstName,
         'last_name': chat.lastName,
         'email': chat.email,
         'organisation_id': getIt<user.User>().organisation!.id,
         'last_message_timestamp':
-            chat.lastMessageTimestamp?.toUtc().toIso8601String(),
+            (chat.lastMessageTimestamp ?? DateTime.now()).toUtc().toIso8601String(),
         'number_of_message': 0,
       };
 
       final callData = {
-        'id': getIt<user.User>().user!.id,
+        'id': chatId,
         'first_name': chat.firstName,
         'last_name': chat.lastName,
         'email': chat.email,
@@ -83,15 +92,23 @@ class ChatDataSourceImpl implements ChatDataSource {
       final response = await apiClient.get(
           '${ApiConstants.getChats}?organisation_id=${getIt<user.User>().organisation!.id}');
       if (response.statusCode == 200) {
+        debugPrint("HEHE");
         debugPrint(response.body);
-        final List<dynamic> data = jsonDecode(response.body);
-        return right(data
+        final List<dynamic> data = jsonDecode(response.body)["chats"];
+        final List<ChatModel> chatList = data
             .where((doc) =>
                 doc['id'].toString() != getIt<user.User>().user!.id.toString())
             .map((doc) => ChatModel.fromMap(doc))
-            .toList()
-          ..sort((a, b) =>
-              b.lastMessageTimestamp!.compareTo(a.lastMessageTimestamp!)));
+            .toList();
+        chatList.sort((a, b) {
+          final aTime = a.lastMessageTimestamp;
+          final bTime = b.lastMessageTimestamp;
+          if (aTime == null && bTime == null) return 0;
+          if (aTime == null) return 1;
+          if (bTime == null) return -1;
+          return bTime.compareTo(aTime);
+        });
+        return right(chatList);
       } else {
         return left(ErrorModel(message: 'Failed to load chats'));
       }

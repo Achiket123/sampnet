@@ -155,36 +155,28 @@ class _TaskWidgetBoxState extends State<TaskWidgetBox> {
           DropdownMenuItem<String>(
             value: 'In Progress',
             onTap: () {
-              setState(() {
-                widget.task.status = 'In Progress';
-              });
+              // Status mutation is handled by the BLoC event
             },
             child: Text('In Progress', style: dropDownStyle),
           ),
           DropdownMenuItem<String>(
             value: 'Blocked',
             onTap: () {
-              setState(() {
-                widget.task.status = 'Blocked';
-              });
+              // Status mutation is handled by the BLoC event
             },
             child: Text('Blocked', style: dropDownStyle),
           ),
           DropdownMenuItem<String>(
             value: 'Done',
             onTap: () {
-              setState(() {
-                widget.task.status = 'Done';
-              });
+              // Status mutation is handled by the BLoC event
             },
             child: Text('Done', style: dropDownStyle),
           ),
           DropdownMenuItem<String>(
             value: 'Pending',
             onTap: () {
-              setState(() {
-                widget.task.status = 'Pending';
-              });
+              // Status mutation is handled by the BLoC event
             },
             child: Text('Pending', style: dropDownStyle),
           ),

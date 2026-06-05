@@ -31,7 +31,7 @@ class TeamDataSourceImpl implements TeamDataSource {
       debugPrint(getIt<User>().organisation.toString());
       final url = Uri.parse(ApiConstants.getTeamsByOrganisation);
       final response = await client.get(url, headers: {
-        'Authorization': token,
+        'Authorization': getIt<User>().employeeToken ?? token,
       });
       if (response.statusCode == 200) {
         debugPrint("TEAM RESP: ${response.toString()}");
@@ -55,7 +55,7 @@ class TeamDataSourceImpl implements TeamDataSource {
         Uri.parse(ApiConstants.createTeam),
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "Authorization": getIt<User>().token!
+          "Authorization": getIt<User>().employeeToken ?? getIt<User>().token!
         },
         body: jsonEncode(params.toJson()),
       );
@@ -80,7 +80,7 @@ class TeamDataSourceImpl implements TeamDataSource {
     try {
       final url = Uri.parse("${ApiConstants.getTeamById}/$id");
       final response = await client.get(url, headers: {
-        'Authorization': getIt<User>().token!,
+        'Authorization': getIt<User>().employeeToken ?? getIt<User>().token!,
       });
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
@@ -106,7 +106,7 @@ class TeamDataSourceImpl implements TeamDataSource {
     try {
       final url = Uri.parse("${ApiConstants.deleteTeam}/$id");
       final response = await client.delete(url, headers: {
-        'Authorization': getIt<User>().token!,
+        'Authorization': getIt<User>().employeeToken ?? getIt<User>().token!,
       });
       if (response.statusCode == 200) {
         return right(response.statusCode);
@@ -126,7 +126,7 @@ class TeamDataSourceImpl implements TeamDataSource {
       final response = await client.put(
         url,
         headers: {
-          'Authorization': getIt<User>().token!,
+          'Authorization': getIt<User>().employeeToken ?? getIt<User>().token!,
         },
       );
       if (response.statusCode < 400) {

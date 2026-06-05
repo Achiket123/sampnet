@@ -18,7 +18,7 @@ class TaskEntity extends Equatable {
       assignedByUser; // Dart equivalent for assigned by user relation
   final String type; // e.g., "Bug", "Feature"
   final String priority; // e.g., "High", "Medium", "Low"
-  String status; // e.g., "Not Started", "Pending", "Done", "Blocked"
+  final String status; // e.g., "Not Started", "Pending", "Done", "Blocked"
   final String completionStatus;
   final int organisationId;
   final Organisation? organisation;
@@ -29,7 +29,7 @@ class TaskEntity extends Equatable {
   final int? projectId;
   final Project? project;
 
-  TaskEntity(
+  const TaskEntity(
       {this.id,
       required this.title,
       this.description,
@@ -133,38 +133,49 @@ class TaskEntity extends Equatable {
         ),
       );
 
-  // TaskEntity copyWith({
-  //   int? id,
-  //   String? title,
-  //   String? description,
-  //   DateTime? dueDate,
-  //   int? assignedTo,
-  //   int? assignedBy,
-  //   String? type,
-  //   String? priority,
-  //   String? status,
-  //   String? completionStatus,
-  //   int? organisationId,
-  //   Organisation? organisation,
-  //   DateTime? createdAt,
-  //   bool? isPersonal,
-  // }) => TaskEntity(
-  //   id: id ?? this.id,
-  //   title: title ?? this.title,
-  //   description: description ?? this.description,
-  //   dueDate: dueDate ?? this.dueDate,
-  //   assignedTo: assignedTo ?? this.assignedTo,
-  //   assignedBy: assignedBy ?? this.assignedBy,
-  //   type: type ?? this.type,
-  //   priority: priority ?? this.priority,
-  //   organisationId: organisationId ?? this.organisationId,
-  //   isPersonal: isPersonal ?? this.isPersonal,
-  //   organisation: organisation ?? this.organisation,
-  //   createdAt: createdAt ?? this.createdAt,
-  //   status: status ?? this.status,
-  //   completionStatus: completionStatus ?? this.completionStatus,
-
-  // );
+  TaskEntity copyWith({
+    int? id,
+    String? title,
+    String? description,
+    DateTime? dueDate,
+    int? assignedTo,
+    int? assignedBy,
+    String? type,
+    String? priority,
+    String? status,
+    String? completionStatus,
+    int? organisationId,
+    Organisation? organisation,
+    DateTime? createdAt,
+    bool? isPersonal,
+    int? teamId,
+    Team? team,
+    int? projectId,
+    Project? project,
+    UserModel? assignedUser,
+    UserModel? assignedByUser,
+  }) => TaskEntity(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    dueDate: dueDate ?? this.dueDate,
+    assignedTo: assignedTo ?? this.assignedTo,
+    assignedBy: assignedBy ?? this.assignedBy,
+    type: type ?? this.type,
+    priority: priority ?? this.priority,
+    organisationId: organisationId ?? this.organisationId,
+    isPersonal: isPersonal ?? this.isPersonal,
+    organisation: organisation ?? this.organisation,
+    createdAt: createdAt ?? this.createdAt,
+    status: status ?? this.status,
+    completionStatus: completionStatus ?? this.completionStatus,
+    teamId: teamId ?? this.teamId,
+    team: team ?? this.team,
+    projectId: projectId ?? this.projectId,
+    project: project ?? this.project,
+    assignedUser: assignedUser ?? this.assignedUser,
+    assignedByUser: assignedByUser ?? this.assignedByUser,
+  );
 
   @override
   List<Object?> get props => [

@@ -17,6 +17,17 @@ class User {
     this.employeeToken,
   });
 
+  String get role {
+    final t = employee?.type;
+    if (t == 'owner' || t == 'boss') {
+      return 'boss';
+    }
+    if (t == 'manager') {
+      return 'manager';
+    }
+    return 'employee';
+  }
+
   @override
   toString() {
     if (organisation == null) {

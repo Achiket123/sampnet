@@ -13,6 +13,7 @@ import 'package:hackathon/globals/constants/user.dart';
 import 'package:intl/intl.dart';
 
 class TaskDetailPage extends StatefulWidget {
+  static const String routeName = "/task-detail/:taskId";
   final int taskId;
 
   const TaskDetailPage({super.key, required this.taskId});
@@ -24,22 +25,34 @@ class TaskDetailPage extends StatefulWidget {
 class _TaskDetailPageState extends State<TaskDetailPage> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocProvider(
-      create: (context) => getIt<TaskDetailBloc>()..add(LoadTaskDetail(taskId: widget.taskId)),
+      create: (context) =>
+          getIt<TaskDetailBloc>()..add(LoadTaskDetail(taskId: widget.taskId)),
       child: Scaffold(
+        backgroundColor: const Color(0xFF121212), // Deep premium background
         appBar: AppBar(
+          backgroundColor: Colors.red,
+          elevation: 0,
           title: BlocBuilder<TaskDetailBloc, TaskDetailState>(
             builder: (context, state) {
-              return Text(state.task?.title ?? "Task Details");
+              return Text(
+                state.task?.title ?? "Task Details",
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              );
             },
           ),
           actions: [
             BlocBuilder<TaskDetailBloc, TaskDetailState>(
               builder: (context, state) {
                 final currentUserId = getIt<User>().user!.id;
-                if (state.task != null && state.task!.assignedBy == currentUserId) {
+                if (state.task != null &&
+                    state.task!.assignedBy == currentUserId) {
                   return IconButton(
-                    icon: const Icon(Icons.delete),
+                    icon: const Icon(Icons.delete_outline,
+                        color: Colors.redAccent),
                     onPressed: () => _showDeleteConfirmation(context),
                   );
                 }
@@ -53,13 +66,16 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
             BlocListener<TaskDetailBloc, TaskDetailState>(
               listener: (context, state) {
                 if (state.taskError != null) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.taskError!)));
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(state.taskError!)));
                 }
                 if (state.commentError != null) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.commentError!)));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.commentError!)));
                 }
                 if (state.attachmentError != null) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.attachmentError!)));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.attachmentError!)));
                 }
               },
             ),
@@ -67,9 +83,9 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
               listener: (context, state) {
                 if (state is UploadFileSuccess) {
                   context.read<TaskDetailBloc>().add(AddAttachment(
-                    fileId: state.fileId,
-                    fileName: "New Attachment", // Ideally we'd get the actual file name
-                  ));
+                        fileId: state.fileId,
+                        fileName: state.fileName ?? "New Attachment",
+                      ));
                 }
               },
             ),
@@ -85,11 +101,20 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Error: ${state.taskError}"),
+                      Icon(Icons.error_outline,
+                          size: 48, color: Colors.red.shade300),
+                      const SizedBox(height: 16),
+                      Text("Error: ${state.taskError}",
+                          style: const TextStyle(color: Colors.white70)),
                       const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () => context.read<TaskDetailBloc>().add(LoadTaskDetail(taskId: widget.taskId)),
-                        child: const Text("Retry"),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: theme.primaryColor),
+                        onPressed: () => context
+                            .read<TaskDetailBloc>()
+                            .add(LoadTaskDetail(taskId: widget.taskId)),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text("Retry"),
                       ),
                     ],
                   ),
@@ -99,68 +124,121 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
               final task = state.task!;
 
               return SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Section 1: Header
+                    // --- HEADER SECTION ---
                     Text(
                       task.title,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          height: 1.2),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     Text(
                       task.description ?? "No description provided",
-                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey.shade400,
+                          height: 1.4),
                     ),
-                    const SizedBox(height: 16),
-                    Row(
+                    const SizedBox(height: 20),
+
+                    // Badges row
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        _buildBadge(context, task.status, _getStatusColor(task.status)),
-                        const SizedBox(width: 8),
-                        _buildBadge(context, task.priority, _getPriorityColor(task.priority)),
-                        const SizedBox(width: 8),
-                        _buildBadge(context, task.type, Colors.blueGrey),
+                        _buildBadge(task.status, _getStatusColor(task.status)),
+                        _buildBadge(
+                            task.priority, _getPriorityColor(task.priority)),
+                        _buildBadge(task.type, Colors.blueGrey.shade400),
                       ],
                     ),
-                    const Divider(height: 32),
+                    const SizedBox(height: 28),
 
-                    // Section 2: Meta
-                    _buildMetaRow("Assigned To", "${task.assignedUser?.firstName ?? ''} ${task.assignedUser?.lastName ?? ''}"),
-                    _buildMetaRow("Assigned By", "${task.assignedByUser?.firstName ?? ''} ${task.assignedByUser?.lastName ?? ''}"),
-                    _buildMetaRow("Due Date", DateFormat('MMM dd, yyyy').format(task.dueDate)),
-                    if (task.team != null) _buildMetaRow("Team", task.team!.name),
-                    if (task.project != null) _buildMetaRow("Project", task.project!.name),
-                    const Divider(height: 32),
+                    // --- ASSIGNMENT & TIMELINE CARD ---
+                    _buildSectionHeading("Details"),
+                    Card(
+                      color: const Color(0xFF1E1E1E),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                      margin: EdgeInsets.zero,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            _buildUserRow(
+                                "Assigned To",
+                                task.assignedUser?.firstName,
+                                task.assignedUser?.lastName,
+                                task.assignedUser?.profilePic),
+                            const Divider(color: Colors.white10, height: 24),
+                            _buildUserRow(
+                                "Assigned By",
+                                task.assignedByUser?.firstName,
+                                task.assignedByUser?.lastName,
+                                task.assignedByUser?.profilePic),
+                            const Divider(color: Colors.white10, height: 24),
+                            _buildMetaInfoRow(
+                                Icons.calendar_today_rounded,
+                                "Due Date",
+                                DateFormat('MMM dd, yyyy')
+                                    .format(task.dueDate)),
+                            if (task.team != null) ...[
+                              const Divider(color: Colors.white10, height: 24),
+                              _buildMetaInfoRow(Icons.group_work_rounded,
+                                  "Team", task.team!.name),
+                            ],
+                            if (task.project != null) ...[
+                              const Divider(color: Colors.white10, height: 24),
+                              _buildMetaInfoRow(Icons.folder_open_rounded,
+                                  "Project", task.project!.name),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 28),
 
-                    // Section 3: Status Update
-                    const Text("Update Status", style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
+                    // --- ACTIONS & STATUS UPDATE ---
+                    _buildSectionHeading("Update Status"),
                     _buildStatusDropdown(context, task),
-                    const Divider(height: 32),
+                    const SizedBox(height: 32),
 
-                    // Section 4: Comments
+                    // --- COMMENTS SECTION ---
                     TaskCommentSection(
                       comments: state.comments,
                       onAddComment: (content) {
-                        context.read<TaskDetailBloc>().add(AddComment(content: content));
+                        context
+                            .read<TaskDetailBloc>()
+                            .add(AddComment(content: content));
                       },
                       onDeleteComment: (commentId) {
-                        context.read<TaskDetailBloc>().add(DeleteComment(commentId: commentId));
+                        context
+                            .read<TaskDetailBloc>()
+                            .add(DeleteComment(commentId: commentId));
                       },
                       isSubmitting: state.isSubmittingComment,
                       currentUserId: getIt<User>().user!.id,
                     ),
-                    const Divider(height: 32),
+                    const SizedBox(height: 32),
 
-                    // Section 5: Attachments
+                    // --- ATTACHMENTS SECTION ---
                     TaskAttachmentSection(
                       attachments: state.attachments,
                       onAddAttachment: (fileId, fileName) {
-                        context.read<TaskDetailBloc>().add(AddAttachment(fileId: fileId, fileName: fileName));
+                        context.read<TaskDetailBloc>().add(
+                            AddAttachment(fileId: fileId, fileName: fileName));
                       },
                       onRemoveAttachment: (attachmentId) {
-                        context.read<TaskDetailBloc>().add(RemoveAttachment(attachmentId: attachmentId));
+                        context
+                            .read<TaskDetailBloc>()
+                            .add(RemoveAttachment(attachmentId: attachmentId));
                       },
                       isUploading: state.isUploadingAttachment,
                       currentUserId: getIt<User>().user!.id,
@@ -175,67 +253,171 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     );
   }
 
-  Widget _buildBadge(BuildContext context, String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color),
+  Widget _buildSectionHeading(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0, left: 4.0),
+      child: Text(
+        title.toUpperCase(),
+        style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.white54,
+            letterSpacing: 0.5),
       ),
-      child: Text(label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold)),
     );
   }
 
-  Widget _buildMetaRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          Text("$label: ", style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
-          Text(value, style: const TextStyle(color: Colors.white)),
-        ],
+  Widget _buildBadge(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color
+            .withAlpha(25), // Modern equivalent of color.withValues(alpha: 0.1)
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withAlpha(120), width: 1),
       ),
+      child: Text(
+        label,
+        style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3),
+      ),
+    );
+  }
+
+  Widget _buildMetaInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Colors.white38),
+        const SizedBox(width: 12),
+        Text(label,
+            style: const TextStyle(color: Colors.white54, fontSize: 14)),
+        const Spacer(),
+        Text(value,
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w500)),
+      ],
+    );
+  }
+
+  Widget _buildUserRow(
+      String label, String? firstName, String? lastName, String? avatarUrl) {
+    final fullName = "${firstName ?? ''} ${lastName ?? ''}".trim();
+    return Row(
+      children: [
+        const Icon(Icons.assignment_ind_outlined,
+            size: 20, color: Colors.white38),
+        const SizedBox(width: 12),
+        Text(label,
+            style: const TextStyle(color: Colors.white54, fontSize: 14)),
+        const Spacer(),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 12,
+              backgroundColor: Colors.white12,
+              backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
+                  ? NetworkImage(avatarUrl)
+                  : null,
+              child: avatarUrl == null || avatarUrl.isEmpty
+                  ? Text(fullName.isNotEmpty ? fullName[0].toUpperCase() : '?',
+                      style: const TextStyle(fontSize: 10, color: Colors.white))
+                  : null,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              fullName.isNotEmpty ? fullName : "Unassigned",
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
   Widget _buildStatusDropdown(BuildContext context, TaskEntity task) {
-    final List<String> statusOptions = ['Pending', 'In Progress', 'Blocked', 'Done'];
+    final List<String> statusOptions = [
+      'Pending',
+      'In Progress',
+      'Blocked',
+      'Done'
+    ];
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: ColorPallete.blackSecondary,
-        borderRadius: BorderRadius.circular(8),
+        color: const Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white10),
       ),
-      child: DropdownButton<String>(
-        value: statusOptions.contains(task.status) ? task.status : 'Pending',
-        isExpanded: true,
-        underline: const SizedBox(),
-        items: statusOptions.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
-        onChanged: (value) {
-          if (value != null) {
-            context.read<TaskDetailBloc>().add(UpdateTaskStatus(taskId: widget.taskId, status: value));
-          }
-        },
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: statusOptions.contains(task.status) ? task.status : 'Pending',
+          isExpanded: true,
+          dropdownColor: const Color(0xFF1E1E1E),
+          style: const TextStyle(
+              color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+          icon: const Icon(Icons.keyboard_arrow_down_rounded,
+              color: Colors.white54),
+          items: statusOptions.map((s) {
+            return DropdownMenuItem(
+              value: s,
+              child: Row(
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                        color: _getStatusColor(s), shape: BoxShape.circle),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(s),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: (value) {
+            if (value != null) {
+              context
+                  .read<TaskDetailBloc>()
+                  .add(UpdateTaskStatus(taskId: widget.taskId, status: value));
+            }
+          },
+        ),
       ),
     );
   }
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'Done': return Colors.green;
-      case 'In Progress': return Colors.orange;
-      case 'Blocked': return Colors.red;
-      default: return Colors.grey;
+      case 'Done':
+        return Colors.greenAccent;
+      case 'In Progress':
+        return Colors.orangeAccent;
+      case 'Blocked':
+        return Colors.redAccent;
+      default:
+        return Colors.grey;
     }
   }
 
   Color _getPriorityColor(String priority) {
     switch (priority) {
-      case 'High': return Colors.red;
-      case 'Medium': return Colors.orange;
-      case 'Low': return Colors.green;
-      default: return Colors.grey;
+      case 'High':
+        return Colors.redAccent;
+      case 'Medium':
+        return Colors.amberAccent;
+      case 'Low':
+        return Colors.greenAccent;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -243,18 +425,30 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Delete Task"),
-        content: const Text("Are you sure you want to delete this task?"),
+        backgroundColor: const Color(0xFF1E1E1E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text("Delete Task", style: TextStyle(color: Colors.white)),
+        content: const Text(
+            "Are you sure you want to delete this task? This action cannot be undone.",
+            style: TextStyle(color: Colors.white70)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           TextButton(
+            onPressed: () => Navigator.pop(context),
+            child:
+                const Text("Cancel", style: TextStyle(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+            ),
             onPressed: () {
-              // We could add a DeleteTask event to TaskDetailBloc
-              // or just use the existing TaskBloc if available.
-              // For now, let's assume we handle it in TaskDetailBloc if needed.
               Navigator.pop(context);
             },
-            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+            child: const Text("Delete",
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

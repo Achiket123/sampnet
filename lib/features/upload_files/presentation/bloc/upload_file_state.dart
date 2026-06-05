@@ -9,7 +9,8 @@ final class UploadFileLoading extends UploadFileState {}
 
 final class UploadFileSuccess extends UploadFileState {
   final int fileId;
-  UploadFileSuccess({required this.fileId});
+  final String? fileName;
+  UploadFileSuccess({required this.fileId, this.fileName});
 }
 
 final class UploadFileError extends UploadFileState {

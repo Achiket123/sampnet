@@ -18,7 +18,10 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
     on<UploadFileBlocEvent>((event, emit) async {
       emit(UploadFileLoading());
       final result = await _uploadFileUsecase(event.file);
-      result.fold((l) => emit(UploadFileError(error: l)), (r) => emit(UploadFileSuccess(fileId: r)));
+      result.fold(
+        (l) => emit(UploadFileError(error: l)),
+        (r) => emit(UploadFileSuccess(fileId: r, fileName: event.file.fileName)),
+      );
     });
   }
 }

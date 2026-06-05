@@ -8,7 +8,8 @@ import 'package:hackathon/features/tasks/domain/repositories/task_attachment_rep
 part 'task_attachment_event.dart';
 part 'task_attachment_state.dart';
 
-class TaskAttachmentBloc extends Bloc<TaskAttachmentEvent, TaskAttachmentState> {
+class TaskAttachmentBloc
+    extends Bloc<TaskAttachmentEvent, TaskAttachmentState> {
   final TaskAttachmentRepository _repository;
   final AddTaskAttachmentUseCase _addTaskAttachmentUseCase;
 
@@ -20,7 +21,7 @@ class TaskAttachmentBloc extends Bloc<TaskAttachmentEvent, TaskAttachmentState> 
         super(TaskAttachmentInitial()) {
     on<FetchTaskAttachmentsEvent>((event, emit) async {
       emit(TaskAttachmentLoading());
-      final result = await _repository.getTaskAttachments(event.token, event.taskId);
+      final result = await _repository.getAttachments(event.taskId);
       result.fold(
         (l) => emit(TaskAttachmentError(error: l)),
         (r) => emit(TaskAttachmentsLoaded(attachments: r)),
@@ -28,12 +29,15 @@ class TaskAttachmentBloc extends Bloc<TaskAttachmentEvent, TaskAttachmentState> 
     });
 
     on<AddAttachmentEvent>((event, emit) async {
-      final result = await _addTaskAttachmentUseCase(event.token, event.taskId, event.filePath);
+      final result = await _addTaskAttachmentUseCase.call(
+          event.taskId, event.fileId, event.uploadedBy, event.fileName);
       result.fold(
         (l) => emit(TaskAttachmentError(error: l)),
         (r) {
           if (state is TaskAttachmentsLoaded) {
-            final updatedAttachments = List<TaskAttachmentEntity>.from((state as TaskAttachmentsLoaded).attachments)..add(r);
+            final updatedAttachments = List<TaskAttachmentEntity>.from(
+                (state as TaskAttachmentsLoaded).attachments)
+              ..add(r);
             emit(TaskAttachmentsLoaded(attachments: updatedAttachments));
           } else {
             emit(TaskAttachmentsLoaded(attachments: [r]));

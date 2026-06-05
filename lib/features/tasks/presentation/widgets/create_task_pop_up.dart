@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/tasks/domain/entities/task_entity.dart';
 import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart';
-import 'package:hackathon/features/tasks/domain/use_cases/create_task_usecase.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/create_task_bloc/create_task_bloc.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/get_emp_bloc/get_employees_bloc.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/get_project_bloc/get_project_bloc.dart';
@@ -42,13 +41,12 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
     super.initState();
 
     BlocProvider.of<GetEmployeesBloc>(context)
-        .add(GetEmployees(token: getIt<User>().token!));
+        .add(GetEmployees(token: getIt<User>().employeeToken ?? getIt<User>().token!));
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
     final taskStyle = Theme.of(context).textTheme.bodyMedium;
     return Container(
       constraints: const BoxConstraints(minWidth: 200, maxWidth: 600),
@@ -153,19 +151,33 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                       children: [
                         tagWidget('Team Task', context, taskStyle, width, 0,
                             () {
-                          typeOfTask = "Team Task";
+                          setState(() {
+                            typeOfTask = "Team Task";
+                            teamID = null;
+                            projectID = null;
+                          });
                           BlocProvider.of<TeamBloc>(context)
-                              .add(GetTeamEvent(token: getIt<User>().token!));
+                              .add(GetTeamEvent(token: getIt<User>().employeeToken ?? getIt<User>().token!));
                         }),
                         tagWidget('Project Task', context, taskStyle, width, 1,
                             () {
-                          typeOfTask = "Project Task";
+                          setState(() {
+                            typeOfTask = "Project Task";
+                            teamID = null;
+                            projectID = null;
+                          });
                           context
                               .read<GetProjectBloc>()
-                              .add(GetProjects(token: getIt<User>().token!));
+                              .add(GetProjects(token: getIt<User>().employeeToken ?? getIt<User>().token!));
                         }),
                         tagWidget('Personal Task', context, taskStyle, width, 2,
-                            () {}),
+                            () {
+                          setState(() {
+                            typeOfTask = "Personal Task";
+                            teamID = null;
+                            projectID = null;
+                          });
+                        }),
                       ],
                     ),
                     BlocBuilder<GetProjectBloc, GetProjectState>(
@@ -180,7 +192,7 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                                   color: ColorPallete.offWhite,
                                   borderRadius: BorderRadius.circular(20)),
                               child: DropdownButton(
-                                  value: teamID,
+                                  value: projectID,
                                   borderRadius: BorderRadius.circular(20),
                                   dropdownColor: ColorPallete.offWhite,
                                   items: projects
@@ -196,7 +208,7 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                                       .toList(),
                                   onChanged: (val) {
                                     setState(() {
-                                      teamID = val;
+                                      projectID = val;
                                     });
                                   }),
                             );
@@ -254,7 +266,7 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                       listener: (context, state) {
                         if (state is CreateTaskSuccess) {
                           context.read<TaskBloc>().add(
-                              FetchTasksEvent(token: getIt<User>().token!));
+                              FetchTasksEvent(token: getIt<User>().employeeToken ?? getIt<User>().token!));
                           ElegantNotification.success(
                             description: const Text(
                               "Task Created Successfully",
@@ -289,10 +301,10 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                             try {
                               debugPrint("${getIt<User>().user!.id}");
                               debugPrint("${getIt<User>().organisation!.id}");
-                              debugPrint("${getIt<User>().token}");
+                              debugPrint("${getIt<User>().employeeToken ?? getIt<User>().token}");
 
                               createTaskParams = CreateTaskParams(
-                                  token: getIt<User>().token!,
+                                  token: getIt<User>().employeeToken ?? getIt<User>().token!,
                                   task: TaskEntity(
                                       title: _titleController.text.trim(),
                                       description:

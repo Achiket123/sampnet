@@ -10,7 +10,7 @@ class MessageRepositoryImpl implements MessageRepository{
 
   MessageRepositoryImpl({required this.messageDataSource});
   @override
-  Stream getMessages(String id) => messageDataSource.getMessages(id);
+  Stream<List<MessageEntity>> getMessages(String id) => messageDataSource.getMessages(id);
 
 
   @override

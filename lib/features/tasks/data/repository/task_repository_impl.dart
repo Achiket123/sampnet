@@ -4,8 +4,6 @@ import 'package:hackathon/features/tasks/domain/entities/task_entity.dart';
 import 'package:hackathon/features/tasks/domain/entities/task_activity_entity.dart';
 import 'package:hackathon/features/tasks/domain/repositories/task_repository.dart';
 import 'package:hackathon/features/tasks/data/data_sources/task_remote_data_source.dart';
-import 'package:hackathon/features/tasks/domain/use_cases/create_task_usecase.dart';
-import 'package:hackathon/features/tasks/domain/use_cases/update_task_usecase.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 
 class TaskRepositoryImpl implements TaskRepository {

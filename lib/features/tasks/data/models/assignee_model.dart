@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:hackathon/features/tasks/domain/entities/assignee_entity.dart';
 
 class AssigneeModel extends AssigneeEntity {

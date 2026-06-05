@@ -130,8 +130,9 @@ class _TaskHorizontalWidgetState extends State<TaskHorizontalWidget> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Container _statusDropDown(
       double width, double height, TextStyle dropDownStyle) {
@@ -143,9 +144,8 @@ class _TaskHorizontalWidgetState extends State<TaskHorizontalWidget> {
     ];
 
     // Ensure task status is valid, default to 'Pending' if not
-    if (!statusOptions.contains(widget.task.status)) {
-      widget.task.status = 'Pending';
-    }
+    final String currentStatus =
+        statusOptions.contains(widget.task.status) ? widget.task.status : 'Pending';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -161,15 +161,13 @@ class _TaskHorizontalWidgetState extends State<TaskHorizontalWidget> {
         isExpanded: true,
         focusColor: ColorPallete.transparent,
         underline: const SizedBox(),
-        value: widget.task.status,
+        value: currentStatus,
         style: dropDownStyle,
         items: statusOptions.map((String status) {
           return DropdownMenuItem<String>(
             value: status,
             onTap: () {
-              setState(() {
-                widget.task.status = status;
-              });
+              // Status mutation is handled by the BLoC event
             },
             child: Text(status, style: dropDownStyle),
           );
