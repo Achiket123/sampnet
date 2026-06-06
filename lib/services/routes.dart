@@ -53,8 +53,11 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:jwt_io/jwt_io.dart';
 import 'package:hackathon/services/websocket_service.dart';
 import 'package:hackathon/services/incoming_call_overlay_service.dart';
+import 'package:hackathon/services/webrtc_service.dart';
+import 'package:hackathon/globals/constants/globals.dart';
 
 final GoRouter route = GoRouter(
+  navigatorKey: navigatorKey,
   initialLocation: initRoute(),
   redirect: (context, state) {
     return handleRouteGuard(state);
@@ -514,6 +517,7 @@ String handleToken(dynamic token) {
     if (getIt<User>().employee != null && getIt<User>().organisation != null) {
       getIt<WebsocketService>().connect();
       getIt<IncomingCallOverlayService>(); // Initialize the service so it listens to call events
+      getIt<WebRtcService>(); // Initialize so it listens and caches pending offers/candidates
       return Dashboard.routePath;
     }
 

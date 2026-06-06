@@ -194,7 +194,6 @@ class _MyAppState extends State<MyApp> {
         ),
       ],
       child: MaterialApp.router(
-        key: navigatorKey,
         debugShowCheckedModeBanner: false,
         routerConfig: route,
         theme: ThemeData.dark().copyWith(

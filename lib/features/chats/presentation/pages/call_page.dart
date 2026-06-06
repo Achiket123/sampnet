@@ -7,6 +7,7 @@ import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart'
 import 'package:hackathon/globals/constants/color_pallete.dart';
 import 'package:hackathon/services/webrtc_service.dart';
 import 'package:hackathon/widgets/custom_app_bar.dart';
+import 'package:hackathon/globals/constants/user.dart' as user;
 
 class CallPage extends StatefulWidget {
   static const routePath = '/call';
@@ -28,32 +29,33 @@ class _WebRTCClientState extends State<CallPage> {
   void initState() {
     super.initState();
     _webRtcService = getIt<WebRtcService>();
-    _initializeRenderers();
-
-    _webRtcService.onLocalStream = (stream) {
-      setState(() {
-        localRenderer.srcObject = stream;
-      });
-    };
-
-    _webRtcService.onRemoteStream = (stream) {
-      setState(() {
-        remoteRenderer.srcObject = stream;
-      });
-    };
-
-    _webRtcService.onCallEnded = () {
+    _initializeRenderers().then((_) {
       if (mounted) {
-        setState(() {
-          inCall = false;
-        });
-        if (context.canPop()) context.pop();
-      }
-    };
+        _webRtcService.onLocalStream = (stream) {
+          setState(() {
+            localRenderer.srcObject = stream;
+          });
+        };
 
-    if (widget.isCalling) {
-      startWebRTC();
-    }
+        _webRtcService.onRemoteStream = (stream) {
+          setState(() {
+            remoteRenderer.srcObject = stream;
+          });
+        };
+
+        _webRtcService.onCallEnded = () {
+          if (mounted) {
+            setState(() {
+              inCall = false;
+            });
+            if (context.canPop()) context.pop();
+          }
+        };
+
+        // Always start WebRTC; WebRtcService will handle offer vs answer based on isCalling
+        startWebRTC();
+      }
+    });
   }
 
   Future<void> _initializeRenderers() async {
@@ -69,7 +71,12 @@ class _WebRTCClientState extends State<CallPage> {
 
     try {
       final roomId = widget.chatEntity.roomId ?? widget.chatEntity.id.toString();
-      await _webRtcService.startCall(roomId, isCaller: widget.isCalling);
+      final currentUserId = getIt<user.User>().user?.id ?? 0;
+      final targetUserIds = widget.chatEntity.participants
+          .where((p) => p.userId != currentUserId)
+          .map((p) => p.userId.toString())
+          .toList();
+      await _webRtcService.startCall(roomId, isCaller: widget.isCalling, targetUserIds: targetUserIds);
     } catch (e) {
       debugPrint('Error starting WebRTC: $e');
     }

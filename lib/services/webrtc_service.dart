@@ -24,6 +24,7 @@ class WebRtcService {
   Function()? onCallEnded;
 
   String? _currentRoomId;
+  List<String>? _targetUserIds;
 
   WebRtcService({required this.websocketService}) {
     _callStreamSub = websocketService.callStream.listen(_handleSignalingMessage);
@@ -35,9 +36,12 @@ class WebRtcService {
   }
 
   Map<String, dynamic>? _pendingOffer;
+  List<RTCIceCandidate> _pendingIceCandidates = [];
+  bool _hasRemoteDescription = false;
 
-  Future<void> startCall(String roomId, {bool isCaller = false}) async {
+  Future<void> startCall(String roomId, {bool isCaller = false, List<String>? targetUserIds}) async {
     _currentRoomId = roomId;
+    _targetUserIds = targetUserIds;
 
     _localStream = await navigator.mediaDevices.getUserMedia({
       'video': true,
@@ -54,11 +58,12 @@ class WebRtcService {
       _peerConnection?.addTrack(track, _localStream!);
     });
 
-    _peerConnection?.onTrack = (event) async {
-      _remoteStream ??= await createLocalMediaStream('remote');
-      _remoteStream?.addTrack(event.track);
-      if (onRemoteStream != null) {
-        onRemoteStream!(_remoteStream!);
+    _peerConnection?.onTrack = (event) {
+      if (event.streams.isNotEmpty) {
+        _remoteStream = event.streams[0];
+        if (onRemoteStream != null) {
+          onRemoteStream!(_remoteStream!);
+        }
       }
     };
 
@@ -94,6 +99,8 @@ class WebRtcService {
   Future<void> _processOffer(Map<String, dynamic> offerData, String roomId) async {
     final remoteOffer = RTCSessionDescription(offerData['sdp'], offerData['type']);
     await _peerConnection?.setRemoteDescription(remoteOffer);
+    _hasRemoteDescription = true;
+    _processPendingIceCandidates();
 
     final answer = await _peerConnection?.createAnswer();
     if (answer != null) {
@@ -127,6 +134,8 @@ class WebRtcService {
         final answerData = data['answer'];
         final remoteAnswer = RTCSessionDescription(answerData['sdp'], answerData['type']);
         await _peerConnection?.setRemoteDescription(remoteAnswer);
+        _hasRemoteDescription = true;
+        _processPendingIceCandidates();
       } else if (type == 'ice_candidate') {
         final candidateData = data['candidate'];
         final candidate = RTCIceCandidate(
@@ -134,8 +143,12 @@ class WebRtcService {
           candidateData['sdpMid'],
           candidateData['sdpMLineIndex'],
         );
-        await _peerConnection?.addCandidate(candidate);
-      } else if (type == 'call_ended') {
+        if (_peerConnection == null || !_hasRemoteDescription) {
+          _pendingIceCandidates.add(candidate);
+        } else {
+          await _peerConnection?.addCandidate(candidate);
+        }
+      } else if (type == 'call_ended' || type == 'call_rejected') {
         _endCall();
         if (onCallEnded != null) onCallEnded!();
       }
@@ -167,6 +180,18 @@ class WebRtcService {
     _remoteStream = null;
 
     _currentRoomId = null;
+    _pendingIceCandidates.clear();
+    _hasRemoteDescription = false;
+    _pendingOffer = null;
+  }
+
+  Future<void> _processPendingIceCandidates() async {
+    if (_peerConnection != null) {
+      for (var candidate in _pendingIceCandidates) {
+        await _peerConnection?.addCandidate(candidate);
+      }
+      _pendingIceCandidates.clear();
+    }
   }
 
   Future<void> toggleCamera(bool isVisible) async {
@@ -207,6 +232,7 @@ class WebRtcService {
   void _sendSignalingMessage(String type, Map<String, dynamic> payload) {
     websocketService.sendWebSocketMessage({
       'type': type,
+      if (_targetUserIds != null) 'target_user_ids': _targetUserIds,
       ...payload,
     });
   }
