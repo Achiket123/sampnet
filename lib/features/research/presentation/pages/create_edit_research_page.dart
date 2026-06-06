@@ -1,15 +1,18 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hackathon/dependency_injection.g.dart';
-import 'package:hackathon/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hackathon/globals/constants/user.dart';
+
 import '../../domain/entities/research_entry_entity.dart';
 import '../../domain/entities/research_status.dart';
 import '../blocs/research_detail_bloc/research_detail_bloc.dart';
 import '../blocs/research_list_bloc/research_list_bloc.dart';
 import '../../../projects/presentation/blocs/project_bloc/project_bloc.dart';
-import '../../../projects/presentation/blocs/project_bloc/project_event.dart';
 import '../../../projects/presentation/blocs/project_bloc/project_state.dart';
 import '../../../team/presentation/blocs/team_bloc/team_bloc.dart';
 
@@ -34,6 +37,8 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
   int? _selectedProjectId;
   int? _selectedTeamId;
   List<String> _tags = [];
+  String? _base64Thumbnail;
+  Uint8List? _thumbnailBytes;
 
   @override
   void initState() {
@@ -49,6 +54,13 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
     _tags = widget.entryToEdit != null
         ? List<String>.from(widget.entryToEdit!.tags)
         : [];
+    
+    if (widget.entryToEdit?.thumbnail != null) {
+      _base64Thumbnail = widget.entryToEdit!.thumbnail;
+      try {
+        _thumbnailBytes = base64Decode(_base64Thumbnail!);
+      } catch (_) {}
+    }
   }
 
   @override
@@ -59,6 +71,20 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
     super.dispose();
   }
 
+  Future<void> _pickThumbnail() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      withData: true,
+    );
+
+    if (result != null && result.files.first.bytes != null) {
+      setState(() {
+        _thumbnailBytes = result.files.first.bytes;
+        _base64Thumbnail = base64Encode(_thumbnailBytes!);
+      });
+    }
+  }
+
   void _submit() {
     if (_formKey.currentState!.validate()) {
       final user = getIt<User>().user;
@@ -66,6 +92,7 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
         id: widget.entryToEdit?.id ?? 0,
         title: _titleController.text,
         description: _descriptionController.text,
+        thumbnail: _base64Thumbnail,
         status: _selectedStatus,
         authorName: widget.entryToEdit?.authorName ?? '',
         authorId: widget.entryToEdit?.authorId ?? user!.id,
@@ -85,7 +112,7 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
             .read<ResearchDetailBloc>()
             .add(UpdateResearchEntry(entry: entry));
       }
-      context.pop();
+      // Relying on BlocListener for pop
     }
   }
 
@@ -124,6 +151,8 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                _buildThumbnailSection(),
+                const SizedBox(height: 24),
                 _buildTextField(
                   controller: _titleController,
                   label: 'Title',
@@ -223,6 +252,69 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildThumbnailSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Thumbnail',
+            style: TextStyle(
+                color: Colors.white70,
+                fontSize: 12,
+                fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        Center(
+          child: GestureDetector(
+            onTap: _pickThumbnail,
+            child: Container(
+              width: double.infinity,
+              height: 160,
+              decoration: BoxDecoration(
+                color: const Color(0xFF16161A),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white10),
+                image: _thumbnailBytes != null
+                    ? DecorationImage(
+                        image: MemoryImage(_thumbnailBytes!),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+              ),
+              child: _thumbnailBytes == null
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add_photo_alternate_outlined,
+                            color: Colors.white.withValues(alpha: 0.3), size: 40),
+                        const SizedBox(height: 8),
+                        Text('Add File (Workspace Image)',
+                            style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.3),
+                                fontSize: 12)),
+                      ],
+                    )
+                  : Stack(
+                      children: [
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.black54,
+                            radius: 16,
+                            child: IconButton(
+                              icon: const Icon(Icons.edit, size: 14, color: Colors.white),
+                              onPressed: _pickThumbnail,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -353,7 +445,7 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
                 .map((tag) => Chip(
                       label: Text(tag),
                       onDeleted: () => setState(() => _tags.remove(tag)),
-                      backgroundColor: Colors.white.withOpacity(0.05),
+                      backgroundColor: Colors.white.withValues(alpha: 0.05),
                       labelStyle:
                           const TextStyle(color: Colors.white70, fontSize: 12),
                       shape: RoundedRectangleBorder(

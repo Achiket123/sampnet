@@ -59,61 +59,10 @@ class AuthRemoteDataSourceImpl with Strings implements AuthRemoteDataSource {
           Hive.box(Strings.authBox).delete(Strings.employeeKey);
 
           // Call is-employee endpoint to check employment status
-          try {
-            final isEmployeeResponse = await apiClient.get(
-              Uri.parse('${ApiConstants.isEmployee}/${user.id}'),
-              headers: {
-                "Authorization": token,
-              },
-            );
+          final isEmployee = await this.isEmployee(token, user.id);
 
-            if (isEmployeeResponse.statusCode == 200) {
-              final body = jsonDecode(isEmployeeResponse.body);
-              final empToken = body['token'];
-              final empData = body['data'];
-
-              if (empToken != null && empData != null) {
-                Hive.box(Strings.authBox).put(Strings.employeeTokenKey, empToken);
-                Hive.box(Strings.authBox).put(Strings.employeeKey, empData);
-                getIt<User>().employeeToken = empToken;
-
-                // Handle decoding of employee/manager/boss
-                final empPayload = JwtToken.payload(empToken);
-                Map<String, dynamic>? empJson;
-                if (empPayload['employee'] != null) {
-                  empJson = Map<String, dynamic>.from(empPayload['employee']);
-                } else if (empPayload['manager'] != null) {
-                  empJson = Map<String, dynamic>.from(empPayload['manager']);
-                } else if (empPayload['boss'] != null) {
-                  empJson = Map<String, dynamic>.from(empPayload['boss']);
-                  empJson['type'] = 'boss';
-                  empJson['employment_id'] = 0;
-                  empJson['salary'] = '0';
-                }
-
-                if (empData['Organisation'] != null) {
-                  final org = Organisation.fromJson(Map<String, dynamic>.from(empData['Organisation']));
-                  getIt<User>().organisation = org;
-                  Hive.box(Strings.authBox).put(Strings.organisationKey, empData['Organisation']);
-                } else if (empData['organisation'] != null) {
-                  final org = Organisation.fromJson(Map<String, dynamic>.from(empData['organisation']));
-                  getIt<User>().organisation = org;
-                  Hive.box(Strings.authBox).put(Strings.organisationKey, empData['organisation']);
-                }
-
-                if (empJson != null) {
-                  getIt<User>().employee = EmpModel.fromJson(empJson);
-                }
-              }
-            } else {
-              debugPrint('isEmployee check returned non-200: ${isEmployeeResponse.statusCode}');
-              Hive.box(Strings.authBox).delete(Strings.organisationKey);
-              getIt<User>().organisation = null;
-            }
-          } catch (e) {
-            debugPrint('Error during isEmployee validation: $e');
-            Hive.box(Strings.authBox).delete(Strings.organisationKey);
-            getIt<User>().organisation = null;
+          if (isEmployee) {
+            // isEmployee is handling the logic here
           }
 
           return right(
@@ -167,6 +116,12 @@ class AuthRemoteDataSourceImpl with Strings implements AuthRemoteDataSource {
           Hive.box(Strings.authBox).delete(Strings.employeeTokenKey);
           Hive.box(Strings.authBox).delete(Strings.employeeKey);
           Hive.box(Strings.authBox).delete(Strings.organisationKey);
+          final isEmployee = await this.isEmployee(token, user.id);
+
+          if (isEmployee) {
+            // isEmployee is handling the logic here
+          }
+
           return right(AuthResponseModel(
               token: token,
               userModel: UserModel.fromJson(decodedToken['user'])));
@@ -213,6 +168,74 @@ class AuthRemoteDataSourceImpl with Strings implements AuthRemoteDataSource {
     } catch (e) {
       debugPrint(e.toString());
       return left(ServerError(message: e.toString()));
+    }
+  }
+
+  Future<bool> isEmployee(String token, int userId) async {
+    try {
+      final isEmployeeResponse = await apiClient.get(
+        Uri.parse('${ApiConstants.isEmployee}/$userId'),
+        headers: {
+          "Authorization": token,
+        },
+      );
+
+      if (isEmployeeResponse.statusCode == 200) {
+        final body = jsonDecode(isEmployeeResponse.body);
+        final empToken = body['token'];
+        final empData = body['data'];
+
+        if (empToken != null && empData != null) {
+          Hive.box(Strings.authBox).put(Strings.employeeTokenKey, empToken);
+          Hive.box(Strings.authBox).put(Strings.employeeKey, empData);
+          getIt<User>().employeeToken = empToken;
+
+          // Handle decoding of employee/manager/boss
+          final empPayload = JwtToken.payload(empToken);
+          Map<String, dynamic>? empJson;
+          if (empPayload['employee'] != null) {
+            empJson = Map<String, dynamic>.from(empPayload['employee']);
+          } else if (empPayload['manager'] != null) {
+            empJson = Map<String, dynamic>.from(empPayload['manager']);
+          } else if (empPayload['boss'] != null) {
+            empJson = Map<String, dynamic>.from(empPayload['boss']);
+            empJson['type'] = 'boss';
+            empJson['employment_id'] = 0;
+            empJson['salary'] = '0';
+          }
+
+          if (empData['Organisation'] != null) {
+            final org = Organisation.fromJson(
+                Map<String, dynamic>.from(empData['Organisation']));
+            getIt<User>().organisation = org;
+            Hive.box(Strings.authBox)
+                .put(Strings.organisationKey, empData['Organisation']);
+          } else if (empData['organisation'] != null) {
+            final org = Organisation.fromJson(
+                Map<String, dynamic>.from(empData['organisation']));
+            getIt<User>().organisation = org;
+            Hive.box(Strings.authBox)
+                .put(Strings.organisationKey, empData['organisation']);
+          }
+
+          if (empJson != null) {
+            getIt<User>().employee = EmpModel.fromJson(empJson);
+          }
+          return true;
+        }
+        return false;
+      } else {
+        debugPrint(
+            'isEmployee check returned non-200: ${isEmployeeResponse.statusCode}');
+        Hive.box(Strings.authBox).delete(Strings.organisationKey);
+        getIt<User>().organisation = null;
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error during isEmployee validation: $e');
+      Hive.box(Strings.authBox).delete(Strings.organisationKey);
+      getIt<User>().organisation = null;
+      return false;
     }
   }
 }

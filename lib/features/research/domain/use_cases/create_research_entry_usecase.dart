@@ -8,7 +8,8 @@ class CreateResearchEntryUsecase {
 
   CreateResearchEntryUsecase({required this.repository});
 
-  Future<Either<ErrorModel, ResearchEntryEntity>> call(ResearchEntryEntity entry) {
+  Future<Either<ErrorModel, ResearchEntryEntity>> call(
+      ResearchEntryEntity entry) {
     return repository.createEntry(entry);
   }
 }

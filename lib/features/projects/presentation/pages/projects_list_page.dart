@@ -336,7 +336,10 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
       builder: (context) => const CreateProjectDialog(),
     ).then((newProject) {
       if (newProject != null && parentContext.mounted) {
-        parentContext.read<ProjectsBloc>().add(CreateProjectEvent(newProject));
+        final bloc = parentContext.read<ProjectsBloc>();
+        if (!bloc.isClosed) {
+          bloc.add(CreateProjectEvent(newProject));
+        }
       }
     });
   }
@@ -347,7 +350,10 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
       builder: (context) => CreateProjectDialog(projectToEdit: project),
     ).then((updatedProject) {
       if (updatedProject != null && parentContext.mounted) {
-        parentContext.read<ProjectsBloc>().add(UpdateProjectEvent(updatedProject));
+        final bloc = parentContext.read<ProjectsBloc>();
+        if (!bloc.isClosed) {
+          bloc.add(UpdateProjectEvent(updatedProject));
+        }
       }
     });
   }
@@ -381,7 +387,10 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
       ),
     ).then((confirmed) {
       if (confirmed == true && parentContext.mounted) {
-        parentContext.read<ProjectsBloc>().add(DeleteProjectEvent(project.id));
+        final bloc = parentContext.read<ProjectsBloc>();
+        if (!bloc.isClosed) {
+          bloc.add(DeleteProjectEvent(project.id));
+        }
       }
     });
   }

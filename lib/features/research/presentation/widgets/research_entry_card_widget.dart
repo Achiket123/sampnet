@@ -53,7 +53,8 @@ class ResearchEntryCardWidget extends StatelessWidget {
                     },
                     itemBuilder: (context) => [
                       const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                      const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                      const PopupMenuItem(
+                          value: 'delete', child: Text('Delete')),
                     ],
                   ),
                 ],
@@ -72,12 +73,16 @@ class ResearchEntryCardWidget extends StatelessWidget {
                   runSpacing: 4,
                   children: entry.tags
                       .map((tag) => Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).dividerColor.withOpacity(0.1),
+                              color: Theme.of(context)
+                                  .dividerColor
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text(tag, style: const TextStyle(fontSize: 10)),
+                            child:
+                                Text(tag, style: const TextStyle(fontSize: 10)),
                           ))
                       .toList(),
                 ),

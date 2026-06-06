@@ -11,7 +11,8 @@ part 'research_list_state.dart';
 class ResearchListBloc extends Bloc<ResearchListEvent, ResearchListState> {
   final FetchResearchListUsecase fetchResearchListUsecase;
 
-  ResearchListBloc({required this.fetchResearchListUsecase}) : super(ResearchListInitial()) {
+  ResearchListBloc({required this.fetchResearchListUsecase})
+      : super(ResearchListInitial()) {
     on<LoadResearchList>(_onLoadResearchList);
     on<SearchQueryChanged>(
       _onSearchQueryChanged,
@@ -22,7 +23,8 @@ class ResearchListBloc extends Bloc<ResearchListEvent, ResearchListState> {
     on<FilterByStatus>(_onFilterByStatus);
   }
 
-  Future<void> _onLoadResearchList(LoadResearchList event, Emitter<ResearchListState> emit) async {
+  Future<void> _onLoadResearchList(
+      LoadResearchList event, Emitter<ResearchListState> emit) async {
     final currentState = state;
     int offset = 0;
     String? status;
@@ -49,9 +51,13 @@ class ResearchListBloc extends Bloc<ResearchListEvent, ResearchListState> {
       (error) => emit(ResearchListError(message: error.message)),
       (response) {
         emit(ResearchListLoaded(
-          entries: event.isRefresh ? response.items : oldEntries + response.items,
+          entries:
+              event.isRefresh ? response.items : oldEntries + response.items,
           total: response.total,
-          hasReachedMax: (event.isRefresh ? response.items : oldEntries + response.items).length >= response.total,
+          hasReachedMax:
+              (event.isRefresh ? response.items : oldEntries + response.items)
+                      .length >=
+                  response.total,
           statusFilter: status,
           searchQuery: query,
         ));
@@ -59,7 +65,8 @@ class ResearchListBloc extends Bloc<ResearchListEvent, ResearchListState> {
     );
   }
 
-  Future<void> _onSearchQueryChanged(SearchQueryChanged event, Emitter<ResearchListState> emit) async {
+  Future<void> _onSearchQueryChanged(
+      SearchQueryChanged event, Emitter<ResearchListState> emit) async {
     emit(ResearchListLoading());
     final result = await fetchResearchListUsecase(query: event.query);
     result.fold(
@@ -75,7 +82,8 @@ class ResearchListBloc extends Bloc<ResearchListEvent, ResearchListState> {
     );
   }
 
-  Future<void> _onFilterByStatus(FilterByStatus event, Emitter<ResearchListState> emit) async {
+  Future<void> _onFilterByStatus(
+      FilterByStatus event, Emitter<ResearchListState> emit) async {
     emit(ResearchListLoading());
     final result = await fetchResearchListUsecase(status: event.status);
     result.fold(

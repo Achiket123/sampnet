@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hackathon/features/onboarding/presentation/blocs/onboarding_bloc/onboarding_bloc.dart';
 import 'package:hackathon/features/onboarding/presentation/blocs/onboarding_bloc/onboarding_state.dart';
+import 'package:hackathon/features/onboarding/presentation/blocs/onboarding_bloc/onboarding_event.dart';
+import 'package:hackathon/features/onboarding/data/models/onboarding_progress_model.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class GettingStartedChecklistWidget extends StatelessWidget {
@@ -27,8 +29,19 @@ class GettingStartedChecklistWidget extends StatelessWidget {
           }
 
           int currentStep = 0;
+          bool profileCompleted = false;
+          bool orgJoined = false;
+          bool teamJoined = false;
+          bool taskCreated = false;
+          bool inviteSent = false;
+
           if (state is OnboardingLoaded) {
             currentStep = state.progress.currentStep;
+            profileCompleted = state.progress.profileCompleted;
+            orgJoined = state.progress.organisationId != 0;
+            teamJoined = state.progress.teamJoined;
+            taskCreated = state.progress.taskCreated;
+            inviteSent = state.progress.inviteSent;
           }
 
           final steps = [
@@ -37,6 +50,14 @@ class GettingStartedChecklistWidget extends StatelessWidget {
             "Create your first team",
             "Assign your first task",
             "Invite a team member",
+          ];
+
+          final stepStatuses = [
+            profileCompleted,
+            orgJoined,
+            teamJoined,
+            taskCreated,
+            inviteSent,
           ];
 
           final completionProgress = currentStep / steps.length;
@@ -76,7 +97,7 @@ class GettingStartedChecklistWidget extends StatelessWidget {
               ...List.generate(steps.length, (index) {
                 return _ChecklistItem(
                   text: steps[index],
-                  isDone: currentStep > index,
+                  isDone: stepStatuses[index],
                 );
               }),
               if (state is OnboardingError)
@@ -85,6 +106,38 @@ class GettingStartedChecklistWidget extends StatelessWidget {
                   child: Text(
                     "Error loading progress",
                     style: TextStyle(color: Colors.redAccent.withOpacity(0.7), fontSize: 11),
+                  ),
+                ),
+              const SizedBox(height: 16),
+              if (state is OnboardingLoaded && completionProgress < 1.0)
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final updatedProgress = OnboardingProgressModel(
+                        userId: state.progress.userId,
+                        organisationId: state.progress.organisationId,
+                        profileCompleted: true,
+                        teamJoined: true,
+                        taskCreated: true,
+                        inviteSent: true,
+                        currentStep: 5,
+                        isCompleted: true,
+                      );
+                      context.read<OnboardingBloc>().add(UpdateOnboardingStep(updatedProgress));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.greenAccent,
+                      foregroundColor: Colors.black87,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: const Text(
+                      "Complete Onboarding",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
             ],

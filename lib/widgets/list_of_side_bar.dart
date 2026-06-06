@@ -4,12 +4,11 @@ class ListOfSideBar {
     'Chat',
     'Tasks',
     'Teams',
-    'Leaves',
-    'Database',
+    'Leaves', 
     'Resources', 
     'Employees',
     'Research',
     'Projects',
-    'Calendar',
+    'Calendar', 
   ];
 }

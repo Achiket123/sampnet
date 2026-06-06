@@ -5,6 +5,7 @@ class ResearchEntryEntity extends Equatable {
   final int id;
   final String title;
   final String description;
+  final String? thumbnail;
   final ResearchStatus status;
   final String authorName;
   final int authorId;
@@ -20,6 +21,7 @@ class ResearchEntryEntity extends Equatable {
     required this.id,
     required this.title,
     required this.description,
+    this.thumbnail,
     required this.status,
     required this.authorName,
     required this.authorId,
@@ -37,6 +39,7 @@ class ResearchEntryEntity extends Equatable {
         id,
         title,
         description,
+        thumbnail,
         status,
         authorName,
         authorId,

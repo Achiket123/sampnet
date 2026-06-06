@@ -2,7 +2,7 @@ part of 'research_list_bloc.dart';
 
 abstract class ResearchListState extends Equatable {
   const ResearchListState();
-  
+
   @override
   List<Object?> get props => [];
 }
@@ -27,7 +27,8 @@ class ResearchListLoaded extends ResearchListState {
   });
 
   @override
-  List<Object?> get props => [entries, total, hasReachedMax, statusFilter, searchQuery];
+  List<Object?> get props =>
+      [entries, total, hasReachedMax, statusFilter, searchQuery];
 
   ResearchListLoaded copyWith({
     List<ResearchEntryEntity>? entries,

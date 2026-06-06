@@ -9,6 +9,7 @@ import 'package:hackathon/features/tasks/presentation/pages/task_page.dart';
 import 'package:hackathon/features/team/presentation/pages/team_page.dart';
 import 'package:hackathon/features/projects/presentation/pages/projects_list_page.dart';
 import 'package:hackathon/features/research/presentation/pages/research_list_page.dart';
+import 'package:hackathon/features/people/presentation/pages/people_list_page.dart';
 import 'package:hackathon/globals/constants/styles.dart';
 import 'package:hackathon/widgets/list_of_side_bar.dart';
 import 'package:hackathon/dependency_injection.g.dart';
@@ -64,9 +65,9 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                   context.go(TeamPage.routePath);
                 } else if (index == 4) {
                   context.go(LeaveManagementPage.routePath);
-                } else if (index == 6) {
+                } else if (index == 5) {
                   context.go(ResourcesPage.routePath);
-                } else if (index == 7) {
+                } else if (index == 6) {
                   final userRole = getIt<User>().role;
                   if (userRole == 'employee') {
                     final userId = getIt<User>().user?.id ?? 0;
@@ -74,13 +75,13 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                   } else {
                     context.go(EmployeesListPage.routePath);
                   }
-                } else if (index == 8) {
+                } else if (index == 7) {
                   context.go(ResearchListPage.routePath);
-                } else if (index == 9) {
+                } else if (index == 8) {
                   context.go(ProjectsListPage.routePath);
-                } else if (index == 10) {
+                } else if (index == 9) {
                   context.go(PersonalCalendarPage.routePath);
-                } else {
+              }  else {
                   _changeIndex(index);
                 }
               },

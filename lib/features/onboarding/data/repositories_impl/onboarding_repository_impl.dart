@@ -15,6 +15,11 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
       userId: model.userId,
       currentStep: model.currentStep,
       isCompleted: model.isCompleted,
+      organisationId: model.organisationId,
+      profileCompleted: model.profileCompleted,
+      teamJoined: model.teamJoined,
+      taskCreated: model.taskCreated,
+      inviteSent: model.inviteSent,
     );
   }
 
@@ -24,6 +29,11 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
       userId: progress.userId,
       currentStep: progress.currentStep,
       isCompleted: progress.isCompleted,
+      organisationId: progress.organisationId,
+      profileCompleted: progress.profileCompleted,
+      teamJoined: progress.teamJoined,
+      taskCreated: progress.taskCreated,
+      inviteSent: progress.inviteSent,
     );
     await remoteDataSource.updateOnboardingProgress(model);
   }

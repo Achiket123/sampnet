@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../blocs/research_detail_bloc/research_detail_bloc.dart';
 import '../widgets/status_badge_widget.dart';
 import 'create_edit_research_page.dart';
+import 'research_explorer_page.dart';
 
 class ResearchDetailPage extends StatelessWidget {
   static const String routePath = '/research-detail';
@@ -33,11 +34,15 @@ class ResearchDetailPage extends StatelessWidget {
                 return Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit_outlined, color: Colors.white),
-                      onPressed: () => context.push(CreateEditResearchPage.routePath, extra: state.entry),
+                      icon:
+                          const Icon(Icons.edit_outlined, color: Colors.white),
+                      onPressed: () => context.push(
+                          CreateEditResearchPage.routePath,
+                          extra: state.entry),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                      icon: const Icon(Icons.delete_outline,
+                          color: Colors.redAccent),
                       onPressed: () => _confirmDelete(context, state.entry.id),
                     ),
                   ],
@@ -65,7 +70,9 @@ class ResearchDetailPage extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is ResearchDetailLoading) {
-            return const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.white)));
+            return const Center(
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(Colors.white)));
           } else if (state is ResearchDetailLoaded) {
             final entry = state.entry;
             return SingleChildScrollView(
@@ -79,7 +86,8 @@ class ResearchDetailPage extends StatelessWidget {
                       StatusBadgeWidget(status: entry.status),
                       Text(
                         DateFormat('MMM dd, yyyy').format(entry.createdAt),
-                        style: const TextStyle(color: Colors.white38, fontSize: 12),
+                        style: const TextStyle(
+                            color: Colors.white38, fontSize: 12),
                       ),
                     ],
                   ),
@@ -152,12 +160,36 @@ class ResearchDetailPage extends StatelessWidget {
                           .map((tag) => Chip(
                                 label: Text(tag),
                                 backgroundColor: Colors.white10,
-                                labelStyle: const TextStyle(color: Colors.white70, fontSize: 12),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                labelStyle: const TextStyle(
+                                    color: Colors.white70, fontSize: 12),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
                               ))
                           .toList(),
                     ),
                   ],
+                  const SizedBox(height: 40),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 54,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      icon: const Icon(Icons.folder_open_rounded),
+                      label: const Text('OPEN WORKSPACE',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                      onPressed: () {
+                        context.push(
+                            '${ResearchExplorerPage.routePath}/${entry.id}',
+                            extra: entry);
+                      },
+                    ),
+                  ),
                 ],
               ),
             );
@@ -166,11 +198,15 @@ class ResearchDetailPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+                  const Icon(Icons.error_outline,
+                      size: 48, color: Colors.redAccent),
                   const SizedBox(height: 16),
-                  Text(state.message, style: const TextStyle(color: Colors.white70)),
+                  Text(state.message,
+                      style: const TextStyle(color: Colors.white70)),
                   TextButton(
-                    onPressed: () => context.read<ResearchDetailBloc>().add(GetResearchDetail(id: researchId)),
+                    onPressed: () => context
+                        .read<ResearchDetailBloc>()
+                        .add(GetResearchDetail(id: researchId)),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -197,7 +233,7 @@ class ResearchDetailPage extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.03),
+            color: Colors.white.withValues(alpha: 0.03),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.white10),
           ),
@@ -208,14 +244,17 @@ class ResearchDetailPage extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+                  Text(label,
+                      style:
+                          const TextStyle(color: Colors.white38, fontSize: 10)),
                   Text(
                     value,
                     style: TextStyle(
                       color: onTap != null ? Colors.blueAccent : Colors.white70,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      decoration: onTap != null ? TextDecoration.underline : null,
+                      decoration:
+                          onTap != null ? TextDecoration.underline : null,
                     ),
                   ),
                 ],
@@ -236,24 +275,32 @@ class ResearchDetailPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: Colors.white10),
         ),
-        title: const Text('Delete Research Entry', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: const Text('Are you sure you want to delete this entry? This action cannot be undone.', style: TextStyle(color: Colors.white70)),
+        title: const Text('Delete Research Entry',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: const Text(
+            'Are you sure you want to delete this entry? This action cannot be undone.',
+            style: TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              context.read<ResearchDetailBloc>().add(DeleteResearchEntry(id: id));
+              context
+                  .read<ResearchDetailBloc>()
+                  .add(DeleteResearchEntry(id: id));
               Navigator.pop(dialogContext);
             },
-            child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text('Delete',
+                style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),

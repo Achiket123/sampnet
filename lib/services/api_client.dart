@@ -45,4 +45,12 @@ class ApiClient {
     final headers = _getHeaders();
     return await _client.delete(Uri.parse('$baseUrl$endpoint'), headers: headers);
   }
+
+  Future<http.StreamedResponse> sendMultipart(http.MultipartRequest request) async {
+    final headers = _getHeaders();
+    // Content-Type is set by MultipartRequest automatically, don't overwrite it here
+    headers.remove('Content-Type');
+    request.headers.addAll(headers);
+    return await _client.send(request);
+  }
 }

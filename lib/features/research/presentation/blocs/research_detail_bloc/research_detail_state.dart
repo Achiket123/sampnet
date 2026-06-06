@@ -2,7 +2,7 @@ part of 'research_detail_bloc.dart';
 
 abstract class ResearchDetailState extends Equatable {
   const ResearchDetailState();
-  
+
   @override
   List<Object?> get props => [];
 }

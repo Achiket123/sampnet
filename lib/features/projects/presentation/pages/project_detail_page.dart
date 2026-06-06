@@ -729,10 +729,13 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                     organisationId: orgId,
                   );
 
-                  if (milestoneToEdit == null) {
-                    parentContext.read<ProjectsBloc>().add(CreateMilestoneEvent(milestone));
-                  } else {
-                    parentContext.read<ProjectsBloc>().add(UpdateMilestoneEvent(milestone));
+                  final bloc = parentContext.read<ProjectsBloc>();
+                  if (!bloc.isClosed) {
+                    if (milestoneToEdit == null) {
+                      bloc.add(CreateMilestoneEvent(milestone));
+                    } else {
+                      bloc.add(UpdateMilestoneEvent(milestone));
+                    }
                   }
                   Navigator.pop(context, true);
                 }
@@ -774,10 +777,13 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
       ),
     ).then((confirmed) {
       if (confirmed == true && parentContext.mounted) {
-        parentContext.read<ProjectsBloc>().add(DeleteMilestoneEvent(
-          projectId: milestone.projectId,
-          milestoneId: milestone.id,
-        ));
+        final bloc = parentContext.read<ProjectsBloc>();
+        if (!bloc.isClosed) {
+          bloc.add(DeleteMilestoneEvent(
+            projectId: milestone.projectId,
+            milestoneId: milestone.id,
+          ));
+        }
       }
     });
   }

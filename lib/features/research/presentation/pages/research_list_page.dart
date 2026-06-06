@@ -77,7 +77,9 @@ class _ResearchListPageState extends State<ResearchListPage> {
                 title: const Text("Success"),
                 description: Text(state.message),
               ).show(context);
-              context.read<ResearchListBloc>().add(const LoadResearchList(isRefresh: true));
+              context
+                  .read<ResearchListBloc>()
+                  .add(const LoadResearchList(isRefresh: true));
             } else if (state is ResearchDetailError) {
               ElegantNotification.error(
                 title: const Text("Error"),
@@ -90,14 +92,20 @@ class _ResearchListPageState extends State<ResearchListPage> {
               children: [
                 _appBar(context),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: width * 0.04, vertical: 8),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.04, vertical: 8),
                   child: _buildFilters(context),
                 ),
                 Expanded(
                   child: BlocBuilder<ResearchListBloc, ResearchListState>(
                     builder: (context, state) {
-                      if (state is ResearchListInitial || (state is ResearchListLoading && _searchController.text.isEmpty)) {
-                        return const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.white)));
+                      if (state is ResearchListInitial ||
+                          (state is ResearchListLoading &&
+                              _searchController.text.isEmpty)) {
+                        return const Center(
+                            child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation(Colors.white)));
                       } else if (state is ResearchListError) {
                         return _buildErrorState(context, state.message);
                       } else if (state is ResearchListLoaded) {
@@ -106,21 +114,34 @@ class _ResearchListPageState extends State<ResearchListPage> {
                         }
                         return RefreshIndicator(
                           onRefresh: () async {
-                            context.read<ResearchListBloc>().add(const LoadResearchList(isRefresh: true));
+                            context
+                                .read<ResearchListBloc>()
+                                .add(const LoadResearchList(isRefresh: true));
                           },
                           child: ListView.builder(
                             controller: _scrollController,
-                            padding: EdgeInsets.symmetric(horizontal: width * 0.04, vertical: 8),
-                            itemCount: state.hasReachedMax ? state.entries.length : state.entries.length + 1,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: width * 0.04, vertical: 8),
+                            itemCount: state.hasReachedMax
+                                ? state.entries.length
+                                : state.entries.length + 1,
                             itemBuilder: (context, index) {
                               if (index >= state.entries.length) {
-                                return const Center(child: Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.white))));
+                                return const Center(
+                                    child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation(
+                                                Colors.white))));
                               }
                               final entry = state.entries[index];
                               return ResearchEntryCardWidget(
                                 entry: entry,
-                                onTap: () => context.push('${ResearchDetailPage.routePath}/${entry.id}'),
-                                onEdit: (entry) => context.push(CreateEditResearchPage.routePath, extra: entry),
+                                onTap: () => context.push(
+                                    '${ResearchDetailPage.routePath}/${entry.id}'),
+                                onEdit: (entry) => context.push(
+                                    CreateEditResearchPage.routePath,
+                                    extra: entry),
                                 onDelete: (id) => _confirmDelete(context, id),
                               );
                             },
@@ -183,12 +204,15 @@ class _ResearchListPageState extends State<ResearchListPage> {
             controller: _searchController,
             style: const TextStyle(color: Colors.white, fontSize: 14),
             onChanged: (value) {
-              context.read<ResearchListBloc>().add(SearchQueryChanged(query: value));
+              context
+                  .read<ResearchListBloc>()
+                  .add(SearchQueryChanged(query: value));
             },
             decoration: const InputDecoration(
               hintText: 'Search research by title...',
               hintStyle: TextStyle(color: Colors.white24),
-              prefixIcon: Icon(Icons.search_rounded, color: Colors.white38, size: 20),
+              prefixIcon:
+                  Icon(Icons.search_rounded, color: Colors.white38, size: 20),
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(vertical: 12),
             ),
@@ -200,7 +224,8 @@ class _ResearchListPageState extends State<ResearchListPage> {
           child: Row(
             children: [
               _filterChip(context, 'All', null),
-              ...ResearchStatus.values.map((status) => _filterChip(context, status.label, status.value)),
+              ...ResearchStatus.values.map(
+                  (status) => _filterChip(context, status.label, status.value)),
             ],
           ),
         ),
@@ -211,14 +236,17 @@ class _ResearchListPageState extends State<ResearchListPage> {
   Widget _filterChip(BuildContext context, String label, String? value) {
     return BlocBuilder<ResearchListBloc, ResearchListState>(
       builder: (context, state) {
-        final isSelected = state is ResearchListLoaded && state.statusFilter == value;
+        final isSelected =
+            state is ResearchListLoaded && state.statusFilter == value;
         return Padding(
           padding: const EdgeInsets.only(right: 8),
           child: FilterChip(
             label: Text(label),
             selected: isSelected,
             onSelected: (_) {
-              context.read<ResearchListBloc>().add(FilterByStatus(status: value));
+              context
+                  .read<ResearchListBloc>()
+                  .add(FilterByStatus(status: value));
             },
             backgroundColor: const Color(0xFF16161A),
             selectedColor: Colors.white,
@@ -230,7 +258,8 @@ class _ResearchListPageState extends State<ResearchListPage> {
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: isSelected ? Colors.white : Colors.white10),
+              side:
+                  BorderSide(color: isSelected ? Colors.white : Colors.white10),
             ),
           ),
         );
@@ -247,24 +276,32 @@ class _ResearchListPageState extends State<ResearchListPage> {
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: Colors.white10),
         ),
-        title: const Text('Delete Research Entry', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: const Text('Are you sure you want to delete this entry? This action cannot be undone.', style: TextStyle(color: Colors.white70)),
+        title: const Text('Delete Research Entry',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: const Text(
+            'Are you sure you want to delete this entry? This action cannot be undone.',
+            style: TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              context.read<ResearchDetailBloc>().add(DeleteResearchEntry(id: id));
+              context
+                  .read<ResearchDetailBloc>()
+                  .add(DeleteResearchEntry(id: id));
               Navigator.pop(dialogContext);
             },
-            child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text('Delete',
+                style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -272,15 +309,20 @@ class _ResearchListPageState extends State<ResearchListPage> {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.search_off_rounded, size: 64, color: Colors.white24),
-          const SizedBox(height: 16),
-          const Text('No research entries found', style: TextStyle(color: Colors.white70, fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          const Text('Try adjusting your filters or search query', style: TextStyle(color: Colors.white38, fontSize: 14)),
+          Icon(Icons.search_off_rounded, size: 64, color: Colors.white24),
+          SizedBox(height: 16),
+          Text('No research entries found',
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
+          SizedBox(height: 8),
+          Text('Try adjusting your filters or search query',
+              style: TextStyle(color: Colors.white38, fontSize: 14)),
         ],
       ),
     );
@@ -291,19 +333,29 @@ class _ResearchListPageState extends State<ResearchListPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 64, color: Colors.redAccent),
+          const Icon(Icons.error_outline_rounded,
+              size: 64, color: Colors.redAccent),
           const SizedBox(height: 16),
-          const Text('Something went wrong', style: TextStyle(color: Colors.white70, fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('Something went wrong',
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          Text(message, style: const TextStyle(color: Colors.white38, fontSize: 14), textAlign: TextAlign.center),
+          Text(message,
+              style: const TextStyle(color: Colors.white38, fontSize: 14),
+              textAlign: TextAlign.center),
           const SizedBox(height: 16),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white10,
               side: const BorderSide(color: Colors.white24),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
-            onPressed: () => context.read<ResearchListBloc>().add(const LoadResearchList(isRefresh: true)),
+            onPressed: () => context
+                .read<ResearchListBloc>()
+                .add(const LoadResearchList(isRefresh: true)),
             child: const Text('Retry', style: TextStyle(color: Colors.white)),
           ),
         ],

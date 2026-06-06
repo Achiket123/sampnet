@@ -33,12 +33,17 @@ import 'package:hackathon/features/calendar/presentation/pages/team_calendar_pag
 import 'package:hackathon/features/research/domain/entities/research_entry_entity.dart';
 import 'package:hackathon/features/research/presentation/pages/research_list_page.dart';
 import 'package:hackathon/features/research/presentation/pages/research_detail_page.dart';
+import 'package:hackathon/features/research/presentation/pages/research_explorer_page.dart';
+import 'package:hackathon/features/research/presentation/pages/markdown_editor_page.dart';
 import 'package:hackathon/features/research/presentation/pages/create_edit_research_page.dart';
 import 'package:hackathon/features/research/presentation/blocs/research_list_bloc/research_list_bloc.dart';
 import 'package:hackathon/features/research/presentation/blocs/research_detail_bloc/research_detail_bloc.dart';
+import 'package:hackathon/features/research/presentation/blocs/research_workspace_bloc/research_workspace_bloc.dart';
+import 'package:hackathon/features/research/presentation/blocs/markdown_editor_bloc/markdown_editor_bloc.dart';
 import 'package:hackathon/features/projects/presentation/blocs/project_bloc/project_bloc.dart';
 import 'package:hackathon/features/projects/presentation/blocs/project_bloc/project_event.dart';
 import 'package:hackathon/features/team/presentation/blocs/team_bloc/team_bloc.dart';
+import 'package:hackathon/features/people/presentation/pages/people_list_page.dart';
 
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/models/organisation_model.dart';
@@ -96,7 +101,8 @@ final GoRouter route = GoRouter(
       path: '${EmployeeProfilePage.routePath}/:employeeId',
       builder: safeBuilder(
         (context, state) {
-          final id = int.tryParse(state.pathParameters['employeeId'] ?? '0') ?? 0;
+          final id =
+              int.tryParse(state.pathParameters['employeeId'] ?? '0') ?? 0;
           return EmployeeProfilePage(employeeId: id);
         },
       ),
@@ -121,7 +127,8 @@ final GoRouter route = GoRouter(
           ChatEntity? initialChat;
           if (extra is ChatEntity) {
             initialChat = extra;
-          } else if (extra is Map<String, dynamic> && extra.containsKey('chat')) {
+          } else if (extra is Map<String, dynamic> &&
+              extra.containsKey('chat')) {
             initialChat = extra['chat'] as ChatEntity?;
           }
           return ChatPage(initialChat: initialChat);
@@ -156,7 +163,8 @@ final GoRouter route = GoRouter(
       path: '${ProjectDetailPage.routePath}/:projectId',
       builder: safeBuilder(
         (context, state) {
-          final id = int.tryParse(state.pathParameters['projectId'] ?? '0') ?? 0;
+          final id =
+              int.tryParse(state.pathParameters['projectId'] ?? '0') ?? 0;
           return ProjectDetailPage(projectId: id);
         },
       ),
@@ -222,8 +230,7 @@ final GoRouter route = GoRouter(
       path: GlobalSearchPage.routePath,
       builder: safeBuilder(
         (context, state) {
-          final query =
-              state.extra is String ? state.extra as String : '';
+          final query = state.extra is String ? state.extra as String : '';
           return GlobalSearchPage(initialQuery: query);
         },
       ),
@@ -269,6 +276,44 @@ final GoRouter route = GoRouter(
       ),
     ),
     GoRoute(
+      path: '${ResearchExplorerPage.routePath}/:researchId',
+      builder: safeBuilder(
+        (context, state) {
+          final id =
+              int.tryParse(state.pathParameters['researchId'] ?? '0') ?? 0;
+          final extra = state.extra;
+          ResearchEntryEntity? entry;
+          if (extra is ResearchEntryEntity) {
+            entry = extra;
+          }
+          return BlocProvider(
+            create: (context) => getIt<ResearchWorkspaceBloc>(),
+            child: ResearchExplorerPage(researchId: id, entry: entry),
+          );
+        },
+      ),
+    ),
+    GoRoute(
+      path: '${MarkdownEditorPage.routePath}/:documentId',
+      builder: safeBuilder(
+        (context, state) {
+          final id =
+              int.tryParse(state.pathParameters['documentId'] ?? '0') ?? 0;
+          final extra = state.extra as Map<String, dynamic>?;
+          return BlocProvider(
+            create: (context) => getIt<MarkdownEditorBloc>(),
+            child: MarkdownEditorPage(
+              documentId: id,
+              researchId: extra?['researchId'] ?? 0,
+              folderId: extra?['folderId'],
+              initialTitle: extra?['title'],
+              initialContent: extra?['content'],
+            ),
+          );
+        },
+      ),
+    ),
+    GoRoute(
       path: CreateEditResearchPage.routePath,
       builder: safeBuilder(
         (context, state) {
@@ -283,12 +328,19 @@ final GoRouter route = GoRouter(
                   create: (context) =>
                       getIt<ProjectsBloc>()..add(LoadProjectsEvent())),
               BlocProvider(
-                  create: (context) => getIt<TeamBloc>()..add(GetTeamEvent(token: ''))),
+                  create: (context) =>
+                      getIt<TeamBloc>()..add(GetTeamEvent(token: ''))),
               BlocProvider(create: (context) => getIt<ResearchDetailBloc>()),
             ],
             child: CreateEditResearchPage(entryToEdit: entry),
           );
         },
+      ),
+    ),
+    GoRoute(
+      path: PeopleListPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const PeopleListPage(),
       ),
     ),
   ],

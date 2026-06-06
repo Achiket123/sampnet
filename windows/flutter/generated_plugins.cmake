@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   cloud_firestore
   firebase_core
   flutter_webrtc
+  syncfusion_pdfviewer_windows
   url_launcher_windows
 )
 

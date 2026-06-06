@@ -113,7 +113,8 @@ import 'package:hackathon/features/leave/presentation/blocs/leave_bloc/leave_blo
 import 'package:hackathon/features/team/data/repo/team_project_repo_impl.dart';
 import 'package:hackathon/features/employees/data/data_sources/employees_remote_data_source.dart';
 import 'package:hackathon/features/employees/data/repositories/employees_repository_impl.dart';
-import 'package:hackathon/features/employees/domain/repositories/employees_repository.dart';
+import 'package:hackathon/features/employees/domain/repositories/employees_repository.dart'
+    as employees_domain;
 import 'package:hackathon/features/employees/domain/use_cases/get_employees_usecase.dart';
 import 'package:hackathon/features/employees/domain/use_cases/get_employee_profile_usecase.dart';
 import 'package:hackathon/features/employees/domain/use_cases/add_employee_usecase.dart';
@@ -127,8 +128,10 @@ import 'package:hackathon/features/employees/presentation/blocs/employee_profile
 
 // Projects Module imports
 import 'package:hackathon/features/projects/data/data_sources/project_remote_data_source.dart';
-import 'package:hackathon/features/projects/data/repositories_impl/project_repository_impl.dart' as projects_data;
-import 'package:hackathon/features/projects/domain/repositories/project_repository.dart' as projects_domain;
+import 'package:hackathon/features/projects/data/repositories_impl/project_repository_impl.dart'
+    as projects_data;
+import 'package:hackathon/features/projects/domain/repositories/project_repository.dart'
+    as projects_domain;
 import 'package:hackathon/features/projects/domain/use_cases/get_projects_usecase.dart';
 import 'package:hackathon/features/projects/domain/use_cases/get_project_detail_usecase.dart';
 import 'package:hackathon/features/projects/domain/use_cases/create_project_usecase.dart';
@@ -173,12 +176,37 @@ import 'package:hackathon/features/research/domain/use_cases/get_research_detail
 import 'package:hackathon/features/research/domain/use_cases/create_research_entry_usecase.dart';
 import 'package:hackathon/features/research/domain/use_cases/update_research_entry_usecase.dart';
 import 'package:hackathon/features/research/domain/use_cases/delete_research_entry_usecase.dart';
+import 'package:hackathon/features/research/domain/use_cases/get_research_workspace_usecase.dart';
+import 'package:hackathon/features/research/domain/use_cases/create_research_folder_usecase.dart';
+import 'package:hackathon/features/research/domain/use_cases/delete_research_folder_usecase.dart';
+import 'package:hackathon/features/research/domain/use_cases/create_research_document_usecase.dart';
+import 'package:hackathon/features/research/domain/use_cases/get_research_document_usecase.dart';
+import 'package:hackathon/features/research/domain/use_cases/update_research_document_usecase.dart';
+import 'package:hackathon/features/research/domain/use_cases/delete_research_document_usecase.dart';
+import 'package:hackathon/features/research/domain/use_cases/research_file_usecases.dart';
+import 'package:hackathon/features/research/domain/use_cases/research_reference_usecases.dart';
 import 'package:hackathon/features/research/presentation/blocs/research_list_bloc/research_list_bloc.dart';
 import 'package:hackathon/features/research/presentation/blocs/research_detail_bloc/research_detail_bloc.dart';
+import 'package:hackathon/features/research/presentation/blocs/research_workspace_bloc/research_workspace_bloc.dart';
+import 'package:hackathon/features/research/presentation/blocs/markdown_editor_bloc/markdown_editor_bloc.dart';
+
+
+// People CRM Module Imports
+import 'package:hackathon/features/people/data/data_sources/people_remote_data_source.dart';
+import 'package:hackathon/features/people/data/repositories_impl/people_repository_impl.dart';
+import 'package:hackathon/features/people/domain/use_cases/people_usecases.dart';
+import 'package:hackathon/features/people/presentation/blocs/people_list_bloc/people_list_bloc.dart';
+import 'package:hackathon/features/people/presentation/blocs/contact_detail_bloc/contact_detail_bloc.dart';
 
 final getIt = GetIt.instance;
 
 void initDependencies() {
+  // User (mutable singleton)
+  getIt.registerLazySingleton(() => User());
+
+  // Websocket Service
+  getIt.registerLazySingleton(() => WebsocketService(user: getIt()));
+
   // Http client
   getIt.registerLazySingleton(() => http.Client());
 
@@ -208,6 +236,9 @@ void initDependencies() {
   );
   getIt.registerLazySingleton<TaskTeamDataSource>(
     () => TaskTeamDataSourceImpl(client: getIt()),
+  );
+  getIt.registerLazySingleton<TeamDataSource>(
+    () => TeamDataSourceImpl(client: getIt()),
   );
   getIt.registerLazySingleton<EmployeeDataSource>(
     () => EmployeeDataSourceImpl(apiService: getIt()),
@@ -239,27 +270,32 @@ void initDependencies() {
   getIt.registerLazySingleton<NotificationTypeFilter>(
     () => NotificationTypeFilter(),
   );
-  getIt.registerLazySingleton<ChatDataSource>(
-      () => ChatDataSourceImpl(apiClient: getIt()));
 
-  getIt.registerLazySingleton<MessageDataSource>(
-      () => MessageDataSourceImpl(apiClient: getIt()));
-
-  getIt.registerLazySingleton<TeamDataSource>(
-      () => TeamDataSourceImpl(client: getIt()));
-
-  getIt.registerLazySingleton<TeamProjectDataSource>(
-      () => TeamProjectDataSourceImpl(getIt()));
-
+  getIt.registerLazySingleton<ResourcesRemoteDataSource>(
+    () => ResourcesRemoteDataSourceImpl(apiClient: getIt()),
+  );
+  getIt.registerLazySingleton<CalendarRemoteDataSource>(
+    () => CalendarRemoteDataSourceImpl(apiClient: getIt()),
+  );
+  getIt.registerLazySingleton<SearchRemoteDataSource>(
+    () => SearchRemoteDataSourceImpl(apiClient: getIt()),
+  );
+  getIt.registerLazySingleton<ResearchRemoteDataSource>(
+    () => ResearchRemoteDataSourceImpl(apiClient: getIt()),
+  );
   getIt.registerLazySingleton<EmployeesRemoteDataSource>(
     () => EmployeesRemoteDataSourceImpl(apiClient: getIt()),
   );
-
   getIt.registerLazySingleton<ProjectRemoteDataSource>(
     () => ProjectRemoteDataSourceImpl(apiClient: getIt()),
   );
 
+    getIt.registerLazySingleton<PeopleRemoteDataSource>(
+    () => PeopleRemoteDataSourceImpl(apiClient: getIt()),
+  );
+
   // Repositories
+
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: getIt(),
@@ -275,23 +311,14 @@ void initDependencies() {
   getIt.registerLazySingleton<AttendenceRepository>(
     () => AttendenceRepositoryImpl(attendenceRemoteDataSource: getIt()),
   );
-  getIt.registerLazySingleton<ProjectRepository>(
-    () => ProjectRepositoryImpl(dataSource: getIt()),
+  getIt.registerLazySingleton<projects_domain.ProjectRepository>(
+    () => projects_data.ProjectRepositoryImpl(remoteDataSource: getIt()),
   );
-  getIt.registerLazySingleton<TeamRepository>(
-    () => TeamRepositoryImpl(dataSource: getIt()),
+  getIt.registerLazySingleton<TaskTeamRepository>(
+    () => TaskTeamRepositoryImpl(dataSource: getIt()),
   );
   getIt.registerLazySingleton<EmployeeRepository>(
     () => EmployeeRepositoryImpl(dataSource: getIt()),
-  );
-  getIt.registerLazySingleton<OnboardingRepository>(
-    () => OnboardingRepositoryImpl(remoteDataSource: getIt()),
-  );
-  getIt.registerLazySingleton<LeaveRepository>(
-    () => LeaveRepositoryImpl(remoteDataSource: getIt()),
-  );
-  getIt.registerLazySingleton<NotificationRepository>(
-    () => NotificationRepositoryImpl(remoteDataSource: getIt()),
   );
   getIt.registerLazySingleton<ValidateEmployeeRepository>(
     () => ValidateEmpRepoImpl(dataSource: getIt()),
@@ -305,33 +332,59 @@ void initDependencies() {
   getIt.registerLazySingleton<UpdateTaskRepository>(
     () => UpdateTaskRepositoryImpl(remoteDataSource: getIt()),
   );
+  getIt.registerLazySingleton<ProjectRepository>(
+    () => ProjectRepositoryImpl(dataSource: getIt()),
+  );
   getIt.registerLazySingleton<TaskCommentRepository>(
     () => TaskCommentRepositoryImpl(remoteDataSource: getIt()),
   );
   getIt.registerLazySingleton<TaskAttachmentRepository>(
     () => TaskAttachmentRepositoryImpl(remoteDataSource: getIt()),
   );
-  getIt.registerLazySingleton<ChatRepository>(
-      () => ChatRepositoryImpl(dataSource: getIt()));
-
-  getIt.registerLazySingleton<MessageRepository>(
-      () => MessageRepositoryImpl(messageDataSource: getIt()));
-
-  getIt.registerLazySingleton<TaskTeamRepository>(
-      () => TaskTeamRepositoryImpl(dataSource: getIt()));
-
+  getIt.registerLazySingleton<OnboardingRepository>(
+    () => OnboardingRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<LeaveRepository>(
+    () => LeaveRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<ResourcesRepository>(
+    () => ResourcesRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<CalendarRepository>(
+    () => CalendarRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<TeamRepository>(
+    () => TeamRepositoryImpl(dataSource: getIt()),
+  );
   getIt.registerLazySingleton<TeamProjectRepo>(
-      () => TeamProjectRepoImpl(getIt()));
-
-  getIt.registerLazySingleton<EmployeesRepository>(
+    () => TeamProjectRepoImpl(getIt()),
+  );
+  getIt.registerLazySingleton<SearchRepository>(
+    () => SearchRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<ResearchRepository>(
+    () => ResearchRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<employees_domain.EmployeesRepository>(
     () => EmployeesRepositoryImpl(remoteDataSource: getIt()),
   );
 
-  getIt.registerLazySingleton<projects_domain.ProjectRepository>(
-    () => projects_data.ProjectRepositoryImpl(remoteDataSource: getIt()),
+  getIt.registerLazySingleton<ChatRepository>(
+    () => ChatRepositoryImpl(dataSource: getIt()),
+  );
+  getIt.registerLazySingleton<MessageRepository>(
+    () => MessageRepositoryImpl(messageDataSource: getIt()),
+  );
+
+    getIt.registerLazySingleton<PeopleRepository>(
+    () => PeopleRepositoryImpl(remoteDataSource: getIt()),
   );
 
   // Use Cases
+
   getIt.registerLazySingleton<SignUpUsecase>(
     () => SignUpUsecase(repository: getIt()),
   );
@@ -340,6 +393,9 @@ void initDependencies() {
   );
   getIt.registerLazySingleton<GetTokenUsecase>(
     () => GetTokenUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<SaveTokenUsecase>(
+    () => SaveTokenUsecase(repository: getIt()),
   );
   getIt.registerLazySingleton<UploadFileUsecase>(
     () => UploadFileUsecase(uploadFileRepository: getIt()),
@@ -359,17 +415,21 @@ void initDependencies() {
   getIt.registerLazySingleton<AttendenceCheckOutUsecase>(
     () => AttendenceCheckOutUsecase(attendenceRepository: getIt()),
   );
+
   getIt.registerLazySingleton<GetEmployeesUseCase>(
     () => GetEmployeesUseCase(employeeRepository: getIt()),
   );
   getIt.registerLazySingleton<GetProjectUseCase>(
     () => GetProjectUseCase(projectRepository: getIt()),
   );
-  getIt.registerLazySingleton<GetTeamUseCase>(
-    () => GetTeamUseCase(teamRepository: getIt()),
+  getIt.registerLazySingleton<TaskGetTeamUsecase>(
+    () => TaskGetTeamUsecase(teamRepository: getIt()),
   );
   getIt.registerLazySingleton<ValidateEmpUsecase>(
     () => ValidateEmpUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<FetchTaskUsecase>(
+    () => FetchTaskUsecase(getIt()),
   );
   getIt.registerLazySingleton<FetchTaskByIdUsecase>(
     () => FetchTaskByIdUsecase(getIt()),
@@ -383,35 +443,23 @@ void initDependencies() {
   getIt.registerLazySingleton<UpdateTaskUsecase>(
     () => UpdateTaskUsecase(repository: getIt()),
   );
-  getIt.registerLazySingleton<FetchTaskUsecase>(
-    () => FetchTaskUsecase(getIt()),
+  getIt.registerLazySingleton<GetTaskCommentsUseCase>(
+    () => GetTaskCommentsUseCase(repository: getIt()),
   );
   getIt.registerLazySingleton<AddTaskCommentUseCase>(
     () => AddTaskCommentUseCase(repository: getIt()),
   );
-  getIt.registerLazySingleton<GetTaskCommentsUseCase>(
-    () => GetTaskCommentsUseCase(repository: getIt()),
-  );
   getIt.registerLazySingleton<DeleteTaskCommentUseCase>(
     () => DeleteTaskCommentUseCase(repository: getIt()),
-  );
-  getIt.registerLazySingleton<AddTaskAttachmentUseCase>(
-    () => AddTaskAttachmentUseCase(repository: getIt()),
   );
   getIt.registerLazySingleton<GetTaskAttachmentsUseCase>(
     () => GetTaskAttachmentsUseCase(repository: getIt()),
   );
+  getIt.registerLazySingleton<AddTaskAttachmentUseCase>(
+    () => AddTaskAttachmentUseCase(repository: getIt()),
+  );
   getIt.registerLazySingleton<RemoveTaskAttachmentUseCase>(
     () => RemoveTaskAttachmentUseCase(repository: getIt()),
-  );
-  getIt.registerLazySingleton<GetNotificationsUseCase>(
-    () => GetNotificationsUseCase(getIt()),
-  );
-  getIt.registerLazySingleton<MarkNotificationReadUseCase>(
-    () => MarkNotificationReadUseCase(getIt()),
-  );
-  getIt.registerLazySingleton<MarkAllReadUseCase>(
-    () => MarkAllReadUseCase(getIt()),
   );
   getIt.registerLazySingleton<GetOnboardingProgressUseCase>(
     () => GetOnboardingProgressUseCase(getIt()),
@@ -437,7 +485,45 @@ void initDependencies() {
   getIt.registerLazySingleton<CancelLeaveUsecase>(
     () => CancelLeaveUsecase(repository: getIt()),
   );
-
+  getIt.registerLazySingleton<GetNotificationsUseCase>(
+    () => GetNotificationsUseCase(getIt()),
+  );
+  getIt.registerLazySingleton<MarkNotificationReadUseCase>(
+    () => MarkNotificationReadUseCase(getIt()),
+  );
+  getIt.registerLazySingleton<MarkAllReadUseCase>(
+    () => MarkAllReadUseCase(getIt()),
+  );
+  getIt.registerLazySingleton<GetFilesUsecase>(
+    () => GetFilesUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<CreateCollectionUsecase>(
+    () => CreateCollectionUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<DeleteFileUsecase>(
+    () => DeleteFileUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetFileDetailUsecase>(
+    () => GetFileDetailUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<UpdateFileAccessUsecase>(
+    () => UpdateFileAccessUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetPersonalCalendarUsecase>(
+    () => GetPersonalCalendarUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetTeamCalendarUsecase>(
+    () => GetTeamCalendarUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetTeamUseCase>(
+    () => GetTeamUseCase(teamRepository: getIt()),
+  );
+  getIt.registerLazySingleton<CreateTeamUsecase>(
+    () => CreateTeamUsecase(getIt()),
+  );
+  getIt.registerLazySingleton<TeamGetProjectUsecase>(
+    () => TeamGetProjectUsecase(getIt()),
+  );
   getIt.registerLazySingleton<GetEmployeesUsecase>(
     () => GetEmployeesUsecase(getIt()),
   );
@@ -459,257 +545,74 @@ void initDependencies() {
   getIt.registerLazySingleton<MakeManagerUsecase>(
     () => MakeManagerUsecase(getIt()),
   );
-
-  getIt.registerLazySingleton<StreamChatUsecase>(
-      () => StreamChatUsecase(chatRepository: getIt()));
-  getIt.registerLazySingleton<CreateChatUsecase>(
-      () => CreateChatUsecase(chatRepository: getIt()));
-
-  getIt.registerLazySingleton<GetChatUsecase>(
-      () => GetChatUsecase(chatRepository: getIt()));
-
-  getIt.registerLazySingleton<MessageUsecase>(() => MessageUsecase(
-        messageRepository: getIt(),
-      ));
-  getIt.registerLazySingleton<TeamGetProjectUsecase>(
-      () => TeamGetProjectUsecase(getIt()));
-
-  getIt.registerLazySingleton<TaskGetTeamUsecase>(
-      () => TaskGetTeamUsecase(teamRepository: getIt()));
-
-  getIt.registerLazySingleton<CreateTeamUsecase>(
-      () => CreateTeamUsecase(getIt()));
-
-  getIt.registerLazySingleton<GetTeamByIdUseCase>(
-      () => GetTeamByIdUseCase(teamRepository: getIt()));
-
-  getIt.registerLazySingleton<SaveTokenUsecase>(() => SaveTokenUsecase(
-        repository: getIt(),
-      ));
-
   getIt.registerLazySingleton<GetProjectsUseCase>(
-    () => GetProjectsUseCase(repository: getIt<projects_domain.ProjectRepository>()),
+    () => GetProjectsUseCase(
+        repository: getIt<projects_domain.ProjectRepository>()),
   );
   getIt.registerLazySingleton<GetProjectDetailUseCase>(
-    () => GetProjectDetailUseCase(repository: getIt<projects_domain.ProjectRepository>()),
+    () => GetProjectDetailUseCase(
+        repository: getIt<projects_domain.ProjectRepository>()),
   );
   getIt.registerLazySingleton<CreateProjectUseCase>(
-    () => CreateProjectUseCase(repository: getIt<projects_domain.ProjectRepository>()),
+    () => CreateProjectUseCase(
+        repository: getIt<projects_domain.ProjectRepository>()),
   );
   getIt.registerLazySingleton<UpdateProjectUseCase>(
-    () => UpdateProjectUseCase(repository: getIt<projects_domain.ProjectRepository>()),
+    () => UpdateProjectUseCase(
+        repository: getIt<projects_domain.ProjectRepository>()),
   );
   getIt.registerLazySingleton<DeleteProjectUseCase>(
-    () => DeleteProjectUseCase(repository: getIt<projects_domain.ProjectRepository>()),
+    () => DeleteProjectUseCase(
+        repository: getIt<projects_domain.ProjectRepository>()),
   );
   getIt.registerLazySingleton<CreateMilestoneUseCase>(
-    () => CreateMilestoneUseCase(repository: getIt<projects_domain.ProjectRepository>()),
+    () => CreateMilestoneUseCase(
+        repository: getIt<projects_domain.ProjectRepository>()),
   );
   getIt.registerLazySingleton<UpdateMilestoneUseCase>(
-    () => UpdateMilestoneUseCase(repository: getIt<projects_domain.ProjectRepository>()),
+    () => UpdateMilestoneUseCase(
+        repository: getIt<projects_domain.ProjectRepository>()),
   );
   getIt.registerLazySingleton<DeleteMilestoneUseCase>(
-    () => DeleteMilestoneUseCase(repository: getIt<projects_domain.ProjectRepository>()),
+    () => DeleteMilestoneUseCase(
+        repository: getIt<projects_domain.ProjectRepository>()),
   );
 
-  // Blocs
-  getIt.registerFactory<AuthBloc>(
-    () => AuthBloc(
-      saveTokenUsecase: getIt(),
-      signUpUsecase: getIt(),
-      signInUsecase: getIt(),
-      getTokenUsecase: getIt(),
-    ),
-  );
-  getIt.registerFactory<UploadFileBloc>(
-    () => UploadFileBloc(uploadFileUsecase: getIt()),
-  );
-  getIt.registerFactory<RegisterCompanyBloc>(
-    () => RegisterCompanyBloc(
-      registerCompanyUseCase: getIt(),
-      fetchEmployeeDataUseCase: getIt(),
-    ),
-  );
-  getIt.registerFactory<AttendenceBloc>(
-    () => AttendenceBloc(
-      attendenceGetUsecase: getIt(),
-      attendenceCheckInUsecase: getIt(),
-      attendenceCheckOutUsecase: getIt(),
-    ),
-  );
-  getIt.registerFactory<GetEmployeesBloc>(
-    () => GetEmployeesBloc(
-      getEmployeesUseCase: getIt(),
-      getProjectUseCase: getIt(),
-      getTeamUseCase: getIt(),
-    ),
-  );
-  getIt.registerFactory<GetProjectBloc>(
-    () => GetProjectBloc(getProjectUseCase: getIt()),
-  );
-  getIt.registerFactory<ValidateEmployeeBloc>(
-    () => ValidateEmployeeBloc(usecase: getIt()),
-  );
-  getIt.registerFactory<OnboardingBloc>(
-    () => OnboardingBloc(
-      getOnboardingProgressUseCase: getIt(),
-      updateOnboardingProgressUseCase: getIt(),
-    ),
-  );
-  getIt.registerFactory<LeaveBloc>(
-    () => LeaveBloc(
-      submitLeaveRequestUsecase: getIt(),
-      getLeaveHistoryUsecase: getIt(),
-      getAllLeaveRequestsUsecase: getIt(),
-      approveLeaveUsecase: getIt(),
-      rejectLeaveUsecase: getIt(),
-      cancelLeaveUsecase: getIt(),
-    ),
-  );
-  getIt.registerFactory<NotificationsBloc>(
-    () => NotificationsBloc(
-      repository: getIt(),
-      typeFilter: getIt(),
-    ),
-  );
-  getIt.registerFactory<EmployeesListBloc>(
-    () => EmployeesListBloc(repository: getIt()),
-  );
-  getIt.registerFactory<AddEmployeeBloc>(
-    () => AddEmployeeBloc(repository: getIt()),
-  );
-  getIt.registerFactory<EmployeeProfileBloc>(
-    () => EmployeeProfileBloc(repository: getIt()),
-  );
-  getIt.registerFactory<CreateTaskBloc>(
-    () => CreateTaskBloc(createTaskUsecase: getIt()),
-  );
-  getIt.registerFactory<TaskBloc>(
-    () => TaskBloc(fetchTasksUsecase: getIt(), updateTaskUsecase: getIt()),
-  );
-  getIt.registerFactory<ChatBlocBloc>(
-    () => ChatBlocBloc(
-      usecase: getIt(),
-      createChatUsecase: getIt(),
-      getChatUsecase: getIt(),
-    ),
-  );
-  getIt
-      .registerFactory<MessageBloc>(() => MessageBloc(messageUseCase: getIt()));
-
-  getIt.registerFactory<ProjectBloc>(
-      () => ProjectBloc(teamGetProjectUsecase: getIt()));
-  getIt.registerCachedFactory<TeamBloc>(
-      () => TeamBloc(createTeamUsecase: getIt(), getTeamUseCase: getIt()));
-
-  getIt.registerFactory<TeamidBloc>(
-      () => TeamidBloc(getTeamByIdUseCase: getIt()));
-
-  // User
-  getIt.registerLazySingleton<User>(() => User());
-
-  // WebSocket Service
-  getIt.registerLazySingleton<WebsocketService>(
-    () => WebsocketService(user: getIt()),
-  );
-getIt.registerFactory(
-  () => TaskDetailBloc(
-    getTaskUsecase: getIt(),
-    updateTaskUsecase: getIt(),
-    addTaskCommentUsecase: getIt(),
-    getTaskCommentsUsecase: getIt(),
-    deleteTaskCommentUsecase: getIt(),
-    addTaskAttachmentUsecase: getIt(),
-    getTaskAttachmentsUsecase: getIt(),
-    removeTaskAttachmentUsecase: getIt(),
-  ),
-);
   getIt.registerFactory<ProjectsBloc>(
     () => ProjectsBloc(
+      createMilestoneUseCase: getIt(),
+      updateMilestoneUseCase: getIt(),
+      deleteMilestoneUseCase: getIt(),
       getProjectsUseCase: getIt(),
       getProjectDetailUseCase: getIt(),
       createProjectUseCase: getIt(),
       updateProjectUseCase: getIt(),
       deleteProjectUseCase: getIt(),
-      createMilestoneUseCase: getIt(),
-      updateMilestoneUseCase: getIt(),
-      deleteMilestoneUseCase: getIt(),
     ),
   );
-
-  // ── Search Module ──────────────────────────────────────────────────────────
-  getIt.registerLazySingleton<SearchRemoteDataSource>(
-    () => SearchRemoteDataSourceImpl(apiClient: getIt()),
-  );
-  getIt.registerLazySingleton<SearchRepository>(
-    () => SearchRepositoryImpl(remoteDataSource: getIt()),
-  );
-  getIt.registerLazySingleton(
+  getIt.registerLazySingleton<GlobalSearchUsecase>(
     () => GlobalSearchUsecase(repository: getIt()),
   );
-  getIt.registerFactory<SearchBloc>(
-    () => SearchBloc(searchUsecase: getIt()),
+  getIt.registerLazySingleton<MessageDataSource>(
+    () => MessageDataSourceImpl(apiClient: getIt()),
+  );
+  getIt.registerLazySingleton<ChatDataSource>(
+    () => ChatDataSourceImpl(apiClient: getIt()),
   );
 
-  // ── Resources Module ──────────────────────────────────────────────────────
-  getIt.registerLazySingleton<ResourcesRemoteDataSource>(
-    () => ResourcesRemoteDataSourceImpl(apiClient: getIt()),
+  getIt.registerLazySingleton<StreamChatUsecase>(
+    () => StreamChatUsecase(chatRepository: getIt()),
   );
-  getIt.registerLazySingleton<ResourcesRepository>(
-    () => ResourcesRepositoryImpl(remoteDataSource: getIt()),
+  getIt.registerLazySingleton<CreateChatUsecase>(
+    () => CreateChatUsecase(chatRepository: getIt()),
   );
-  getIt.registerLazySingleton<GetFilesUsecase>(
-    () => GetFilesUsecase(repository: getIt()),
+  getIt.registerLazySingleton<GetChatUsecase>(
+    () => GetChatUsecase(chatRepository: getIt()),
   );
-  getIt.registerLazySingleton<GetFileDetailUsecase>(
-    () => GetFileDetailUsecase(repository: getIt()),
-  );
-  getIt.registerLazySingleton<CreateCollectionUsecase>(
-    () => CreateCollectionUsecase(repository: getIt()),
-  );
-  getIt.registerLazySingleton<UpdateFileAccessUsecase>(
-    () => UpdateFileAccessUsecase(repository: getIt()),
-  );
-  getIt.registerLazySingleton<DeleteFileUsecase>(
-    () => DeleteFileUsecase(repository: getIt()),
-  );
-  getIt.registerFactory<ResourcesListBloc>(
-    () => ResourcesListBloc(
-      getFilesUsecase: getIt(),
-      getFileDetailUsecase: getIt(),
-      uploadFileUsecase: getIt(),
-      updateFileAccessUsecase: getIt(),
-      deleteFileUsecase: getIt(),
-    ),
+  getIt.registerLazySingleton<MessageUsecase>(
+    () => MessageUsecase(messageRepository: getIt()),
   );
 
-  // ── Calendar Module ───────────────────────────────────────────────────────
-  getIt.registerLazySingleton<CalendarRemoteDataSource>(
-    () => CalendarRemoteDataSourceImpl(apiClient: getIt()),
-  );
-  getIt.registerLazySingleton<CalendarRepository>(
-    () => CalendarRepositoryImpl(remoteDataSource: getIt()),
-  );
-  getIt.registerLazySingleton<GetPersonalCalendarUsecase>(
-    () => GetPersonalCalendarUsecase(repository: getIt()),
-  );
-  getIt.registerLazySingleton<GetTeamCalendarUsecase>(
-    () => GetTeamCalendarUsecase(repository: getIt()),
-  );
-  getIt.registerFactory<CalendarBloc>(
-    () => CalendarBloc(
-      getPersonalCalendarUsecase: getIt(),
-      getTeamCalendarUsecase: getIt(),
-    ),
-  );
-
-  // ── Research Module ────────────────────────────────────────────────────────
-  getIt.registerLazySingleton<ResearchRemoteDataSource>(
-    () => ResearchRemoteDataSourceImpl(apiClient: getIt()),
-  );
-  getIt.registerLazySingleton<ResearchRepository>(
-    () => ResearchRepositoryImpl(remoteDataSource: getIt()),
-  );
   getIt.registerLazySingleton<FetchResearchListUsecase>(
     () => FetchResearchListUsecase(repository: getIt()),
   );
@@ -725,6 +628,141 @@ getIt.registerFactory(
   getIt.registerLazySingleton<DeleteResearchEntryUsecase>(
     () => DeleteResearchEntryUsecase(repository: getIt()),
   );
+  getIt.registerLazySingleton<GetResearchFilesUsecase>(
+    () => GetResearchFilesUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<UploadResearchFileUsecase>(
+    () => UploadResearchFileUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<DeleteResearchFileUsecase>(
+    () => DeleteResearchFileUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetResearchReferencesUsecase>(
+    () => GetResearchReferencesUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<AddResearchReferenceUsecase>(
+    () => AddResearchReferenceUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<DeleteResearchReferenceUsecase>(
+    () => DeleteResearchReferenceUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetResearchWorkspaceUsecase>(
+    () => GetResearchWorkspaceUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<CreateResearchFolderUsecase>(
+    () => CreateResearchFolderUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<DeleteResearchFolderUsecase>(
+    () => DeleteResearchFolderUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<CreateResearchDocumentUsecase>(
+    () => CreateResearchDocumentUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetResearchDocumentUsecase>(
+    () => GetResearchDocumentUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<UpdateResearchDocumentUsecase>(
+    () => UpdateResearchDocumentUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<DeleteResearchDocumentUsecase>(
+    () => DeleteResearchDocumentUsecase(repository: getIt()),
+  );
+
+    getIt.registerLazySingleton<GetContactsUseCase>(() => GetContactsUseCase(getIt()));
+  getIt.registerLazySingleton<GetContactDetailsUseCase>(() => GetContactDetailsUseCase(getIt()));
+  getIt.registerLazySingleton<CreateContactUseCase>(() => CreateContactUseCase(getIt()));
+  getIt.registerLazySingleton<UpdateContactUseCase>(() => UpdateContactUseCase(getIt()));
+  getIt.registerLazySingleton<DeleteContactUseCase>(() => DeleteContactUseCase(getIt()));
+  getIt.registerLazySingleton<GetInteractionsUseCase>(() => GetInteractionsUseCase(getIt()));
+  getIt.registerLazySingleton<CreateInteractionUseCase>(() => CreateInteractionUseCase(getIt()));
+  getIt.registerLazySingleton<GetPipelineStagesUseCase>(() => GetPipelineStagesUseCase(getIt()));
+  getIt.registerLazySingleton<CreatePipelineStageUseCase>(() => CreatePipelineStageUseCase(getIt()));
+  getIt.registerLazySingleton<UpdatePipelineStageUseCase>(() => UpdatePipelineStageUseCase(getIt()));
+  getIt.registerLazySingleton<GetListsUseCase>(() => GetListsUseCase(getIt()));
+  getIt.registerLazySingleton<CreateListUseCase>(() => CreateListUseCase(getIt()));
+
+  // Blocs
+
+  getIt.registerFactory<TaskDetailBloc>(
+    () => TaskDetailBloc(
+      getTaskUsecase: getIt(),
+      updateTaskUsecase: getIt(),
+      getTaskCommentsUsecase: getIt(),
+      addTaskCommentUsecase: getIt(),
+      deleteTaskCommentUsecase: getIt(),
+      getTaskAttachmentsUsecase: getIt(),
+      addTaskAttachmentUsecase: getIt(),
+      removeTaskAttachmentUsecase: getIt(),
+    ),
+  );
+
+  getIt.registerFactory<OnboardingBloc>(
+    () => OnboardingBloc(
+      getOnboardingProgressUseCase: getIt(),
+      updateOnboardingProgressUseCase: getIt(),
+    ),
+  );
+
+  getIt.registerFactory<LeaveBloc>(
+    () => LeaveBloc(
+      submitLeaveRequestUsecase: getIt(),
+      getLeaveHistoryUsecase: getIt(),
+      getAllLeaveRequestsUsecase: getIt(),
+      approveLeaveUsecase: getIt(),
+      rejectLeaveUsecase: getIt(),
+      cancelLeaveUsecase: getIt(),
+    ),
+  );
+  getIt.registerFactory<AttendenceBloc>(
+    () => AttendenceBloc(
+      attendenceCheckInUsecase: getIt(),
+      attendenceCheckOutUsecase: getIt(),
+      attendenceGetUsecase: getIt(),
+    ),
+  );
+
+  getIt.registerFactory<NotificationsBloc>(
+    () => NotificationsBloc(
+      repository: getIt(),
+      typeFilter: getIt(),
+    ),
+  );
+
+  getIt.registerFactory<ResourcesListBloc>(
+    () => ResourcesListBloc(
+      getFilesUsecase: getIt(),
+      uploadFileUsecase: getIt(),
+      deleteFileUsecase: getIt(),
+      getFileDetailUsecase: getIt(),
+      updateFileAccessUsecase: getIt(),
+    ),
+  );
+
+  getIt.registerFactory<CalendarBloc>(
+    () => CalendarBloc(
+      getPersonalCalendarUsecase: getIt(),
+      getTeamCalendarUsecase: getIt(),
+    ),
+  );
+
+  getIt.registerFactory<EmployeesListBloc>(
+    () => EmployeesListBloc(
+      repository: getIt(),
+    ),
+  );
+
+  getIt.registerFactory<AddEmployeeBloc>(
+    () => AddEmployeeBloc(
+      repository: getIt(),
+    ),
+  );
+
+  getIt.registerFactory<EmployeeProfileBloc>(
+    () => EmployeeProfileBloc(
+      repository: getIt(),
+    ),
+  );
+
   getIt.registerFactory<ResearchListBloc>(
     () => ResearchListBloc(fetchResearchListUsecase: getIt()),
   );
@@ -736,4 +774,35 @@ getIt.registerFactory(
       deleteResearchEntryUsecase: getIt(),
     ),
   );
+  getIt.registerFactory<ResearchWorkspaceBloc>(
+    () => ResearchWorkspaceBloc(
+      getResearchWorkspaceUsecase: getIt(),
+      createResearchFolderUsecase: getIt(),
+      deleteResearchFolderUsecase: getIt(),
+      createResearchDocumentUsecase: getIt(),
+      deleteResearchDocumentUsecase: getIt(),
+    ),
+  );
+  getIt.registerFactory<MarkdownEditorBloc>(
+    () => MarkdownEditorBloc(
+      getResearchDocumentUsecase: getIt(),
+      createResearchDocumentUsecase: getIt(),
+      updateResearchDocumentUsecase: getIt(),
+      getResearchFilesUsecase: getIt(),
+      uploadResearchFileUsecase: getIt(),
+      getResearchReferencesUsecase: getIt(),
+      addResearchReferenceUsecase: getIt(),
+    ),
+  );
+  getIt.registerFactory<PeopleListBloc>(() => PeopleListBloc(
+        getContactsUseCase: getIt(),
+        deleteContactUseCase: getIt(),
+        createContactUseCase: getIt(),
+      ));
+  getIt.registerFactory<ContactDetailBloc>(() => ContactDetailBloc(
+        getContactDetailsUseCase: getIt(),
+        getInteractionsUseCase: getIt(),
+        createInteractionUseCase: getIt(),
+        updateContactUseCase: getIt(),
+      ));
 }
