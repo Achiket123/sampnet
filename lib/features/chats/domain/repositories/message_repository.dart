@@ -5,6 +5,7 @@ import 'package:hackathon/globals/error_handling/error_model.dart';
 
 abstract class MessageRepository {
   Stream<List<MessageEntity>> getMessages(String id);
+  Future<void> fetchInitialMessages(String id);
+  Future<void> loadMoreMessages(String id);
   Future<Either<ErrorModel, MessageEntity>> sendMessage(MessageParams message);
-
 }

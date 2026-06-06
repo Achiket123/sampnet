@@ -15,20 +15,22 @@ class MessageUsecase implements Usecase<MessageEntity,MessageParams > {
 }
 
 class MessageParams {
+  final String roomId;
   final String message;
   final String senderId;
   final String receiverId;
   final String receiverName;
   final String senderName;
   final bool isSender;
-  final DateTime timeStamp;
+  final DateTime createdAt;
   MessageParams(
-      {required this.message,
+      {required this.roomId,
+      required this.message,
       required this.senderId,
       required this.receiverId,
       required this.receiverName,
       required this.isSender,
-      required this.timeStamp,
+      required this.createdAt,
       required this.senderName});
 
   Map<String, dynamic> toMap() {
@@ -39,7 +41,7 @@ class MessageParams {
       'receiver_name': receiverName,
       'sender_name': senderName,
       'is_sender': isSender,
-      'time_stamp': timeStamp.toUtc().toIso8601String()
+      'created_at': createdAt.toUtc().toIso8601String()
     };
   }
 }

@@ -32,16 +32,20 @@ class ChatTiles extends StatelessWidget {
           ),
           mouseCursor: SystemMouseCursors.click,
           title: Text(
-            "${chatEntity.firstName} ${chatEntity.lastName}",
+            chatEntity.isGroup 
+                ? chatEntity.name ?? "Group Chat" 
+                : (chatEntity.participants.isNotEmpty 
+                    ? "${chatEntity.participants.first.firstName ?? ''} ${chatEntity.participants.first.lastName ?? ''}".trim()
+                    : "Unknown User"),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: textStyle,
           ),
           trailing: Text(
-            chatEntity.lastMessageTimestamp!=null?
+            chatEntity.lastMessageAt != null ?
             Intl()
                 .date(DateFormat.HOUR24_MINUTE)
-                .format(chatEntity.lastMessageTimestamp!):'',
+                .format(chatEntity.lastMessageAt!) : '',
             style: textStyle.copyWith(fontSize: 10),
           ),
         ),

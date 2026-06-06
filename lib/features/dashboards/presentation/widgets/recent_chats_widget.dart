@@ -85,18 +85,23 @@ class RecentChatsWidget extends StatelessWidget {
                   separatorBuilder: (context, index) => const SizedBox(height: 4),
                   itemBuilder: (context, index) {
                     final chat = chats[index];
+                    final chatName = chat.isGroup 
+                        ? (chat.name ?? "Group Chat") 
+                        : (chat.participants.isNotEmpty 
+                            ? "${chat.participants.first.firstName ?? ''} ${chat.participants.first.lastName ?? ''}".trim()
+                            : "Unknown User");
                     return ListTile(
                       onTap: () => context.push('/chats'),
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
                         backgroundColor: Colors.blueAccent.withOpacity(0.2),
                         child: Text(
-                          chat.firstName.isNotEmpty ? chat.firstName[0].toUpperCase() : "?",
+                          chatName.isNotEmpty ? chatName[0].toUpperCase() : "?",
                           style: const TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       ),
                       title: Text(
-                        "${chat.firstName} ${chat.lastName}",
+                        chatName,
                         style: const TextStyle(color: ColorPallete.white, fontSize: 14, fontWeight: FontWeight.w500),
                       ),
                       subtitle: Text(
@@ -106,7 +111,7 @@ class RecentChatsWidget extends StatelessWidget {
                         style: TextStyle(color: ColorPallete.white.withOpacity(0.6), fontSize: 12),
                       ),
                       trailing: Text(
-                        _formatRelativeTime(chat.lastMessageTimestamp),
+                        _formatRelativeTime(chat.lastMessageAt),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: ColorPallete.white.withOpacity(0.4),
                               fontSize: 10,

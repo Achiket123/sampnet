@@ -47,6 +47,9 @@ import 'package:hackathon/globals/constants/globals.dart';
 import 'package:hackathon/globals/constants/strings.dart';
 import 'package:hackathon/globals/constants/styles.dart';
 import 'package:hackathon/services/routes.dart';
+import 'package:hackathon/features/chats/data/models/message_hive_model.dart';
+import 'package:hackathon/features/chats/data/models/chat_hive_model.dart';
+import 'package:hackathon/features/chats/data/models/chat_participant_hive_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart';
 
@@ -59,7 +62,17 @@ main() async {
   );
 
   // Initialize the Hive Flutter database
+  await Hive.initFlutter();
+  
+  // Register Hive adapters
+  Hive.registerAdapter(MessageHiveModelAdapter());
+  Hive.registerAdapter(ChatHiveModelAdapter());
+  Hive.registerAdapter(ChatParticipantHiveModelAdapter());
+
   await Hive.openBox(Strings.authBox);
+  await Hive.openBox<MessageHiveModel>('messages');
+  await Hive.openBox<ChatHiveModel>('chats');
+  await Hive.openBox<String>('chat_cursors');
 
   // Initialize the dependencies
   initDependencies();

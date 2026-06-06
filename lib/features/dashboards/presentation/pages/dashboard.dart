@@ -21,7 +21,6 @@ import 'package:hackathon/features/team/presentation/blocs/team_bloc/team_bloc.d
 import 'package:hackathon/features/attendence/presentation/blocs/bloc/attendence_bloc.dart';
 import 'package:hackathon/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hackathon/features/chats/presentation/blocs/chat_bloc/chat_bloc_bloc.dart';
-import 'package:hackathon/features/chats/data/data_sources/signaling.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
 
 BuildContext? parentContext;
@@ -51,10 +50,8 @@ class _DashboardState extends State<Dashboard> {
     context.read<TeamBloc>().add(GetTeamEvent(token: token));
     context.read<AttendenceBloc>().add(AttendenceGetEvent(userId: userId));
     context.read<ChatBlocBloc>().add(GetChatsEvent());
-    
-    WebRTCSignaling.listenForCalling(context);
   }
-
+    
   @override
   void didChangeDependencies() {
     parentContext = context;

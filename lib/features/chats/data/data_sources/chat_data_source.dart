@@ -9,6 +9,7 @@ import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/constants/user.dart' as user;
 import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:hackathon/services/api_client.dart';
+import 'package:hackathon/services/websocket_service.dart';
 
 abstract class ChatDataSource {
   Stream<List<ChatModel>> getChats();
@@ -24,18 +25,17 @@ class ChatDataSourceImpl implements ChatDataSource {
   Stream<List<ChatModel>> getChats() async* {
     debugPrint("Chat data source called");
 
-    yield* Stream.periodic(const Duration(seconds: 3)).asyncMap<List<ChatModel>>((_) async {
+    Future<List<ChatModel>> fetchChats() async {
       try {
         final response = await apiClient.get(
             '${ApiConstants.getChats}?organisation_id=${getIt<user.User>().organisation!.id}');
         if (response.statusCode == 200) {
-          debugPrint(response.body);
-          final List<dynamic> data = jsonDecode(response.body)['chats'];
-          debugPrint(data.toString());
+          final dynamic decoded = jsonDecode(response.body);
+          final List<dynamic> data = decoded is Map && decoded.containsKey('chats') ? decoded['chats'] : [];
           final List<ChatModel> chatList = data.map<ChatModel>((doc) => ChatModel.fromMap(doc)).toList();
           chatList.sort((a, b) {
-            final aTime = a.lastMessageTimestamp;
-            final bTime = b.lastMessageTimestamp;
+            final aTime = a.lastMessageAt;
+            final bTime = b.lastMessageAt;
             if (aTime == null && bTime == null) return 0;
             if (aTime == null) return 1;
             if (bTime == null) return -1;
@@ -44,30 +44,29 @@ class ChatDataSourceImpl implements ChatDataSource {
           return chatList;
         }
         return <ChatModel>[];
-      } catch (e) {
-        debugPrint(e.toString());
+      } catch (e, stack) {
+        debugPrint("Error fetching chats: $e\n$stack");
         return <ChatModel>[];
       }
-    });
+    }
+
+    // Yield initial fetch
+    yield await fetchChats();
+
+    // Yield on websocket messages
+    final websocketService = getIt<WebsocketService>();
+    await for (final _ in websocketService.messageStream) {
+      yield await fetchChats();
+    }
   }
 
   @override
   Future<Either<ErrorModel, ChatModel>> createChat(ChatParams chat) async {
     try {
-      final chatId = chat.id ?? getIt<user.User>().user!.id;
-      final chatData = {
-        'ID': chatId,
-        'first_name': chat.firstName,
-        'last_name': chat.lastName,
-        'email': chat.email,
-        'organisation_id': getIt<user.User>().organisation!.id,
-        'last_message_timestamp':
-            (chat.lastMessageTimestamp ?? DateTime.now()).toUtc().toIso8601String(),
-        'number_of_message': 0,
-      };
-
+      final targetUserId = chat.id ?? 0;
+      
       final callData = {
-        'id': chatId,
+        'id': targetUserId,
         'first_name': chat.firstName,
         'last_name': chat.lastName,
         'email': chat.email,
@@ -76,10 +75,11 @@ class ChatDataSourceImpl implements ChatDataSource {
         'offer': null,
       };
 
-      await apiClient.post(ApiConstants.createChat, body: chatData);
+      final res = await apiClient.get('${ApiConstants.getChats}/dm/$targetUserId');
       await apiClient.post(ApiConstants.upsertCall, body: callData);
-
-      return right(ChatModel.fromMap(chatData));
+      
+      final data = jsonDecode(res.body)['chat'];
+      return right(ChatModel.fromMap(data));
     } catch (e) {
       debugPrint(e.toString());
       return left(ErrorModel(message: e.toString()));
@@ -96,13 +96,11 @@ class ChatDataSourceImpl implements ChatDataSource {
         debugPrint(response.body);
         final List<dynamic> data = jsonDecode(response.body)["chats"];
         final List<ChatModel> chatList = data
-            .where((doc) =>
-                doc['id'].toString() != getIt<user.User>().user!.id.toString())
             .map((doc) => ChatModel.fromMap(doc))
             .toList();
         chatList.sort((a, b) {
-          final aTime = a.lastMessageTimestamp;
-          final bTime = b.lastMessageTimestamp;
+          final aTime = a.lastMessageAt;
+          final bTime = b.lastMessageAt;
           if (aTime == null && bTime == null) return 0;
           if (aTime == null) return 1;
           if (bTime == null) return -1;

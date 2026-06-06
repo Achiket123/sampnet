@@ -12,6 +12,8 @@ import 'package:hackathon/features/auth/domain/usecase/auth_usecase.dart';
 import 'package:hackathon/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hackathon/features/chats/data/data_sources/chat_data_source.dart';
 import 'package:hackathon/features/chats/data/data_sources/message_data_source.dart';
+import 'package:hackathon/features/chats/data/data_sources/message_local_data_source.dart';
+import 'package:hackathon/features/chats/data/models/message_hive_model.dart';
 import 'package:hackathon/features/chats/data/repositories_impl/chat_repository_impl.dart';
 import 'package:hackathon/features/chats/data/repositories_impl/message_repository_impl.dart';
 import 'package:hackathon/features/chats/domain/repositories/chat_repository.dart';
@@ -68,6 +70,11 @@ import 'package:hackathon/features/upload_files/domain/repositories/upload_file_
 import 'package:hackathon/features/upload_files/domain/use_cases/upload_file_usecase.dart';
 import 'package:hackathon/features/upload_files/presentation/bloc/upload_file_bloc.dart';
 import 'package:hackathon/features/chats/domain/use_cases/message_usecase.dart';
+import 'package:hackathon/services/cache_service.dart';
+import 'package:hackathon/services/notification_service.dart';
+import 'package:hackathon/services/websocket_service.dart';
+import 'package:hackathon/services/webrtc_service.dart';
+import 'package:hackathon/services/incoming_call_overlay_service.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/services/api_client.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
@@ -190,7 +197,6 @@ import 'package:hackathon/features/research/presentation/blocs/research_detail_b
 import 'package:hackathon/features/research/presentation/blocs/research_workspace_bloc/research_workspace_bloc.dart';
 import 'package:hackathon/features/research/presentation/blocs/markdown_editor_bloc/markdown_editor_bloc.dart';
 
-
 // People CRM Module Imports
 import 'package:hackathon/features/people/data/data_sources/people_remote_data_source.dart';
 import 'package:hackathon/features/people/data/repositories_impl/people_repository_impl.dart';
@@ -204,8 +210,15 @@ void initDependencies() {
   // User (mutable singleton)
   getIt.registerLazySingleton(() => User());
 
-  // Websocket Service
-  getIt.registerLazySingleton(() => WebsocketService(user: getIt()));
+  // Services
+  getIt.registerLazySingleton<WebsocketService>(
+      () => WebsocketService(user: getIt<User>()));
+  
+  getIt.registerLazySingleton<WebRtcService>(
+      () => WebRtcService(websocketService: getIt()));
+
+  getIt.registerLazySingleton<IncomingCallOverlayService>(
+      () => IncomingCallOverlayService(websocketService: getIt()));
 
   // Http client
   getIt.registerLazySingleton(() => http.Client());
@@ -239,6 +252,9 @@ void initDependencies() {
   );
   getIt.registerLazySingleton<TeamDataSource>(
     () => TeamDataSourceImpl(client: getIt()),
+  );
+  getIt.registerLazySingleton<TeamProjectDataSource>(
+    () => TeamProjectDataSourceImpl(client: getIt()),
   );
   getIt.registerLazySingleton<EmployeeDataSource>(
     () => EmployeeDataSourceImpl(apiService: getIt()),
@@ -290,7 +306,7 @@ void initDependencies() {
     () => ProjectRemoteDataSourceImpl(apiClient: getIt()),
   );
 
-    getIt.registerLazySingleton<PeopleRemoteDataSource>(
+  getIt.registerLazySingleton<PeopleRemoteDataSource>(
     () => PeopleRemoteDataSourceImpl(apiClient: getIt()),
   );
 
@@ -376,10 +392,15 @@ void initDependencies() {
     () => ChatRepositoryImpl(dataSource: getIt()),
   );
   getIt.registerLazySingleton<MessageRepository>(
-    () => MessageRepositoryImpl(messageDataSource: getIt()),
+    () => MessageRepositoryImpl(
+      remoteDataSource: getIt(),
+      localDataSource: getIt(),
+      websocketService: getIt(),
+      messageBox: Hive.box<MessageHiveModel>('messages'),
+    ),
   );
 
-    getIt.registerLazySingleton<PeopleRepository>(
+  getIt.registerLazySingleton<PeopleRepository>(
     () => PeopleRepositoryImpl(remoteDataSource: getIt()),
   );
 
@@ -596,6 +617,12 @@ void initDependencies() {
   getIt.registerLazySingleton<MessageDataSource>(
     () => MessageDataSourceImpl(apiClient: getIt()),
   );
+  getIt.registerLazySingleton<MessageLocalDataSource>(
+    () => MessageLocalDataSourceImpl(
+      messageBox: Hive.box<MessageHiveModel>('messages'),
+      cursorBox: Hive.box<String>('chat_cursors'),
+    ),
+  );
   getIt.registerLazySingleton<ChatDataSource>(
     () => ChatDataSourceImpl(apiClient: getIt()),
   );
@@ -668,21 +695,39 @@ void initDependencies() {
     () => DeleteResearchDocumentUsecase(repository: getIt()),
   );
 
-    getIt.registerLazySingleton<GetContactsUseCase>(() => GetContactsUseCase(getIt()));
-  getIt.registerLazySingleton<GetContactDetailsUseCase>(() => GetContactDetailsUseCase(getIt()));
-  getIt.registerLazySingleton<CreateContactUseCase>(() => CreateContactUseCase(getIt()));
-  getIt.registerLazySingleton<UpdateContactUseCase>(() => UpdateContactUseCase(getIt()));
-  getIt.registerLazySingleton<DeleteContactUseCase>(() => DeleteContactUseCase(getIt()));
-  getIt.registerLazySingleton<GetInteractionsUseCase>(() => GetInteractionsUseCase(getIt()));
-  getIt.registerLazySingleton<CreateInteractionUseCase>(() => CreateInteractionUseCase(getIt()));
-  getIt.registerLazySingleton<GetPipelineStagesUseCase>(() => GetPipelineStagesUseCase(getIt()));
-  getIt.registerLazySingleton<CreatePipelineStageUseCase>(() => CreatePipelineStageUseCase(getIt()));
-  getIt.registerLazySingleton<UpdatePipelineStageUseCase>(() => UpdatePipelineStageUseCase(getIt()));
+  getIt.registerLazySingleton<GetContactsUseCase>(
+      () => GetContactsUseCase(getIt()));
+  getIt.registerLazySingleton<GetContactDetailsUseCase>(
+      () => GetContactDetailsUseCase(getIt()));
+  getIt.registerLazySingleton<CreateContactUseCase>(
+      () => CreateContactUseCase(getIt()));
+  getIt.registerLazySingleton<UpdateContactUseCase>(
+      () => UpdateContactUseCase(getIt()));
+  getIt.registerLazySingleton<DeleteContactUseCase>(
+      () => DeleteContactUseCase(getIt()));
+  getIt.registerLazySingleton<GetInteractionsUseCase>(
+      () => GetInteractionsUseCase(getIt()));
+  getIt.registerLazySingleton<CreateInteractionUseCase>(
+      () => CreateInteractionUseCase(getIt()));
+  getIt.registerLazySingleton<GetPipelineStagesUseCase>(
+      () => GetPipelineStagesUseCase(getIt()));
+  getIt.registerLazySingleton<CreatePipelineStageUseCase>(
+      () => CreatePipelineStageUseCase(getIt()));
+  getIt.registerLazySingleton<UpdatePipelineStageUseCase>(
+      () => UpdatePipelineStageUseCase(getIt()));
   getIt.registerLazySingleton<GetListsUseCase>(() => GetListsUseCase(getIt()));
-  getIt.registerLazySingleton<CreateListUseCase>(() => CreateListUseCase(getIt()));
+  getIt.registerLazySingleton<CreateListUseCase>(
+      () => CreateListUseCase(getIt()));
 
   // Blocs
-
+  getIt.registerFactory<SearchBloc>(() => SearchBloc(searchUsecase: getIt()));
+  getIt.registerFactory<UploadFileBloc>(
+      () => UploadFileBloc(uploadFileUsecase: getIt()));
+  getIt.registerFactory<AuthBloc>(() => AuthBloc(
+      getTokenUsecase: getIt(),
+      saveTokenUsecase: getIt(),
+      signInUsecase: getIt(),
+      signUpUsecase: getIt()));
   getIt.registerFactory<TaskDetailBloc>(
     () => TaskDetailBloc(
       getTaskUsecase: getIt(),
@@ -805,4 +850,30 @@ void initDependencies() {
         createInteractionUseCase: getIt(),
         updateContactUseCase: getIt(),
       ));
+
+  getIt.registerFactory<CreateTaskBloc>(
+      () => CreateTaskBloc(createTaskUsecase: getIt()));
+  getIt.registerFactory<GetEmployeesBloc>(() => GetEmployeesBloc(
+      getEmployeesUseCase: getIt(),
+      getProjectUseCase: getIt(),
+      getTeamUseCase: getIt()));
+  getIt.registerFactory<GetProjectBloc>(
+      () => GetProjectBloc(getProjectUseCase: getIt()));
+  getIt.registerFactory<TaskBloc>(
+      () => TaskBloc(fetchTasksUsecase: getIt(), updateTaskUsecase: getIt()));
+  getIt.registerFactory<TeamBloc>(
+      () => TeamBloc(createTeamUsecase: getIt(), getTeamUseCase: getIt()));
+  getIt.registerFactory<TeamidBloc>(
+      () => TeamidBloc(getTeamByIdUseCase: getIt()));
+  getIt.registerFactory<ProjectBloc>(
+      () => ProjectBloc(teamGetProjectUsecase: getIt()));
+
+  getIt.registerFactory<ChatBlocBloc>(() => ChatBlocBloc(
+      usecase: getIt(), createChatUsecase: getIt(), getChatUsecase: getIt()));
+  getIt
+      .registerFactory<MessageBloc>(() => MessageBloc(messageUseCase: getIt()));
+  getIt.registerFactory<RegisterCompanyBloc>(() => RegisterCompanyBloc(
+      registerCompanyUseCase: getIt(), fetchEmployeeDataUseCase: getIt()));
+  getIt.registerFactory<ValidateEmployeeBloc>(
+      () => ValidateEmployeeBloc(usecase: getIt()));
 }

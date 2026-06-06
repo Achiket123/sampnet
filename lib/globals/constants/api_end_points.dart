@@ -84,7 +84,7 @@ class ApiConstants {
 
   // Message Endpoints
   static const String sendMessage = "/messages/send";
-  static String getMessages(String peerId) => "/messages/$peerId";
+  static String getMessages(String roomId) => "/messages/$roomId";
 
   // Call Endpoints
   static const String upsertCall = "/calls/upsert";

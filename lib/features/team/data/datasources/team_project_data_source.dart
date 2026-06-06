@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:fpdart/fpdart.dart';
 import 'package:hackathon/features/team/data/models/project_model.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
-import 'package:hackathon/globals/error_handling/error_model.dart'; 
+import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:http/http.dart' as http;
 
 abstract class TeamProjectDataSource {
@@ -12,7 +12,7 @@ abstract class TeamProjectDataSource {
 
 class TeamProjectDataSourceImpl implements TeamProjectDataSource {
   final http.Client client;
-  TeamProjectDataSourceImpl(this.client);
+  TeamProjectDataSourceImpl({required this.client});
   @override
   Future<Either<ErrorModel, List<ProjectModel>>> getProject(
       String token) async {

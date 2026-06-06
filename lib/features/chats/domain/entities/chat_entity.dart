@@ -1,51 +1,48 @@
 import 'package:equatable/equatable.dart';
+import 'package:hackathon/features/chats/domain/entities/chat_participant_entity.dart';
 
 class ChatEntity extends Equatable {
   final int id;
-  final String firstName;
-  final String lastName;
-  final DateTime? lastMessageTimestamp;
+  final String roomId;
+  final int organisationId;
+  final String? name;
+  final bool isGroup;
+  final int createdBy;
   final String? lastMessage;
-  final int numberOfMessage;
-  final String? email;
+  final DateTime? lastMessageAt;
+  final int messageCount;
+  final List<ChatParticipantEntity> participants;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  const ChatEntity(
-      {required this.id,
-      required this.firstName,
-      required this.lastName,
-      this.lastMessage,
-      this.lastMessageTimestamp,
-     this.email,
-      required this.numberOfMessage});
+  const ChatEntity({
+    required this.id,
+    required this.roomId,
+    required this.organisationId,
+    this.name,
+    required this.isGroup,
+    required this.createdBy,
+    this.lastMessage,
+    this.lastMessageAt,
+    required this.messageCount,
+    required this.participants,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
   @override
   List<Object?> get props => [
         id,
+        roomId,
+        organisationId,
+        name,
+        isGroup,
+        createdBy,
+        lastMessage,
+        lastMessageAt,
+        messageCount,
+        participants,
+        createdAt,
+        updatedAt,
       ];
-
-  Map<String, dynamic> toMap() {
-    return {
-      "id": id,
-      "first_name": firstName,
-      "last_name": lastName,
-      "last_message": lastMessage,
-      "email": email,
-      "last_message_timestamp": lastMessageTimestamp?.toUtc().toIso8601String(),
-      "number_of_message": numberOfMessage
-    };
-  }
-}
-
-class ChatGroupEntity extends ChatEntity {
-  final List<String> members;
-  final int image;
-  const ChatGroupEntity(
-      {required super.id,
-
-      required super.numberOfMessage,
-      required super.firstName,
-      required super.lastName,
-      required this.image,
-      required this.members,
-      required super.lastMessageTimestamp});
 }

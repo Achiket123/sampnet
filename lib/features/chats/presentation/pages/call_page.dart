@@ -1,14 +1,12 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hackathon/features/chats/data/data_sources/signaling.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/chats/domain/entities/chat_entity.dart';
 import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart';
-import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
+import 'package:hackathon/services/webrtc_service.dart';
 import 'package:hackathon/widgets/custom_app_bar.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class CallPage extends StatefulWidget {
   static const routePath = '/call';
@@ -20,162 +18,77 @@ class CallPage extends StatefulWidget {
 }
 
 class _WebRTCClientState extends State<CallPage> {
-  late WebSocketChannel signalingServer;
-
-  late MediaStream localStream;
-  MediaStream? remoteStream;
   final RTCVideoRenderer localRenderer = RTCVideoRenderer();
   final RTCVideoRenderer remoteRenderer = RTCVideoRenderer();
   bool inCall = false;
-  MediaStreamTrack? _localVideoTrack;
-  WebRTCSignaling webRTCSignaling = WebRTCSignaling();
-  RTCPeerConnection? peerConnection;
+  late final WebRtcService _webRtcService;
   bool isCameraVisible = true;
-  // ICE Servers configuration
-  final Map<String, dynamic> configuration = {
-    'iceServers': [
-      {'urls': 'stun:stun.l.google.com:19302'}
-    ]
-  };
-  final List<RTCIceCandidate> _candidateQueue = [];
+
   @override
   void initState() {
     super.initState();
-
+    _webRtcService = getIt<WebRtcService>();
     _initializeRenderers();
+
+    _webRtcService.onLocalStream = (stream) {
+      setState(() {
+        localRenderer.srcObject = stream;
+      });
+    };
+
+    _webRtcService.onRemoteStream = (stream) {
+      setState(() {
+        remoteRenderer.srcObject = stream;
+      });
+    };
+
+    _webRtcService.onCallEnded = () {
+      if (mounted) {
+        setState(() {
+          inCall = false;
+        });
+        if (context.canPop()) context.pop();
+      }
+    };
 
     if (widget.isCalling) {
       startWebRTC();
     }
   }
 
- 
-
   Future<void> _initializeRenderers() async {
-    remoteStream = await createLocalMediaStream('remote');
     await localRenderer.initialize();
     await remoteRenderer.initialize();
   }
 
   Future<void> startWebRTC() async {
-    if (inCall) {
-      return;
-    }
-    inCall = true;
+    if (inCall) return;
+    setState(() {
+      inCall = true;
+    });
+
     try {
-      // Get user media (local stream)
-      localStream = await navigator.mediaDevices
-          .getUserMedia({'video': true, 'audio': true});
-      setState(() {
-        localRenderer.srcObject = localStream;
-      });
-      _localVideoTrack = localStream.getVideoTracks().first;
-      // Initialize RTCPeerConnection
-      peerConnection = await createPeerConnection(configuration);
-
-      signalingServer = WebSocketChannel.connect(Uri.parse(
-          ApiConstants.callingEndpoint + widget.chatEntity.id.toString()));
-      signalingServer.stream.listen(_onSignalingMessage);
-
-      // Add local stream tracks to peer connection
-      localStream.getTracks().forEach((track) {
-        peerConnection?.addTrack(track, localStream);
-      });
-
-      // Handle remote tracks
-      peerConnection?.onTrack = (event) {
-        remoteStream?.addTrack(event.track);
-        remoteRenderer.srcObject = remoteStream;
-      };
-
-      // Handle ICE candidates
-      peerConnection?.onIceCandidate = (candidate) {
-        signalingServer.sink.add(jsonEncode({
-          'type': 'candidate',
-          'candidate': candidate.toMap(),
-        }));
-            };
-
-      // Create an offer and send it to the signaling server
-
-      if (!widget.isCalling) {
-        final offer = await peerConnection?.createOffer();
-        await peerConnection?.setLocalDescription(offer!);
-        webRTCSignaling.createOffer(
-            offer.toString(), widget.chatEntity.id, widget.chatEntity);
-
-        signalingServer.sink.add(jsonEncode({
-          'type': 'offer',
-          'offer': offer!.toMap(),
-        }));
-      }
+      final roomId = widget.chatEntity.roomId ?? widget.chatEntity.id.toString();
+      await _webRtcService.startCall(roomId, isCaller: widget.isCalling);
     } catch (e) {
-      print('Error starting WebRTC: $e');
+      debugPrint('Error starting WebRTC: $e');
     }
   }
 
-  endWebRTCcall() async {
-    await peerConnection?.close();
-    peerConnection = null;
-    localStream.getTracks().forEach((track) {
-      track.stop();
+  Future<void> endWebRTCcall() async {
+    _webRtcService.endCall();
+    setState(() {
+      inCall = false;
     });
-    signalingServer.sink.close();
-    localStream.dispose();
-    remoteStream?.dispose();
+    localRenderer.srcObject = null;
+    remoteRenderer.srcObject = null;
+  }
+
+  @override
+  void dispose() {
     localRenderer.dispose();
     remoteRenderer.dispose();
-    localStream.dispose();
-    signalingServer.sink.close();
-    await webRTCSignaling.endCall(widget.chatEntity.id.toString());
-    inCall = false;
-  }
-
-  // Handle incoming signaling messages
-  Future<void> _onSignalingMessage(dynamic message) async {
-    try {
-      final Map<String, dynamic> data = jsonDecode(message);
-
-      switch (data['type']) {
-        case 'offer':
-          final remoteOffer = RTCSessionDescription(
-              data['offer']['sdp'], data['offer']['type']);
-          await peerConnection?.setRemoteDescription(remoteOffer);
-
-          // Create an answer
-          final RTCSessionDescription? answer =
-              await peerConnection?.createAnswer();
-
-          await peerConnection?.setLocalDescription(answer!);
-          signalingServer.sink.add(jsonEncode({
-            'type': 'answer',
-            'answer': answer!.toMap(),
-          }));
-
-          break;
-        case 'answer':
-          final remoteAnswer = RTCSessionDescription(
-              data['answer']['sdp'], data['answer']['type']);
-          await peerConnection?.setRemoteDescription(remoteAnswer);
-          break;
-
-        case 'candidate':
-          final candidate = RTCIceCandidate(
-            data['candidate']['candidate'],
-            data['candidate']['sdpMid'],
-            data['candidate']['sdpMLineIndex'],
-          );
-
-          await peerConnection?.addCandidate(candidate);
-
-          break;
-
-        default:
-          print('Unknown message type: ${data['type']}');
-      }
-    } catch (e) {
-      print('Error handling signaling message: $e');
-    }
+    super.dispose();
   }
 
   @override
@@ -277,8 +190,6 @@ class _WebRTCClientState extends State<CallPage> {
                                 child: IconButton(
                                     onPressed: () {
                                       endWebRTCcall();
-                                      webRTCSignaling.endCall(
-                                          widget.chatEntity.id.toString());
                                       context.canPop() ? context.pop() : null;
                                     },
                                     icon: const CircleAvatar(
@@ -321,45 +232,14 @@ class _WebRTCClientState extends State<CallPage> {
           ),
         ]));
   }
-Future<void> shareScreen() async {
-  try {
-    // Replace the current media stream with the screen share stream
-    final MediaStream screenStream = await navigator.mediaDevices.getDisplayMedia({
-      'video': true,
-      'audio': true,
-    });
-
-    // Update the UI to show the shared screen in the local video renderer
-    setState(() {
-      _localVideoTrack?.enabled = false; 
-      localRenderer.srcObject = screenStream;
-    });
-
-    // Replace the video track in the peer connection
-    final videoTrack = screenStream.getVideoTracks().first;
-   (await peerConnection?.getSenders())!.forEach((sender) async {
-      if (sender.track?.kind == 'video') {
-        await sender.replaceTrack(videoTrack);
-      }
-    });
-    
-  } catch (e) {
-    print('Error sharing screen: $e');
+  Future<void> shareScreen() async {
+    await _webRtcService.shareScreen();
   }
-}
-
 
   void _toggleCamera() {
-    if (isCameraVisible) {
-      // Stop the camera (video track)
-      _localVideoTrack?.enabled = false;
-    } else {
-      // Start the camera (video track)
-      _localVideoTrack?.enabled = true;
-    }
-
     setState(() {
       isCameraVisible = !isCameraVisible;
     });
+    _webRtcService.toggleCamera(isCameraVisible);
   }
 }

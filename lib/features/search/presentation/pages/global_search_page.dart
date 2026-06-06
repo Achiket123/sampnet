@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/chats/domain/entities/chat_entity.dart';
+import 'package:hackathon/features/chats/domain/entities/chat_participant_entity.dart';
 import 'package:hackathon/features/chats/presentation/pages/chat_page.dart';
+import 'package:hackathon/globals/constants/user.dart' as user;
 import 'package:hackathon/features/employees/presentation/pages/employee_profile_page.dart';
 import 'package:hackathon/features/projects/presentation/pages/project_detail_page.dart';
 import 'package:hackathon/features/research/presentation/pages/research_detail_page.dart';
@@ -29,7 +31,14 @@ class _GlobalSearchPageState extends State<GlobalSearchPage> {
   late final TextEditingController _controller;
   late final SearchBloc _bloc;
 
-  static const _filterTypes = ['task', 'project', 'team', 'employee', 'chat', 'research'];
+  static const _filterTypes = [
+    'task',
+    'project',
+    'team',
+    'employee',
+    'chat',
+    'research'
+  ];
 
   List<String> _selectedTypes = [];
 
@@ -65,7 +74,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage> {
   void _navigateTo(BuildContext context, SearchResultItem item) {
     switch (item.type) {
       case 'task':
-        context.push('${TaskDetailPage.routeName}/${item.id}');
+        context.push('${TaskDetailPage.routePath}/${item.id}');
         break;
       case 'project':
         context.push('${ProjectDetailPage.routePath}/${item.id}');
@@ -80,12 +89,36 @@ class _GlobalSearchPageState extends State<GlobalSearchPage> {
         context.push('${ResearchDetailPage.routePath}/${item.id}');
         break;
       case 'chat':
+        final currentUserId = getIt<user.User>().user!.id;
+        final targetUserId = item.id;
+        final smallerId = currentUserId < targetUserId ? currentUserId : targetUserId;
+        final largerId = currentUserId > targetUserId ? currentUserId : targetUserId;
+        final roomId = 'dm_${smallerId}_${largerId}';
+
         final chat = ChatEntity(
           id: item.id,
-          firstName: item.title.split(' ').first,
-          lastName:
-              item.title.split(' ').length > 1 ? item.title.split(' ').last : '',
-          numberOfMessage: 0,
+          roomId: roomId,
+          organisationId: getIt<user.User>().organisation?.id ?? 0,
+          isGroup: false,
+          createdBy: getIt<user.User>().user!.id,
+          participants: [
+            ChatParticipantEntity(
+              userId: item.id,
+              chatId: item.id,
+              unreadCount: 0,
+              lastReadMessageId: 0,
+              firstName: item.title.split(' ').first,
+              lastName: item.title.split(' ').length > 1
+                  ? item.title.split(' ').last
+                  : '',
+              joinedAt: DateTime.now(),
+            )
+          ],
+          lastMessageAt: DateTime.now(),
+          lastMessage: '',
+          messageCount: 0,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
         );
         context.push(ChatPage.routePath, extra: chat);
         break;
@@ -254,8 +287,8 @@ class _TypeFilterRow extends StatelessWidget {
             selected: isSelected,
             selectedColor: ColorPallete.greenPrimary,
             backgroundColor: ColorPallete.blackSecondary,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             onSelected: (_) => onTap(type),
           );
         },
@@ -279,7 +312,8 @@ class _EmptyState extends StatelessWidget {
           Text(
             'Search across tasks, projects,\nteams, employees and chats',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14),
+            style:
+                TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14),
           ),
         ],
       ),
@@ -416,8 +450,8 @@ class _SearchResultTile extends StatelessWidget {
       subtitle: item.subtitle.isNotEmpty
           ? Text(
               item.subtitle,
-              style: TextStyle(
-                  color: Colors.white.withOpacity(0.5), fontSize: 12),
+              style:
+                  TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             )

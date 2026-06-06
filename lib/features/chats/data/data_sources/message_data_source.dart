@@ -9,8 +9,20 @@ import 'package:hackathon/globals/constants/user.dart' as user;
 import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:hackathon/services/api_client.dart';
 
+class MessageCursorPage {
+  final List<MessageModel> messages;
+  final String nextCursor;
+  final bool hasMore;
+
+  MessageCursorPage({
+    required this.messages,
+    required this.nextCursor,
+    required this.hasMore,
+  });
+}
+
 abstract class MessageDataSource {
-  Stream<List<MessageModel>> getMessages(String id);
+  Future<MessageCursorPage> getMessages(String id, {String? cursor, int limit = 30});
   Future<Either<ErrorModel, MessageModel>> sendMessage(MessageParams message);
 }
 
@@ -19,25 +31,38 @@ class MessageDataSourceImpl implements MessageDataSource {
   MessageDataSourceImpl({required this.apiClient});
 
   @override
-  Stream<List<MessageModel>> getMessages(String id) async* {
-    yield* Stream.periodic(const Duration(seconds: 3)).asyncMap<List<MessageModel>>((_) async {
-      try {
-        final response = await apiClient.get(ApiConstants.getMessages(id));
-        if (response.statusCode == 200) {
-          final decoded = jsonDecode(response.body);
-          final List<dynamic> data = decoded is Map && decoded.containsKey('messages')
-              ? (decoded['messages'] ?? [])
-              : (decoded is List ? decoded : []);
-          final List<MessageModel> msgList = data.map((doc) => MessageModel.fromMap(doc)).toList();
-          msgList.sort((a, b) => a.timeStamp.compareTo(b.timeStamp));
-          return msgList;
-        }
-        return <MessageModel>[];
-      } catch (e) {
-        debugPrint(e.toString());
-        return <MessageModel>[];
+  Future<MessageCursorPage> getMessages(String id, {String? cursor, int limit = 30}) async {
+    try {
+      String url = '${ApiConstants.getMessages(id)}?limit=$limit';
+      if (cursor != null && cursor.isNotEmpty) {
+        url += '&cursor=${Uri.encodeComponent(cursor)}';
       }
-    });
+      final response = await apiClient.get(url);
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        final List<dynamic> data = decoded is Map && decoded.containsKey('messages')
+            ? (decoded['messages'] ?? [])
+            : (decoded is List ? decoded : []);
+        final List<MessageModel> msgList = data.map((doc) => MessageModel.fromMap(doc)).toList();
+        
+        String nextCursor = '';
+        bool hasMore = false;
+        if (decoded is Map) {
+          nextCursor = decoded['next_cursor'] ?? '';
+          hasMore = decoded['has_more'] ?? false;
+        }
+
+        return MessageCursorPage(
+          messages: msgList,
+          nextCursor: nextCursor,
+          hasMore: hasMore,
+        );
+      }
+      return MessageCursorPage(messages: [], nextCursor: '', hasMore: false);
+    } catch (e) {
+      debugPrint(e.toString());
+      return MessageCursorPage(messages: [], nextCursor: '', hasMore: false);
+    }
   }
 
   @override
@@ -45,20 +70,19 @@ class MessageDataSourceImpl implements MessageDataSource {
       MessageParams message) async {
     try {
       final data = {
-        "sender_id": message.senderId,
+        "room_id": message.roomId,
         "receiver_id": message.receiverId,
         "message": message.message,
-        "time_stamp": message.timeStamp.toUtc().toIso8601String()
+        "message_type": "text",
       };
+      
+      debugPrint("SENDING MESSAGE PAYLOAD: $data");
 
       final response =
           await apiClient.post(ApiConstants.sendMessage, body: data);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final decoded = jsonDecode(response.body);
-        final Map<String, dynamic> msgData = decoded is Map && decoded.containsKey('message')
-            ? decoded['message']
-            : decoded;
+        final Map<String, dynamic> msgData = jsonDecode(response.body);
         return right(MessageModel.fromMap(msgData));
       } else {
         return left(ErrorModel(message: 'Failed to send message'));

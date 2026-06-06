@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 
 class TaskDetailPage extends StatefulWidget {
   static const String routeName = "/task-detail/:taskId";
+  static const String routePath = "/task-detail";
   final int taskId;
 
   const TaskDetailPage({super.key, required this.taskId});

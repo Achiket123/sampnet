@@ -18,8 +18,14 @@ class WebsocketService {
   final ValueNotifier<List<int>> onlineUsersNotifier = ValueNotifier<List<int>>([]);
   final StreamController<NotificationEntity> _notificationStreamController =
       StreamController<NotificationEntity>.broadcast();
+  final StreamController<dynamic> _messageStreamController =
+      StreamController<dynamic>.broadcast();
+  final StreamController<dynamic> _callStreamController =
+      StreamController<dynamic>.broadcast();
 
   Stream<NotificationEntity> get notificationStream => _notificationStreamController.stream;
+  Stream<dynamic> get messageStream => _messageStreamController.stream;
+  Stream<dynamic> get callStream => _callStreamController.stream;
 
   WebsocketService({required this.user});
 
@@ -33,7 +39,7 @@ class WebsocketService {
       return;
     }
 
-    final wsUri = Uri.parse("${ApiConstants.websocketBaseUrl}/notifications/ws?token=$token");
+    final wsUri = Uri.parse("${ApiConstants.websocketBaseUrl}/ws?token=$token");
     debugPrint("WebsocketService: Connecting to $wsUri");
 
     try {
@@ -60,9 +66,39 @@ class WebsocketService {
     }
   }
 
+  void sendWebSocketMessage(Map<String, dynamic> data) {
+    if (_isConnected && _channel != null) {
+      _channel!.sink.add(jsonEncode(data));
+      debugPrint("WebsocketService: Sent ${data['type']}");
+    }
+  }
+
+  void subscribeRoom(String roomId) {
+    if (_isConnected && _channel != null) {
+      final subMsg = jsonEncode({
+        "type": "subscribe_room",
+        "room_id": roomId,
+      });
+      _channel!.sink.add(subMsg);
+      debugPrint("WebsocketService: Sent subscribe_room for $roomId");
+    }
+  }
+
   void _handleMessage(dynamic message) {
     try {
       final Map<String, dynamic> data = jsonDecode(message);
+      
+      final type = data['type'] as String?;
+      if (type == 'chat_message') {
+        _messageStreamController.add(data['payload']);
+        debugPrint("WebsocketService: Received chat message");
+        return;
+      } else if (type == 'call_incoming' || type == 'call_accepted' || type == 'call_rejected' || type == 'call_ended' || type == 'ice_candidate' || type == 'call_offer' || type == 'call_answer') {
+        _callStreamController.add(data);
+        debugPrint("WebsocketService: Received call event: $type");
+        return;
+      }
+
       if (data.containsKey('online_users')) {
         final List<dynamic> users = data['online_users'];
         onlineUsersNotifier.value = users.map((e) => e as int).toList();

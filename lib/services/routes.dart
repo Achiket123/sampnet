@@ -52,6 +52,7 @@ import 'package:hackathon/widgets/error_page.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:jwt_io/jwt_io.dart';
 import 'package:hackathon/services/websocket_service.dart';
+import 'package:hackathon/services/incoming_call_overlay_service.dart';
 
 final GoRouter route = GoRouter(
   initialLocation: initRoute(),
@@ -206,7 +207,7 @@ final GoRouter route = GoRouter(
           }
 
           return CallPage(
-            chatEntity: ChatModel.fromEntity(extra['chat']),
+            chatEntity: extra['chat'] as ChatEntity,
             isCalling: extra['isCalling'],
           );
         },
@@ -512,6 +513,7 @@ String handleToken(dynamic token) {
 
     if (getIt<User>().employee != null && getIt<User>().organisation != null) {
       getIt<WebsocketService>().connect();
+      getIt<IncomingCallOverlayService>(); // Initialize the service so it listens to call events
       return Dashboard.routePath;
     }
 

@@ -13,6 +13,7 @@ import 'package:hackathon/features/chats/data/models/chat_model.dart';
 import 'package:hackathon/features/chats/data/models/message_model.dart';
 import 'package:hackathon/features/chats/domain/entities/chat_entity.dart';
 import 'package:hackathon/features/chats/domain/entities/message_entity.dart';
+import 'package:hackathon/features/chats/domain/repositories/message_repository.dart';
 import 'package:hackathon/features/chats/domain/use_cases/message_usecase.dart';
 import 'package:hackathon/features/chats/presentation/blocs/chat_bloc/chat_bloc_bloc.dart';
 import 'package:hackathon/features/chats/presentation/blocs/message_bloc/message_bloc.dart';
@@ -53,7 +54,12 @@ class _ChatPageState extends State<ChatPage> {
     if (widget.initialChat != null) {
       isChatSelected = true;
       selectedChat = widget.initialChat;
-      selectedChatName = "${widget.initialChat!.firstName} ${widget.initialChat!.lastName}";
+      selectedChatName = widget.initialChat!.isGroup
+          ? (widget.initialChat!.name ?? "Group Chat")
+          : (widget.initialChat!.participants.isNotEmpty
+              ? "${widget.initialChat!.participants.first.firstName ?? ''} ${widget.initialChat!.participants.first.lastName ?? ''}".trim()
+              : "Unknown User");
+      getIt<MessageRepository>().fetchInitialMessages(widget.initialChat!.roomId);
     }
   }
 
@@ -113,29 +119,31 @@ class _ChatPageState extends State<ChatPage> {
                                 chats[index].id.toString(),
                               );
                               // d.debugPrint(getIt<User>().user.id.toString(), );
-                              if (chats[index].id != getIt<User>().user!.id) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    if (selectedChat?.id == chats[index].id) {
-                                      setState(() {
-                                        isChatSelected = false;
-                                        selectedChatName = "";
-                                        selectedChat = null;
-                                      });
-                                      return;
-                                    }
+                              return GestureDetector(
+                                onTap: () {
+                                  if (selectedChat?.id == chats[index].id) {
                                     setState(() {
-                                      isChatSelected = true;
-                                      selectedChatName = chats[index].firstName;
-                                      selectedChat = chats[index];
+                                      isChatSelected = false;
+                                      selectedChatName = "";
+                                      selectedChat = null;
                                     });
-                                  },
-                                  child: ChatTiles(
-                                    chatEntity: chats[index],
-                                  ),
-                                );
-                              }
-                              return const SizedBox.shrink();
+                                    return;
+                                  }
+                                  setState(() {
+                                    isChatSelected = true;
+                                    selectedChatName = chats[index].isGroup
+                                        ? (chats[index].name ?? "Group Chat")
+                                        : (chats[index].participants.isNotEmpty
+                                            ? "${chats[index].participants.first.firstName ?? ''} ${chats[index].participants.first.lastName ?? ''}".trim()
+                                            : "Unknown User");
+                                    selectedChat = chats[index];
+                                  });
+                                  getIt<MessageRepository>().fetchInitialMessages(chats[index].roomId);
+                                },
+                                child: ChatTiles(
+                                  chatEntity: chats[index],
+                                ),
+                              );
                             }),
                       );
                     } else {
@@ -185,7 +193,7 @@ class _ChatPageState extends State<ChatPage> {
                                   child: const Icon(Icons.call),
                                   onTap: () {
                                     context.push(CallPage.routePath, extra: {
-                                      "isCalling": false,
+                                      "isCalling": true,
                                       'chat': selectedChat
                                     });
                                   },
@@ -206,11 +214,11 @@ class _ChatPageState extends State<ChatPage> {
                                   }
                                 },
                                 child: Expanded(
-                                    child: StreamBuilder<List<MessageModel>>(
-                                  stream: getIt<MessageDataSource>()
-                                      .getMessages(selectedChat!.id.toString()),
+                                    child: StreamBuilder<List<MessageEntity>>(
+                                  stream: getIt<MessageRepository>()
+                                      .getMessages(selectedChat!.roomId),
                                   builder: ((BuildContext context,
-                                      AsyncSnapshot<List<MessageModel>> snapshot) {
+                                      AsyncSnapshot<List<MessageEntity>> snapshot) {
                                     if (snapshot.hasError) {
                                       return Text(snapshot.error.toString());
                                     }
@@ -221,7 +229,7 @@ class _ChatPageState extends State<ChatPage> {
                                     }
                                     if (snapshot.hasData &&
                                         snapshot.data != null) {
-                                      final List<MessageModel> data = List<MessageModel>.from(snapshot.data!);
+                                      final List<MessageEntity> data = List<MessageEntity>.from(snapshot.data!);
                                       // _scrollController.jumpTo(_scrollController
                                       //     .position.maxScrollExtent);
                                       WidgetsBinding.instance
@@ -273,12 +281,13 @@ class _ChatPageState extends State<ChatPage> {
                                             GestureDetector(
                                               child: const Icon(Icons.send),
                                               onTap: () {
+                                                final text = controller.text.trim();
+                                                if (text.isEmpty) return; // Don't send empty messages
+
                                                 context.read<MessageBloc>().add(
                                                     SendMessageEvent(
                                                         messageParams: MessageParams(
-                                                            message: controller
-                                                                .text
-                                                                .trim(),
+                                                            message: text,
                                                             senderId:
                                                                 getIt<User>()
                                                                     .user!
@@ -288,10 +297,11 @@ class _ChatPageState extends State<ChatPage> {
                                                                 selectedChat!.id
                                                                     .toString(),
                                                             receiverName:
-                                                                selectedChat!
-                                                                    .firstName,
+                                                                selectedChatName,
                                                             isSender: true,
-                                                            timeStamp:
+                                                            roomId: selectedChat!
+                                                                .roomId,
+                                                            createdAt:
                                                                 DateTime.now(),
                                                             senderName: getIt<
                                                                     User>()

@@ -14,8 +14,9 @@ import 'package:hackathon/features/employees/presentation/widgets/employee_card_
 import 'package:hackathon/features/employees/presentation/widgets/employee_search_bar.dart';
 import 'package:hackathon/features/employees/presentation/widgets/promote_to_manager_dialog.dart';
 import 'package:hackathon/features/chats/domain/entities/chat_entity.dart';
+import 'package:hackathon/features/chats/domain/entities/chat_participant_entity.dart';
 import 'package:hackathon/features/chats/presentation/pages/chat_page.dart';
-import 'package:hackathon/globals/constants/user.dart';
+import 'package:hackathon/globals/constants/user.dart' as user;
 
 class EmployeesListPage extends StatefulWidget {
   static const String routePath = '/employees';
@@ -33,9 +34,9 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
   }
   @override
   Widget build(BuildContext context) {
-    final user = getIt<User>();
-    final orgId = user.organisation?.id;
-    final userRole = getIt<User>().role;
+    final userInstance = getIt<user.User>();
+    final orgId = userInstance.organisation?.id;
+    final userRole = getIt<user.User>().role;
 
     return BlocProvider(
       create: (context) => getIt<EmployeesListBloc>()..add(EmployeesListLoadRequested(orgId ?? 0)),
@@ -122,7 +123,7 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
                             userRole: userRole,
                             isDeleting: state.deletingEmployeeId == employee.userId,
                             onTap: () {
-                              final currentUserId = getIt<User>().user?.id;
+                              final currentUserId = getIt<user.User>().user?.id;
                               if (userRole == 'boss' || userRole == 'manager' || employee.userId == currentUserId) {
                                 context.push('${EmployeeProfilePage.routePath}/${employee.userId}');
                               } else {
@@ -169,14 +170,34 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
         context.push('${EmployeeProfilePage.routePath}/${employee.userId}');
         break;
       case 'chat':
+        final currentUserId = getIt<user.User>().user!.id;
+        final targetUserId = employee.userId;
+        final smallerId = currentUserId < targetUserId ? currentUserId : targetUserId;
+        final largerId = currentUserId > targetUserId ? currentUserId : targetUserId;
+        final roomId = 'dm_${smallerId}_${largerId}';
+
         final chat = ChatEntity(
           id: employee.userId,
-          firstName: employee.user.firstName,
-          lastName: employee.user.lastName,
-          email: employee.user.email,
-          numberOfMessage: 0,
-          lastMessageTimestamp: DateTime.now(),
+          roomId: roomId,
+          organisationId: getIt<user.User>().organisation?.id ?? 0,
+          isGroup: false,
+          createdBy: currentUserId,
+          participants: [
+            ChatParticipantEntity(
+              userId: targetUserId,
+              chatId: targetUserId,
+              unreadCount: 0,
+              lastReadMessageId: 0,
+              firstName: employee.user.firstName,
+              lastName: employee.user.lastName,
+              joinedAt: DateTime.now(),
+            )
+          ],
+          lastMessageAt: DateTime.now(),
           lastMessage: '',
+          messageCount: 0,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
         );
         context.push(ChatPage.routePath, extra: chat);
         break;
