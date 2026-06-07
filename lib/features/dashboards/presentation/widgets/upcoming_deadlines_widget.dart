@@ -9,7 +9,7 @@ class UpcomingDeadlinesWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorPallete.background2[0].withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -18,7 +18,7 @@ class UpcomingDeadlinesWidget extends StatelessWidget {
           Text(
             "Upcoming Deadlines",
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: ColorPallete.white,
+                  color: ColorPallete.textPrimary,
                   fontWeight: FontWeight.bold,
                 ),
           ),
@@ -32,9 +32,9 @@ class UpcomingDeadlinesWidget extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.redAccent.withOpacity(0.1),
+                  color: ColorPallete.error.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+                  border: Border.all(color: ColorPallete.error.withOpacity(0.3)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -42,12 +42,12 @@ class UpcomingDeadlinesWidget extends StatelessWidget {
                     Expanded(
                       child: Text(
                         "Project Proposal Submission",
-                        style: const TextStyle(color: ColorPallete.white, fontSize: 13),
+                        style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 13),
                       ),
                     ),
                     Text(
                       "In 2 days",
-                      style: const TextStyle(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: ColorPallete.error, fontSize: 11, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

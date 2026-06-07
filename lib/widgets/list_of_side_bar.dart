@@ -10,5 +10,6 @@ class ListOfSideBar {
     'Research',
     'Projects',
     'Calendar', 
+    'Analytics',
   ];
 }

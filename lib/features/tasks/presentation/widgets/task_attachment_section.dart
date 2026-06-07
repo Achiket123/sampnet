@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:html' as html;
 import 'dart:typed_data';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class TaskAttachmentSection extends StatefulWidget {
   final List<TaskAttachmentEntity> attachments;
@@ -43,7 +44,7 @@ class _TaskAttachmentSectionState extends State<TaskAttachmentSection> {
         if (widget.attachments.isEmpty && !widget.isUploading)
           const Text(
             "No attachments yet",
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+            style: TextStyle(color: ColorPallete.textSecondary, fontSize: 14),
           )
         else
           ListView.builder(
@@ -56,7 +57,7 @@ class _TaskAttachmentSectionState extends State<TaskAttachmentSection> {
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Row(
                   children: [
-                    const Icon(Icons.attach_file, color: Colors.blue),
+                    const Icon(Icons.attach_file, color: ColorPallete.redPrimary),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
@@ -68,13 +69,13 @@ class _TaskAttachmentSectionState extends State<TaskAttachmentSection> {
                           ),
                           Text(
                             "Uploaded by ${attachment.uploaderDisplayName} on ${DateFormat('MMM dd, yyyy').format(attachment.createdAt)}",
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            style: const TextStyle(fontSize: 12, color: ColorPallete.textSecondary),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.download, color: Colors.blue),
+                      icon: const Icon(Icons.download, color: ColorPallete.redPrimary),
                       onPressed: () async {
                         final url = Uri.parse(ApiConstants.getFileById(attachment.fileId.toString()));
                         if (await canLaunchUrl(url)) {
@@ -84,7 +85,7 @@ class _TaskAttachmentSectionState extends State<TaskAttachmentSection> {
                     ),
                     if (attachment.uploadedBy == widget.currentUserId)
                       IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete, color: ColorPallete.error),
                         onPressed: () => widget.onRemoveAttachment(attachment.id),
                       ),
                   ],

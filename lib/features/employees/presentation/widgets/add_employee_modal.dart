@@ -7,6 +7,7 @@ import 'package:hackathon/features/employees/presentation/blocs/employees_list_b
 import 'package:hackathon/features/employees/presentation/blocs/employees_list_bloc/employees_list_event.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/dependency_injection.g.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class AddEmployeeModal extends StatelessWidget {
   const AddEmployeeModal({super.key});
@@ -46,10 +47,10 @@ class AddEmployeeModal extends StatelessWidget {
                     children: [
                       const Text(
                         'Add New Employee',
-                        style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: ColorPallete.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white70),
+                        icon: const Icon(Icons.close, color: ColorPallete.textSecondary),
                         onPressed: () {
                           modalContext.read<AddEmployeeBloc>().add(AddEmployeeFormReset());
                           Navigator.pop(modalContext);
@@ -103,13 +104,13 @@ class AddEmployeeModal extends StatelessWidget {
                               ? null
                               : () => modalContext.read<AddEmployeeBloc>().add(AddEmployeeSubmitRequested()),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blueAccent,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: Colors.blueAccent.withValues(alpha: 0.3),
+                            backgroundColor: ColorPallete.redPrimary,
+                            foregroundColor: ColorPallete.textPrimary,
+                            disabledBackgroundColor: ColorPallete.redPrimary.withValues(alpha: 0.3),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
                           child: isSubmitting
-                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: ColorPallete.textPrimary))
                               : const Text('Add Employee', style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                       );
@@ -137,12 +138,9 @@ class AddEmployeeModal extends StatelessWidget {
         TextField(
           onChanged: onChanged,
           keyboardType: keyboardType,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: ColorPallete.textPrimary),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
-            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white10)),
-            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
           ),
         ),
         BlocBuilder<AddEmployeeBloc, AddEmployeeState>(
@@ -152,7 +150,7 @@ class AddEmployeeModal extends StatelessWidget {
             if (error == null) return const SizedBox(height: 16);
             return Padding(
               padding: const EdgeInsets.only(top: 4, bottom: 8),
-              child: Text(error, style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+              child: Text(error, style: const TextStyle(color: ColorPallete.error, fontSize: 12)),
             );
           },
         ),

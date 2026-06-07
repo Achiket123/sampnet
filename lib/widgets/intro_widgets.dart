@@ -15,10 +15,10 @@ class IntroWidgets extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: const Color.fromARGB(255, 54, 54, 54),
+          color: ColorPallete.backgroundPrimary,
           boxShadow: const [
             BoxShadow(
-                color: Colors.black,
+                color: ColorPallete.backgroundSecondary,
                 blurRadius: 3,
                 blurStyle: BlurStyle.outer,
                 spreadRadius: 2)
@@ -38,7 +38,7 @@ class IntroWidgets extends StatelessWidget {
             child: NavArrowButton(
               text: ">",
               onpressed: onTap,
-              color: ColorPallete.blackPrimary,
+              color: ColorPallete.backgroundPrimary,
             ),
           )
         ],

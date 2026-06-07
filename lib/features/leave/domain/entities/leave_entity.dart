@@ -48,3 +48,41 @@ class Leave extends Equatable {
         updatedAt,
       ];
 }
+
+class LeaveSummaryEntity extends Equatable {
+  final int totalLeavesTaken;
+  final int approvedLeaves;
+  final int pendingLeaves;
+  final int rejectedLeaves;
+  final Map<String, int> leavesByType;
+
+  const LeaveSummaryEntity({
+    required this.totalLeavesTaken,
+    required this.approvedLeaves,
+    required this.pendingLeaves,
+    required this.rejectedLeaves,
+    required this.leavesByType,
+  });
+
+  @override
+  List<Object?> get props => [
+        totalLeavesTaken,
+        approvedLeaves,
+        pendingLeaves,
+        rejectedLeaves,
+        leavesByType,
+      ];
+}
+
+class LeaveHistoryEntity extends Equatable {
+  final List<Leave> records;
+  final LeaveSummaryEntity summary;
+
+  const LeaveHistoryEntity({
+    required this.records,
+    required this.summary,
+  });
+
+  @override
+  List<Object?> get props => [records, summary];
+}

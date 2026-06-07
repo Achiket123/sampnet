@@ -34,7 +34,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
       child: Scaffold(
         backgroundColor: const Color(0xFF121212), // Deep premium background
         appBar: AppBar(
-          backgroundColor: Colors.red,
+          backgroundColor: ColorPallete.error,
           elevation: 0,
           title: BlocBuilder<TaskDetailBloc, TaskDetailState>(
             builder: (context, state) {
@@ -53,7 +53,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                     state.task!.assignedBy == currentUserId) {
                   return IconButton(
                     icon: const Icon(Icons.delete_outline,
-                        color: Colors.redAccent),
+                        color: ColorPallete.error),
                     onPressed: () => _showDeleteConfirmation(context),
                   );
                 }
@@ -103,10 +103,10 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.error_outline,
-                          size: 48, color: Colors.red.shade300),
+                          size: 48, color: ColorPallete.error.withOpacity(0.6)),
                       const SizedBox(height: 16),
                       Text("Error: ${state.taskError}",
-                          style: const TextStyle(color: Colors.white70)),
+                          style: const TextStyle(color: ColorPallete.textSecondary)),
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
@@ -136,7 +136,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                       style: const TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: ColorPallete.textPrimary,
                           height: 1.2),
                     ),
                     const SizedBox(height: 12),
@@ -144,7 +144,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                       task.description ?? "No description provided",
                       style: TextStyle(
                           fontSize: 15,
-                          color: Colors.grey.shade400,
+                          color: ColorPallete.textSecondary,
                           height: 1.4),
                     ),
                     const SizedBox(height: 20),
@@ -157,7 +157,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                         _buildBadge(task.status, _getStatusColor(task.status)),
                         _buildBadge(
                             task.priority, _getPriorityColor(task.priority)),
-                        _buildBadge(task.type, Colors.blueGrey.shade400),
+                        _buildBadge(task.type, ColorPallete.textSecondary),
                       ],
                     ),
                     const SizedBox(height: 28),
@@ -165,7 +165,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                     // --- ASSIGNMENT & TIMELINE CARD ---
                     _buildSectionHeading("Details"),
                     Card(
-                      color: const Color(0xFF1E1E1E),
+                      color: ColorPallete.backgroundTertiary,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16)),
                       margin: EdgeInsets.zero,
@@ -178,25 +178,25 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                                 task.assignedUser?.firstName,
                                 task.assignedUser?.lastName,
                                 task.assignedUser?.profilePic),
-                            const Divider(color: Colors.white10, height: 24),
+                            const Divider(color: ColorPallete.divider, height: 24),
                             _buildUserRow(
                                 "Assigned By",
                                 task.assignedByUser?.firstName,
                                 task.assignedByUser?.lastName,
                                 task.assignedByUser?.profilePic),
-                            const Divider(color: Colors.white10, height: 24),
+                            const Divider(color: ColorPallete.divider, height: 24),
                             _buildMetaInfoRow(
                                 Icons.calendar_today_rounded,
                                 "Due Date",
                                 DateFormat('MMM dd, yyyy')
                                     .format(task.dueDate)),
                             if (task.team != null) ...[
-                              const Divider(color: Colors.white10, height: 24),
+                              const Divider(color: ColorPallete.divider, height: 24),
                               _buildMetaInfoRow(Icons.group_work_rounded,
                                   "Team", task.team!.name),
                             ],
                             if (task.project != null) ...[
-                              const Divider(color: Colors.white10, height: 24),
+                              const Divider(color: ColorPallete.divider, height: 24),
                               _buildMetaInfoRow(Icons.folder_open_rounded,
                                   "Project", task.project!.name),
                             ],
@@ -262,7 +262,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
         style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.white54,
+            color: ColorPallete.textSecondary,
             letterSpacing: 0.5),
       ),
     );
@@ -291,14 +291,14 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   Widget _buildMetaInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: Colors.white38),
+        Icon(icon, size: 20, color: ColorPallete.textDisabled),
         const SizedBox(width: 12),
         Text(label,
-            style: const TextStyle(color: Colors.white54, fontSize: 14)),
+            style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 14)),
         const Spacer(),
         Text(value,
             style: const TextStyle(
-                color: Colors.white,
+                color: ColorPallete.textPrimary,
                 fontSize: 14,
                 fontWeight: FontWeight.w500)),
       ],
@@ -311,30 +311,30 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     return Row(
       children: [
         const Icon(Icons.assignment_ind_outlined,
-            size: 20, color: Colors.white38),
+            size: 20, color: ColorPallete.textDisabled),
         const SizedBox(width: 12),
         Text(label,
-            style: const TextStyle(color: Colors.white54, fontSize: 14)),
+            style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 14)),
         const Spacer(),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             CircleAvatar(
               radius: 12,
-              backgroundColor: Colors.white12,
+              backgroundColor: ColorPallete.textPrimary.withOpacity(0.12),
               backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
                   ? NetworkImage(avatarUrl)
                   : null,
               child: avatarUrl == null || avatarUrl.isEmpty
                   ? Text(fullName.isNotEmpty ? fullName[0].toUpperCase() : '?',
-                      style: const TextStyle(fontSize: 10, color: Colors.white))
+                      style: const TextStyle(fontSize: 10, color: ColorPallete.textPrimary))
                   : null,
             ),
             const SizedBox(width: 8),
             Text(
               fullName.isNotEmpty ? fullName : "Unassigned",
               style: const TextStyle(
-                  color: Colors.white,
+                  color: ColorPallete.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.w500),
             ),
@@ -354,19 +354,19 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
+        color: ColorPallete.backgroundTertiary,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: ColorPallete.divider),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: statusOptions.contains(task.status) ? task.status : 'Pending',
           isExpanded: true,
-          dropdownColor: const Color(0xFF1E1E1E),
+          dropdownColor: ColorPallete.backgroundTertiary,
           style: const TextStyle(
-              color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+              color: ColorPallete.textPrimary, fontSize: 15, fontWeight: FontWeight.w500),
           icon: const Icon(Icons.keyboard_arrow_down_rounded,
-              color: Colors.white54),
+              color: ColorPallete.textSecondary),
           items: statusOptions.map((s) {
             return DropdownMenuItem(
               value: s,
@@ -399,26 +399,26 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Done':
-        return Colors.greenAccent;
+        return ColorPallete.statusColor('approved');
       case 'In Progress':
-        return Colors.orangeAccent;
+        return ColorPallete.statusColor('pending');
       case 'Blocked':
-        return Colors.redAccent;
+        return ColorPallete.error;
       default:
-        return Colors.grey;
+        return ColorPallete.textSecondary;
     }
   }
 
   Color _getPriorityColor(String priority) {
     switch (priority) {
       case 'High':
-        return Colors.redAccent;
+        return ColorPallete.error;
       case 'Medium':
-        return Colors.amberAccent;
+        return ColorPallete.statusColor('pending');
       case 'Low':
-        return Colors.greenAccent;
+        return ColorPallete.statusColor('approved');
       default:
-        return Colors.grey;
+        return ColorPallete.textSecondary;
     }
   }
 
@@ -426,21 +426,21 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E1E),
+        backgroundColor: ColorPallete.backgroundTertiary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text("Delete Task", style: TextStyle(color: Colors.white)),
+        title: const Text("Delete Task", style: TextStyle(color: ColorPallete.textPrimary)),
         content: const Text(
             "Are you sure you want to delete this task? This action cannot be undone.",
-            style: TextStyle(color: Colors.white70)),
+            style: TextStyle(color: ColorPallete.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child:
-                const Text("Cancel", style: TextStyle(color: Colors.white54)),
+                const Text("Cancel", style: TextStyle(color: ColorPallete.textSecondary)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: ColorPallete.error,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
             ),
@@ -449,7 +449,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
             },
             child: const Text("Delete",
                 style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
+                    color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

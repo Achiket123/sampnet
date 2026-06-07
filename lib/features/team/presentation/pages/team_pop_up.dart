@@ -30,7 +30,7 @@ class TeamPopUp extends StatelessWidget {
               maxWidth: screenWidth * 0.8,
             ),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: ColorPallete.background),
+              color: ColorPallete.backgroundPrimary,
               borderRadius: BorderRadius.circular(20),
             ),
             padding: const EdgeInsets.all(20),
@@ -63,11 +63,11 @@ class TeamPopUp extends StatelessWidget {
                         //   height: screenHeight * 0.3,
                         //   decoration: BoxDecoration(
                         //     border: Border.all(
-                        //       color: ColorPallete.black,
+                        //       color: ColorPallete.textSecondary,
                         //       width: 2,
                         //     ),
                         //     borderRadius: BorderRadius.circular(10),
-                        //     color: ColorPallete.blackTertiary,
+                        //     color: ColorPallete.backgroundTertiary,
                         //   ),
                         //   child: ListView.builder(
                         //     itemCount:state.teamMemory. team.projects != null
@@ -111,7 +111,7 @@ class TeamPopUp extends StatelessWidget {
                       margin: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: ColorPallete.blackSecondary),
+                          color: ColorPallete.backgroundSecondary),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -134,7 +134,7 @@ class TeamPopUp extends StatelessWidget {
                               WidgetStatePropertyAll(ColorPallete.redPrimary)),
                       child: Text(
                         "Delete",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: ColorPallete.textPrimary),
                       ),
                     )
                   ],
@@ -146,9 +146,9 @@ class TeamPopUp extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: ColorPallete.blackTertiary,
+                  color: ColorPallete.backgroundTertiary,
                   border: Border.all(
-                    color: ColorPallete.black,
+                    color: ColorPallete.textSecondary,
                     width: 2,
                   ),
                 ),
@@ -159,9 +159,9 @@ class TeamPopUp extends StatelessWidget {
                         margin: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: ColorPallete.black,
+                          color: ColorPallete.textSecondary,
                           border: Border.all(
-                            color: ColorPallete.black,
+                            color: ColorPallete.textSecondary,
                             width: 2,
                           ),
                         ),

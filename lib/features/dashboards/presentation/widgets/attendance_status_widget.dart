@@ -9,7 +9,7 @@ class AttendanceStatusWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorPallete.background2[0].withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -21,7 +21,7 @@ class AttendanceStatusWidget extends StatelessWidget {
               Text(
                 "Attendance",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: ColorPallete.white,
+                      color: ColorPallete.textPrimary,
                       fontWeight: FontWeight.bold,
                     ),
               ),
@@ -29,7 +29,7 @@ class AttendanceStatusWidget extends StatelessWidget {
               Text(
                 "Not Checked In", // TODO: Get actual status
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.redAccent,
+                      color: ColorPallete.error,
                     ),
               ),
             ],
@@ -39,8 +39,8 @@ class AttendanceStatusWidget extends StatelessWidget {
               // TODO: Navigate to attendance page
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent,
-              foregroundColor: Colors.white,
+              backgroundColor: ColorPallete.redPrimary,
+              foregroundColor: ColorPallete.textPrimary,
             ),
             child: const Text("Check In"),
           ),

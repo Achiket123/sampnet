@@ -9,7 +9,7 @@ class OrgInfoWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorPallete.background2[0].withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -18,7 +18,7 @@ class OrgInfoWidget extends StatelessWidget {
           Text(
             "Organization Overview",
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: ColorPallete.white,
+                  color: ColorPallete.textPrimary,
                   fontWeight: FontWeight.bold,
                 ),
           ),
@@ -50,14 +50,14 @@ class _OrgStat extends StatelessWidget {
         Text(
           value,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: ColorPallete.white,
+                color: ColorPallete.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
         ),
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: ColorPallete.white.withOpacity(0.6),
+                color: ColorPallete.textPrimary.withOpacity(0.6),
               ),
         ),
       ],

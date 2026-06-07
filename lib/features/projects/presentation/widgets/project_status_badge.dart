@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class ProjectStatusBadge extends StatelessWidget {
   final String text;
@@ -36,7 +37,7 @@ class ProjectStatusBadge extends StatelessWidget {
           bgColor = const Color(0xFF7F1D1D);   // Red-950
           break;
         default:
-          textColor = Colors.white70;
+          textColor = ColorPallete.textSecondary;
           bgColor = const Color(0xFF1E293B);   // Slate-800
       }
     } else {
@@ -64,7 +65,7 @@ class ProjectStatusBadge extends StatelessWidget {
           bgColor = const Color(0xFF7F1D1D);   // Red-950
           break;
         default:
-          textColor = Colors.white70;
+          textColor = ColorPallete.textSecondary;
           bgColor = const Color(0xFF1E293B);
       }
     }

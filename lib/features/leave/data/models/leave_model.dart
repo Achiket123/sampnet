@@ -45,3 +45,37 @@ class LeaveModel extends Leave {
     };
   }
 }
+
+class LeaveSummaryModel extends LeaveSummaryEntity {
+  const LeaveSummaryModel({
+    required super.totalLeavesTaken,
+    required super.approvedLeaves,
+    required super.pendingLeaves,
+    required super.rejectedLeaves,
+    required super.leavesByType,
+  });
+
+  factory LeaveSummaryModel.fromJson(Map<String, dynamic> json) {
+    return LeaveSummaryModel(
+      totalLeavesTaken: json['total_leaves_taken'] ?? 0,
+      approvedLeaves: json['approved'] ?? 0,
+      pendingLeaves: json['pending'] ?? 0,
+      rejectedLeaves: json['rejected'] ?? 0,
+      leavesByType: Map<String, int>.from(json['leaves_by_type'] ?? {}),
+    );
+  }
+}
+
+class LeaveHistoryModel extends LeaveHistoryEntity {
+  const LeaveHistoryModel({
+    required super.records,
+    required super.summary,
+  });
+
+  factory LeaveHistoryModel.fromJson(Map<String, dynamic> json) {
+    return LeaveHistoryModel(
+      records: (json['records'] as List?)?.map((e) => LeaveModel.fromJson(e)).toList() ?? [],
+      summary: LeaveSummaryModel.fromJson(json['summary'] ?? {}),
+    );
+  }
+}

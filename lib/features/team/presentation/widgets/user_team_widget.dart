@@ -17,7 +17,7 @@ class UserTeamWidget extends StatelessWidget {
       margin: const EdgeInsets.all(10),
       constraints: BoxConstraints(minHeight: screenHeight * 0.2),
       decoration: BoxDecoration(
-        color: ColorPallete.blackSecondary,
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(

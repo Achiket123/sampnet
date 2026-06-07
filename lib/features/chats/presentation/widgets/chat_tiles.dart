@@ -17,14 +17,14 @@ class ChatTiles extends StatelessWidget {
     final textStyle = Theme.of(context)
         .textTheme
         .bodyMedium!
-        .copyWith(color: ColorPallete.blackPrimary, fontSize: swidth * 0.01);
+        .copyWith(color: ColorPallete.backgroundPrimary, fontSize: swidth * 0.01);
     return Badge(
-      backgroundColor: Colors.red,
+      backgroundColor: ColorPallete.error,
       smallSize: 10,
       child: Container(
         margin: const EdgeInsets.all(5),
         decoration: BoxDecoration(
-            color: ColorPallete.offWhite2,
+            color: ColorPallete.textPrimary.withOpacity(0.02),
             borderRadius: BorderRadius.circular(5)),
         child: ListTile(
           leading: const CircleAvatar(

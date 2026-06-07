@@ -5,6 +5,7 @@ import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/models/team_model.dart';
 import 'package:hackathon/features/team/domain/repo/team_repository.dart';
 import 'package:intl/intl.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class CreateProjectDialog extends StatefulWidget {
   final Project? projectToEdit;
@@ -109,13 +110,13 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
       builder: (context, child) => Theme(
         data: ThemeData.dark().copyWith(
           colorScheme: const ColorScheme.dark(
-            primary: Colors.white,
-            onPrimary: Colors.black,
-            surface: Color(0xFF16161A),
-            onSurface: Colors.white,
+            primary: ColorPallete.textPrimary,
+            onPrimary: ColorPallete.textSecondary,
+            surface: ColorPallete.backgroundPrimary,
+            onSurface: ColorPallete.textPrimary,
           ),
           dialogTheme: const DialogTheme(
-            backgroundColor: Color(0xFF0F0F11),
+            backgroundColor: ColorPallete.backgroundPrimary,
           ),
         ),
         child: child!,
@@ -140,10 +141,10 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
     final isEditing = widget.projectToEdit != null;
 
     return Dialog(
-      backgroundColor: const Color(0xFF0F0F11),
+      backgroundColor: ColorPallete.backgroundPrimary,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Colors.white10),
+        side: const BorderSide(color: ColorPallete.divider),
       ),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 550),
@@ -161,69 +162,47 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                     Text(
                       isEditing ? 'Edit Project' : 'Create New Project',
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: ColorPallete.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close_rounded, color: Colors.white54),
+                      icon: const Icon(Icons.close_rounded, color: ColorPallete.textSecondary),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
                 ),
-                const Divider(color: Colors.white10, height: 24),
+                const Divider(color: ColorPallete.divider, height: 24),
                 
                 // Name
-                const Text('PROJECT NAME', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
+                const Text('PROJECT NAME', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 10, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _nameController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
+                  style: const TextStyle(color: ColorPallete.textPrimary),
+                  decoration: const InputDecoration(
                     hintText: 'Enter project name',
-                    hintStyle: const TextStyle(color: Colors.white24),
-                    filled: true,
-                    fillColor: const Color(0xFF16161A),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.white10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.white38),
-                    ),
                   ),
                   validator: (value) => (value == null || value.trim().isEmpty) ? 'Project name is required' : null,
                 ),
                 const SizedBox(height: 16),
 
                 // Description
-                const Text('DESCRIPTION', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
+                const Text('DESCRIPTION', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 10, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _descController,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: ColorPallete.textPrimary),
                   maxLines: 3,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter project details/scope',
-                    hintStyle: const TextStyle(color: Colors.white24),
-                    filled: true,
-                    fillColor: const Color(0xFF16161A),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.white10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.white38),
-                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
 
                 // Team selection
-                const Text('ASSIGNED TEAM', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
+                const Text('ASSIGNED TEAM', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 10, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 _loadingTeams
                     ? const Center(child: Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator.adaptive()))
@@ -231,31 +210,20 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                         ? Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF16161A),
+                              color: ColorPallete.backgroundPrimary,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.white10),
+                              border: Border.all(color: ColorPallete.divider),
                             ),
-                            child: const Text(
+                            child: Text(
                               'No teams available. Please create a team first.',
-                              style: TextStyle(color: Colors.amber, fontSize: 13),
+                              style: TextStyle(color: ColorPallete.statusColor('pending'), fontSize: 13),
                             ),
                           )
                         : DropdownButtonFormField<int>(
                             value: _selectedTeamId,
-                            dropdownColor: const Color(0xFF16161A),
-                            style: const TextStyle(color: Colors.white, fontSize: 14),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: const Color(0xFF16161A),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.white10),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.white38),
-                              ),
-                            ),
+                            dropdownColor: ColorPallete.backgroundPrimary,
+                            style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14),
+                            decoration: const InputDecoration(),
                             items: _teams.map((t) {
                               return DropdownMenuItem<int>(
                                 value: t.id,
@@ -276,16 +244,16 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF16161A),
+                            color: ColorPallete.backgroundPrimary,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.white10),
+                            border: Border.all(color: ColorPallete.divider),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('START DATE', style: TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
+                              const Text('START DATE', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 9, fontWeight: FontWeight.bold)),
                               const SizedBox(height: 6),
-                              Text(DateFormat('MMM dd, yyyy').format(_startDate), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                              Text(DateFormat('MMM dd, yyyy').format(_startDate), style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold, fontSize: 13)),
                             ],
                           ),
                         ),
@@ -298,16 +266,16 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF16161A),
+                            color: ColorPallete.backgroundPrimary,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.white10),
+                            border: Border.all(color: ColorPallete.divider),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('END DATE', style: TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
+                              const Text('END DATE', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 9, fontWeight: FontWeight.bold)),
                               const SizedBox(height: 6),
-                              Text(DateFormat('MMM dd, yyyy').format(_endDate), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                              Text(DateFormat('MMM dd, yyyy').format(_endDate), style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold, fontSize: 13)),
                             ],
                           ),
                         ),
@@ -324,25 +292,13 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('STATUS', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
+                          const Text('STATUS', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 10, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 6),
                           DropdownButtonFormField<String>(
                             value: _selectedStatus,
-                            dropdownColor: const Color(0xFF16161A),
-                            style: const TextStyle(color: Colors.white, fontSize: 13),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: const Color(0xFF16161A),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.white10),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.white38),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            ),
+                            dropdownColor: ColorPallete.backgroundPrimary,
+                            style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 13),
+                            decoration: const InputDecoration(),
                             items: _statuses.map((s) {
                               return DropdownMenuItem<String>(
                                 value: s,
@@ -359,25 +315,13 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('PRIORITY', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
+                          const Text('PRIORITY', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 10, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 6),
                           DropdownButtonFormField<String>(
                             value: _selectedPriority,
-                            dropdownColor: const Color(0xFF16161A),
-                            style: const TextStyle(color: Colors.white, fontSize: 13),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: const Color(0xFF16161A),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.white10),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.white38),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            ),
+                            dropdownColor: ColorPallete.backgroundPrimary,
+                            style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 13),
+                            decoration: const InputDecoration(),
                             items: _priorities.map((p) {
                               return DropdownMenuItem<String>(
                                 value: p,
@@ -394,25 +338,13 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('PHASE', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
+                          const Text('PHASE', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 10, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 6),
                           DropdownButtonFormField<String>(
                             value: _selectedCompletionStatus,
-                            dropdownColor: const Color(0xFF16161A),
-                            style: const TextStyle(color: Colors.white, fontSize: 13),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: const Color(0xFF16161A),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.white10),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.white38),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            ),
+                            dropdownColor: ColorPallete.backgroundPrimary,
+                            style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 13),
+                            decoration: const InputDecoration(),
                             items: _completionStatuses.map((c) {
                               return DropdownMenuItem<String>(
                                 value: c,
@@ -434,13 +366,13 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+                      child: const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary)),
                     ),
                     const SizedBox(width: 16),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
+                        backgroundColor: ColorPallete.textPrimary,
+                        foregroundColor: ColorPallete.textSecondary,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                       ),

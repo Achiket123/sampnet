@@ -25,7 +25,7 @@ class BannerBase extends StatelessWidget {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
-              colors: ColorPallete.background,
+              colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
               transform: GradientRotation(rotation ?? -15))),
       child: Padding(
         padding: const EdgeInsets.all(18.0),

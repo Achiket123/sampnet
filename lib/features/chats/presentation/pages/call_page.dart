@@ -103,7 +103,7 @@ class _WebRTCClientState extends State<CallPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-        backgroundColor: ColorPallete.blackSecondary,
+        backgroundColor: ColorPallete.backgroundSecondary,
         body: Column(children: <Widget>[
           CustomAppBar(children: [
             Text(
@@ -114,7 +114,7 @@ class _WebRTCClientState extends State<CallPage> {
             IconButton(
                 icon: const Icon(
                   Icons.home,
-                  color: Colors.white,
+                  color: ColorPallete.textPrimary,
                 ),
                 onPressed: () {
                   context.go(Dashboard.routePath);
@@ -127,7 +127,7 @@ class _WebRTCClientState extends State<CallPage> {
             alignment: Alignment.center,
             child: Container(
               decoration: BoxDecoration(
-                  color: ColorPallete.offWhite2,
+                  color: ColorPallete.textPrimary.withOpacity(0.02),
                   borderRadius: BorderRadius.circular(20)),
               width: screenWidth * 0.7,
               height: screenHeight * 0.7,
@@ -149,7 +149,7 @@ class _WebRTCClientState extends State<CallPage> {
                             height: screenHeight * 0.3,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: ColorPallete.blackPrimary),
+                                color: ColorPallete.backgroundPrimary),
                             child: RTCVideoView(localRenderer,
                                 objectFit: RTCVideoViewObjectFit
                                     .RTCVideoViewObjectFitCover,
@@ -163,7 +163,7 @@ class _WebRTCClientState extends State<CallPage> {
                             height: screenHeight * 0.3,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: ColorPallete.blackPrimary),
+                                color: ColorPallete.backgroundPrimary),
                             child: RTCVideoView(
                               remoteRenderer,
                               objectFit: RTCVideoViewObjectFit
@@ -186,7 +186,7 @@ class _WebRTCClientState extends State<CallPage> {
                                     },
                                     icon: const CircleAvatar(
                                       backgroundColor:
-                                          ColorPallete.greenPrimary,
+                                          ColorPallete.success,
                                       child: Icon(
                                         Icons.call,
                                       ),

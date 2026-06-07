@@ -44,6 +44,8 @@ import 'package:hackathon/features/projects/presentation/blocs/project_bloc/proj
 import 'package:hackathon/features/projects/presentation/blocs/project_bloc/project_event.dart';
 import 'package:hackathon/features/team/presentation/blocs/team_bloc/team_bloc.dart';
 import 'package:hackathon/features/people/presentation/pages/people_list_page.dart';
+import 'package:hackathon/features/analytics/presentation/pages/org_analytics_dashboard_page.dart';
+import 'package:hackathon/features/analytics/presentation/pages/employee_analytics_profile_page.dart';
 
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/models/organisation_model.dart';
@@ -347,6 +349,21 @@ final GoRouter route = GoRouter(
         (context, state) => const PeopleListPage(),
       ),
     ),
+    GoRoute(
+      path: '/analytics',
+      builder: safeBuilder(
+        (context, state) => const OrgAnalyticsDashboardPage(),
+      ),
+    ),
+    GoRoute(
+      path: '/analytics/employee/:employeeId',
+      builder: safeBuilder(
+        (context, state) {
+          final id = state.pathParameters['employeeId'] ?? '0';
+          return EmployeeAnalyticsProfilePage(employeeId: id);
+        },
+      ),
+    ),
   ],
 );
 
@@ -516,8 +533,8 @@ String handleToken(dynamic token) {
 
     if (getIt<User>().employee != null && getIt<User>().organisation != null) {
       getIt<WebsocketService>().connect();
-      getIt<IncomingCallOverlayService>(); // Initialize the service so it listens to call events
-      getIt<WebRtcService>(); // Initialize so it listens and caches pending offers/candidates
+      getIt<IncomingCallOverlayService>();
+      getIt<WebRtcService>(); 
       return Dashboard.routePath;
     }
 

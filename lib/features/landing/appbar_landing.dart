@@ -22,7 +22,7 @@ class LandingAppBar extends StatelessWidget {
       decoration: const BoxDecoration(
           color: ColorPallete.redPrimary,
           boxShadow: [
-            BoxShadow(color: ColorPallete.blackPrimary, blurRadius: 15),
+            BoxShadow(color: ColorPallete.backgroundPrimary, blurRadius: 15),
           ],
           borderRadius: BorderRadius.all(Radius.circular(15))),
       child: Padding(

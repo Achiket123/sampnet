@@ -20,7 +20,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: ColorPallete.background2,
+            colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
           ),
@@ -30,7 +30,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             padding: const EdgeInsets.all(24),
             constraints: const BoxConstraints(maxWidth: 400),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: ColorPallete.textPrimary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Form(
@@ -42,7 +42,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   Text(
                     "Forgot Password",
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: ColorPallete.white,
+                          color: ColorPallete.textPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                     textAlign: TextAlign.center,
@@ -51,17 +51,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   Text(
                     "Enter your email address and we'll send you a link to reset your password.",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: ColorPallete.white.withOpacity(0.7),
+                          color: ColorPallete.textPrimary.withOpacity(0.7),
                         ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
                   TextFormField(
                     controller: emailController,
-                    style: const TextStyle(color: ColorPallete.white),
+                    style: const TextStyle(color: ColorPallete.textPrimary),
                     decoration: const InputDecoration(
                       labelText: "Email",
-                      labelStyle: TextStyle(color: ColorPallete.white),
+                      labelStyle: TextStyle(color: ColorPallete.textPrimary),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -84,7 +84,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     onPressed: () => Navigator.of(context).pop(),
                     child: const Text(
                       "Back to Login",
-                      style: TextStyle(color: ColorPallete.white),
+                      style: TextStyle(color: ColorPallete.textPrimary),
                     ),
                   ),
                 ],

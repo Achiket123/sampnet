@@ -10,6 +10,7 @@ import 'package:hackathon/features/leave/presentation/pages/leave_request_page.d
 import 'package:hackathon/features/leave/presentation/widgets/leave_balance_card.dart'; // Import your provided balance card component
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:intl/intl.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class LeaveManagementPage extends StatefulWidget {
   static const routePath = '/leave-management';
@@ -43,19 +44,19 @@ class _LeaveManagementPageState extends State<LeaveManagementPage>
       // CRITICAL FIX: Add a Builder here to provide a context *below* the BlocProvider
       child: Builder(builder: (context) {
         return Scaffold(
-          backgroundColor: const Color(0xFF0F0F11),
+          backgroundColor: ColorPallete.backgroundPrimary,
           appBar: AppBar(
-            backgroundColor: Colors.red,
+            backgroundColor: ColorPallete.error,
             elevation: 0,
             title: const Text('Leave Balance',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.white)),
+                    fontWeight: FontWeight.bold, color: ColorPallete.textPrimary)),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(50),
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(
+                  color: ColorPallete.textPrimary.withAlpha(
                     05,
                   ),
                   borderRadius: BorderRadius.circular(12),
@@ -63,14 +64,14 @@ class _LeaveManagementPageState extends State<LeaveManagementPage>
                 child: TabBar(
                   controller: _tabController,
                   indicatorSize: TabBarIndicatorSize.tab,
-                  dividerColor: Colors.transparent,
+                  dividerColor: ColorPallete.transparent,
                   indicator: BoxDecoration(
-                    color: const Color(0xFF16161A),
+                    color: ColorPallete.backgroundPrimary,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.white10),
+                    border: Border.all(color: ColorPallete.divider),
                   ),
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.white38,
+                  labelColor: ColorPallete.textPrimary,
+                  unselectedLabelColor: ColorPallete.textDisabled,
                   tabs: const [
                     Tab(text: 'My Account'),
                     Tab(text: 'Team Matrix'),
@@ -87,7 +88,7 @@ class _LeaveManagementPageState extends State<LeaveManagementPage>
             ],
           ),
           floatingActionButton: FloatingActionButton.extended(
-            backgroundColor: Colors.white,
+            backgroundColor: ColorPallete.textPrimary,
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (innerContext) => BlocProvider.value(
@@ -98,9 +99,9 @@ class _LeaveManagementPageState extends State<LeaveManagementPage>
             ),
             label: const Text('Request Absence',
                 style: TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold)),
+                    color: ColorPallete.textSecondary, fontWeight: FontWeight.bold)),
             icon: const Icon(Icons.add_circle_outline_rounded,
-                color: Colors.black),
+                color: ColorPallete.textSecondary),
           ),
         );
       }),
@@ -133,7 +134,7 @@ class _MyLeavesTab extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade600,
+                        color: ColorPallete.textSecondary,
                         letterSpacing: 1.1)),
               ),
             ),
@@ -143,7 +144,7 @@ class _MyLeavesTab extends StatelessWidget {
                       child: Padding(
                           padding: EdgeInsets.all(40.0),
                           child: Text('No allocations recorded',
-                              style: TextStyle(color: Colors.white38))),
+                              style: TextStyle(color: ColorPallete.textDisabled))),
                     ),
                   )
                 : SliverPadding(
@@ -196,7 +197,7 @@ class _TeamLeavesTabState extends State<_TeamLeavesTab> {
         if (teamLeaves.isEmpty) {
           return const Center(
               child: Text('No active organizational leaves found',
-                  style: TextStyle(color: Colors.white38)));
+                  style: TextStyle(color: ColorPallete.textDisabled)));
         }
 
         return ListView.builder(
@@ -220,13 +221,13 @@ class _LeaveListItem extends StatelessWidget {
   Color _getStatusColor() {
     switch (leave.status.toLowerCase()) {
       case 'approved':
-        return Colors.greenAccent;
+        return ColorPallete.statusColor('approved');
       case 'rejected':
-        return Colors.redAccent;
+        return ColorPallete.error;
       case 'cancelled':
-        return Colors.grey;
+        return ColorPallete.textSecondary;
       default:
-        return Colors.orangeAccent;
+        return ColorPallete.statusColor('pending');
     }
   }
 
@@ -236,10 +237,10 @@ class _LeaveListItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-          color: const Color(0xFF16161A),
+          color: ColorPallete.backgroundPrimary,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Colors.white.withAlpha(05),
+            color: ColorPallete.textPrimary.withAlpha(05),
           )),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -261,7 +262,7 @@ class _LeaveListItem extends StatelessWidget {
                             leave.leaveType.toUpperCase(),
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: ColorPallete.textPrimary,
                                 fontSize: 15,
                                 letterSpacing: 0.3),
                           ),
@@ -286,12 +287,12 @@ class _LeaveListItem extends StatelessWidget {
                       Row(
                         children: [
                           const Icon(Icons.date_range_rounded,
-                              size: 14, color: Colors.white38),
+                              size: 14, color: ColorPallete.textDisabled),
                           const SizedBox(width: 6),
                           Text(
                             '${DateFormat('MMM d').format(leave.startDate)} - ${DateFormat('MMM d, yyyy').format(leave.endDate)}',
                             style: const TextStyle(
-                                color: Colors.white70, fontSize: 13),
+                                color: ColorPallete.textSecondary, fontSize: 13),
                           ),
                         ],
                       ),
@@ -299,7 +300,7 @@ class _LeaveListItem extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text('Reason: ${leave.reason}',
                             style: TextStyle(
-                                color: Colors.grey.shade500, fontSize: 13),
+                                color: ColorPallete.textSecondary, fontSize: 13),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis),
                       ],
@@ -321,11 +322,11 @@ class _LeaveListItem extends StatelessWidget {
                         style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: ColorPallete.textPrimary,
                             height: 1.0)),
                     Text(leave.totalDays == 1 ? 'day' : 'days',
                         style: const TextStyle(
-                            fontSize: 12, color: Colors.white38)),
+                            fontSize: 12, color: ColorPallete.textDisabled)),
                   ],
                 )
               ],
@@ -341,24 +342,24 @@ class _LeaveListItem extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: const Color(0xFF16161A),
+        backgroundColor: ColorPallete.backgroundPrimary,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Colors.white10)),
+            side: const BorderSide(color: ColorPallete.divider)),
         title: const Text('Process Leave Request',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
         content: TextField(
           controller: noteController,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: ColorPallete.textPrimary),
           decoration: InputDecoration(
             labelText: 'Manager Note (Optional)',
-            labelStyle: const TextStyle(color: Colors.white38),
+            labelStyle: const TextStyle(color: ColorPallete.textDisabled),
             enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Colors.white10)),
+                borderSide: const BorderSide(color: ColorPallete.divider)),
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Colors.blueAccent)),
+                borderSide: const BorderSide(color: ColorPallete.redPrimary)),
           ),
         ),
         actions: [
@@ -370,11 +371,11 @@ class _LeaveListItem extends StatelessWidget {
             },
             child: const Text('Reject Request',
                 style: TextStyle(
-                    color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                    color: ColorPallete.error, fontWeight: FontWeight.bold)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: ColorPallete.redPrimary,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8))),
             onPressed: () {
@@ -384,7 +385,7 @@ class _LeaveListItem extends StatelessWidget {
             },
             child: const Text('Approve',
                 style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
+                    color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

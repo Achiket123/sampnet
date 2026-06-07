@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/employees/domain/entities/employee_entity.dart';
@@ -8,6 +9,7 @@ import 'package:hackathon/features/employees/presentation/blocs/employees_list_b
 import 'package:hackathon/features/employees/presentation/widgets/edit_employee_modal.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:intl/intl.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class EmployeeProfilePage extends StatefulWidget {
   final int employeeId;
@@ -32,7 +34,7 @@ class _EmployeeProfilePageState extends State<EmployeeProfilePage> {
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 20, 20, 20),
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: ColorPallete.transparent,
           elevation: 0,
           title: const Text('Profile'),
         ),
@@ -48,7 +50,7 @@ class _EmployeeProfilePageState extends State<EmployeeProfilePage> {
                 return _buildSkeleton();
               }
               if (state is EmployeeProfileError) {
-                return Center(child: Text(state.message, style: const TextStyle(color: Colors.redAccent)));
+                return Center(child: Text(state.message, style: const TextStyle(color: ColorPallete.error)));
               }
               if (state is EmployeeProfileLoaded) {
                 final employee = state.employee;
@@ -60,25 +62,25 @@ class _EmployeeProfilePageState extends State<EmployeeProfilePage> {
                     children: [
                       CircleAvatar(
                         radius: 60,
-                        backgroundColor: Colors.blueAccent.withValues(alpha: 0.1),
+                        backgroundColor: ColorPallete.redPrimary.withValues(alpha: 0.1),
                         backgroundImage: employee.user.profilePic.isNotEmpty
                             ? NetworkImage(employee.user.profilePic)
                             : null,
                         child: employee.user.profilePic.isEmpty
                             ? Text(
                                 employee.user.initials,
-                                style: const TextStyle(fontSize: 32, color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                                style: const TextStyle(fontSize: 32, color: ColorPallete.redPrimary, fontWeight: FontWeight.bold),
                               )
                             : null,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         employee.user.fullName,
-                        style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         employee.roleDisplayLabel,
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 16),
+                        style: TextStyle(color: ColorPallete.textPrimary.withValues(alpha: 0.5), fontSize: 16),
                       ),
                       const SizedBox(height: 32),
                       _buildDetailRow('Email', employee.user.email, Icons.email_outlined),
@@ -96,8 +98,8 @@ class _EmployeeProfilePageState extends State<EmployeeProfilePage> {
                               child: OutlinedButton(
                                 onPressed: () => _showEditModal(context, employee, isOwnProfile),
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  side: const BorderSide(color: Colors.white10),
+                                  foregroundColor: ColorPallete.textPrimary,
+                                  side: const BorderSide(color: ColorPallete.divider),
                                   padding: const EdgeInsets.symmetric(vertical: 16),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 ),
@@ -110,8 +112,8 @@ class _EmployeeProfilePageState extends State<EmployeeProfilePage> {
                                 child: ElevatedButton(
                                   onPressed: () => _showDeleteConfirmation(context, employee),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
-                                    foregroundColor: Colors.redAccent,
+                                    backgroundColor: ColorPallete.error.withValues(alpha: 0.1),
+                                    foregroundColor: ColorPallete.error,
                                     elevation: 0,
                                     padding: const EdgeInsets.symmetric(vertical: 16),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -122,6 +124,26 @@ class _EmployeeProfilePageState extends State<EmployeeProfilePage> {
                             ],
                           ],
                         ),
+                      if (userRole == 'boss' || userRole == 'manager') ...[
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              context.push('/analytics/employee/${employee.userId}');
+                            },
+                            icon: const Icon(Icons.analytics_outlined),
+                            label: const Text('View Employee Analytics'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorPallete.redPrimary.withValues(alpha: 0.1),
+                              foregroundColor: ColorPallete.redPrimary,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 );
@@ -142,18 +164,18 @@ class _EmployeeProfilePageState extends State<EmployeeProfilePage> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: ColorPallete.textPrimary.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: Colors.white70, size: 20),
+            child: Icon(icon, color: ColorPallete.textSecondary, size: 20),
           ),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 12)),
+              Text(label, style: TextStyle(color: ColorPallete.textPrimary.withValues(alpha: 0.3), fontSize: 12)),
               const SizedBox(height: 2),
-              Text(value.isNotEmpty ? value : 'Not set', style: const TextStyle(color: Colors.white, fontSize: 15)),
+              Text(value.isNotEmpty ? value : 'Not set', style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 15)),
             ],
           ),
         ],
@@ -170,7 +192,7 @@ class _EmployeeProfilePageState extends State<EmployeeProfilePage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: ColorPallete.transparent,
       builder: (sheetContext) => BlocProvider<EmployeesListBloc>(
         create: (context) => getIt<EmployeesListBloc>(),
         child: EditEmployeeModal(employee: employee, isOwnProfile: isOwnProfile),
@@ -191,7 +213,7 @@ class _EmployeeProfilePageState extends State<EmployeeProfilePage> {
           TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Remove', style: TextStyle(color: Colors.redAccent)),
+            child: const Text('Remove', style: TextStyle(color: ColorPallete.error)),
           ),
         ],
       ),

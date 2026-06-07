@@ -204,6 +204,14 @@ import 'package:hackathon/features/people/domain/use_cases/people_usecases.dart'
 import 'package:hackathon/features/people/presentation/blocs/people_list_bloc/people_list_bloc.dart';
 import 'package:hackathon/features/people/presentation/blocs/contact_detail_bloc/contact_detail_bloc.dart';
 
+// Analytics Module Imports
+import 'package:hackathon/features/analytics/data/data_sources/analytics_remote_data_source.dart';
+import 'package:hackathon/features/analytics/data/repositories_impl/analytics_repository_impl.dart';
+import 'package:hackathon/features/analytics/domain/repositories/analytics_repository.dart';
+import 'package:hackathon/features/analytics/domain/use_cases/get_employee_analytics_usecase.dart';
+import 'package:hackathon/features/analytics/domain/use_cases/get_org_employee_monitor_usecase.dart';
+import 'package:hackathon/features/analytics/presentation/blocs/org_analytics_bloc/org_analytics_bloc.dart';
+
 final getIt = GetIt.instance;
 
 void initDependencies() {
@@ -309,8 +317,19 @@ void initDependencies() {
   getIt.registerLazySingleton<PeopleRemoteDataSource>(
     () => PeopleRemoteDataSourceImpl(apiClient: getIt()),
   );
+  getIt.registerLazySingleton<AnalyticsRemoteDataSource>(
+    () => AnalyticsRemoteDataSourceImpl(
+      apiClient: getIt(),
+    ),
+  );
 
   // Repositories
+
+  getIt.registerLazySingleton<AnalyticsRepository>(
+    () => AnalyticsRepositoryImpl(
+      remoteDataSource: getIt(),
+    ),
+  );
 
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
@@ -405,6 +424,16 @@ void initDependencies() {
   );
 
   // Use Cases
+  getIt.registerLazySingleton<GetEmployeeAnalyticsUseCase>(
+    () => GetEmployeeAnalyticsUseCase(getIt()),
+  );
+  getIt.registerLazySingleton<GetOrgEmployeeMonitorUseCase>(
+    () => GetOrgEmployeeMonitorUseCase(getIt()),
+  );
+
+  getIt.registerLazySingleton<GetTeamByIdUseCase>(
+    () => GetTeamByIdUseCase(teamRepository: getIt()),
+  );
 
   getIt.registerLazySingleton<SignUpUsecase>(
     () => SignUpUsecase(repository: getIt()),
@@ -876,4 +905,11 @@ void initDependencies() {
       registerCompanyUseCase: getIt(), fetchEmployeeDataUseCase: getIt()));
   getIt.registerFactory<ValidateEmployeeBloc>(
       () => ValidateEmployeeBloc(usecase: getIt()));
+
+  getIt.registerFactory<OrgAnalyticsBloc>(
+    () => OrgAnalyticsBloc(
+      getOrgEmployeeMonitorUseCase: getIt(),
+      getEmployeeAnalyticsUseCase: getIt(),
+    ),
+  );
 }

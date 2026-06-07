@@ -36,7 +36,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
       body: Container(
         height: sheight,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: ColorPallete.background),
+          color: ColorPallete.backgroundPrimary,
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -48,7 +48,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 children: [
                   Text(
                     "CHECK-OUT",
-                    style: TextStyle(color: ColorPallete.white),
+                    style: TextStyle(color: ColorPallete.textPrimary),
                   ),
                 ],
               ),
@@ -61,14 +61,14 @@ class _CheckOutPageState extends State<CheckOutPage> {
                     image: picture != null
                         ? DecorationImage(image: MemoryImage(picture!))
                         : null,
-                    color: Colors.black26,
-                    border: Border.all(color: ColorPallete.white, width: 3),
+                    color: ColorPallete.textSecondary.withOpacity(0.26),
+                    border: Border.all(color: ColorPallete.textPrimary, width: 3),
                   ),
                   child: Center(
                     child: picture == null
                         ? const Text(
                             "Take a Clear Picture",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: ColorPallete.textPrimary),
                           )
                         : null,
                   ),
@@ -78,7 +78,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                   margin: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    border: Border.all(color: ColorPallete.white, width: 2),
+                    border: Border.all(color: ColorPallete.textPrimary, width: 2),
                   ),
                   child: picture == null
                       ? GestureDetector(
@@ -102,7 +102,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                             backgroundColor: Color.fromARGB(255, 92, 92, 92),
                             child: Icon(
                               Icons.camera_alt,
-                              color: Colors.white,
+                              color: ColorPallete.textPrimary,
                               size: 40,
                             ),
                           ),
@@ -149,8 +149,8 @@ class _CheckOutPageState extends State<CheckOutPage> {
                             cursor: SystemMouseCursors.click,
                             child: Container(
                               margin: const EdgeInsets.all(20),
-                              child: const CircleAvatar(
-                                backgroundColor: Colors.green,
+                              child: CircleAvatar(
+                                backgroundColor: ColorPallete.statusColor('approved'),
                                 child: Icon(Icons.check),
                               ),
                             ),
@@ -173,10 +173,10 @@ class _CheckOutPageState extends State<CheckOutPage> {
                           child: Container(
                             margin: const EdgeInsets.all(20),
                             child: const CircleAvatar(
-                              backgroundColor: Colors.grey,
+                              backgroundColor: ColorPallete.textSecondary,
                               child: Icon(
                                 Icons.upload,
-                                color: Colors.black,
+                                color: ColorPallete.textSecondary,
                               ),
                             ),
                           ),

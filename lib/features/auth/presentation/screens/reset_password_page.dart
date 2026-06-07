@@ -22,7 +22,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: ColorPallete.background2,
+            colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
           ),
@@ -32,7 +32,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             padding: const EdgeInsets.all(24),
             constraints: const BoxConstraints(maxWidth: 400),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: ColorPallete.textPrimary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Form(
@@ -44,7 +44,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   Text(
                     "Reset Password",
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: ColorPallete.white,
+                          color: ColorPallete.textPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                     textAlign: TextAlign.center,
@@ -53,7 +53,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   Text(
                     "Enter your new password below.",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: ColorPallete.white.withOpacity(0.7),
+                          color: ColorPallete.textPrimary.withOpacity(0.7),
                         ),
                     textAlign: TextAlign.center,
                   ),
@@ -61,14 +61,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   TextFormField(
                     controller: passwordController,
                     obscureText: !isPasswordVisible,
-                    style: const TextStyle(color: ColorPallete.white),
+                    style: const TextStyle(color: ColorPallete.textPrimary),
                     decoration: InputDecoration(
                       labelText: "New Password",
-                      labelStyle: const TextStyle(color: ColorPallete.white),
+                      labelStyle: const TextStyle(color: ColorPallete.textPrimary),
                       suffixIcon: IconButton(
                         icon: Icon(
                           isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                          color: ColorPallete.white,
+                          color: ColorPallete.textPrimary,
                         ),
                         onPressed: () => setState(() => isPasswordVisible = !isPasswordVisible),
                       ),
@@ -87,10 +87,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   TextFormField(
                     controller: confirmPasswordController,
                     obscureText: !isPasswordVisible,
-                    style: const TextStyle(color: ColorPallete.white),
+                    style: const TextStyle(color: ColorPallete.textPrimary),
                     decoration: const InputDecoration(
                       labelText: "Confirm New Password",
-                      labelStyle: TextStyle(color: ColorPallete.white),
+                      labelStyle: TextStyle(color: ColorPallete.textPrimary),
                     ),
                     validator: (value) {
                       if (value != passwordController.text) {

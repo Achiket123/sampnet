@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hackathon/features/notifications/presentation/blocs/notifications_bloc/notifications_bloc.dart';
 import 'package:hackathon/features/notifications/presentation/blocs/notifications_bloc/notifications_event.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class NotificationPreferencesPage extends StatefulWidget {
   static const String routePath = '/notification-preferences';
@@ -22,7 +23,7 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
       backgroundColor: const Color.fromARGB(255, 20, 20, 20),
       appBar: AppBar(
         title: const Text('Notification Preferences'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: ColorPallete.transparent,
         elevation: 0,
       ),
       body: ListView(
@@ -45,7 +46,7 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
             value: filter.isEnabled('task_updated'),
             onChanged: (val) => _updatePreference('task_updated', val),
           ),
-          const Divider(color: Colors.white10),
+          const Divider(color: ColorPallete.divider),
           _buildPreferenceTile(
             title: 'Leave request submitted',
             subtitle: 'Get notified when a team member requests leave',
@@ -73,11 +74,11 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
     required ValueChanged<bool> onChanged,
   }) {
     return SwitchListTile(
-      title: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16)),
-      subtitle: Text(subtitle, style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13)),
+      title: Text(title, style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 16)),
+      subtitle: Text(subtitle, style: TextStyle(color: ColorPallete.textPrimary.withValues(alpha: 0.5), fontSize: 13)),
       value: value,
       onChanged: onChanged,
-      activeColor: Colors.blueAccent,
+      activeColor: ColorPallete.redPrimary,
     );
   }
 

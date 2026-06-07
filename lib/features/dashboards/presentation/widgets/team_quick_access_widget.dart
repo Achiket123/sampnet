@@ -15,7 +15,7 @@ class TeamQuickAccessWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorPallete.background2[0].withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -27,12 +27,12 @@ class TeamQuickAccessWidget extends StatelessWidget {
               Text(
                 "Quick Access - Teams",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: ColorPallete.white,
+                      color: ColorPallete.textPrimary,
                       fontWeight: FontWeight.bold,
                     ),
               ),
               IconButton(
-                icon: const Icon(Icons.add_circle_outline, color: Colors.blueAccent, size: 20),
+                icon: const Icon(Icons.add_circle_outline, color: ColorPallete.redPrimary, size: 20),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -61,7 +61,7 @@ class TeamQuickAccessWidget extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Error loading teams", style: TextStyle(fontSize: 10, color: Colors.redAccent)),
+                        const Text("Error loading teams", style: TextStyle(fontSize: 10, color: ColorPallete.error)),
                         TextButton(
                           onPressed: () {
                             context.read<TeamBloc>().add(GetTeamEvent(token: getIt<User>().token!));
@@ -76,7 +76,7 @@ class TeamQuickAccessWidget extends StatelessWidget {
                 if (state is TeamSuccessState) {
                   if (state.teams.isEmpty) {
                     return const Center(
-                      child: Text("No teams yet", style: TextStyle(color: Colors.white54, fontSize: 12)),
+                      child: Text("No teams yet", style: TextStyle(color: ColorPallete.textSecondary, fontSize: 12)),
                     );
                   }
 
@@ -96,17 +96,17 @@ class TeamQuickAccessWidget extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: Colors.blueAccent.withOpacity(0.3),
+                              backgroundColor: ColorPallete.redPrimary.withOpacity(0.3),
                               child: Text(
                                 team.name.isNotEmpty ? team.name[0].toUpperCase() : "?",
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold),
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               team.name.length > 10 ? "${team.name.substring(0, 7)}..." : team.name,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: ColorPallete.white,
+                                    color: ColorPallete.textPrimary,
                                     fontSize: 10,
                                   ),
                             ),
@@ -134,14 +134,14 @@ class _ShimmerCircle extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 24,
-          backgroundColor: Colors.white.withOpacity(0.05),
+          backgroundColor: ColorPallete.textPrimary.withOpacity(0.05),
         ),
         const SizedBox(height: 4),
         Container(
           width: 40,
           height: 8,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: ColorPallete.textPrimary.withOpacity(0.05),
             borderRadius: BorderRadius.circular(4),
           ),
         ),

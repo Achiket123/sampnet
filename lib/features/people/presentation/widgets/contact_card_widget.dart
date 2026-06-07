@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/people_entities.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class ContactCardWidget extends StatelessWidget {
   final PeopleContactEntity contact;
@@ -14,30 +15,30 @@ class ContactCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white10,
+      color: ColorPallete.divider,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         onTap: onTap,
         contentPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
-          backgroundColor: Colors.blueAccent.withValues(alpha: 0.2),
+          backgroundColor: ColorPallete.redPrimary.withValues(alpha: 0.2),
           child: Text(
             contact.firstName.isNotEmpty ? contact.firstName[0].toUpperCase() : '?',
-            style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+            style: const TextStyle(color: ColorPallete.redPrimary, fontWeight: FontWeight.bold),
           ),
         ),
         title: Text(
           '${contact.firstName} ${contact.lastName}',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.w600),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Text(contact.email, style: const TextStyle(color: Colors.white70)),
+            Text(contact.email, style: const TextStyle(color: ColorPallete.textSecondary)),
             if (contact.company != null)
-              Text(contact.company!, style: const TextStyle(color: Colors.white54)),
+              Text(contact.company!, style: const TextStyle(color: ColorPallete.textSecondary)),
           ],
         ),
         trailing: _buildTypeChip(contact.status),
@@ -49,16 +50,16 @@ class ContactCardWidget extends StatelessWidget {
     Color color;
     switch (type.toLowerCase()) {
       case 'lead':
-        color = Colors.orangeAccent;
+        color = ColorPallete.statusColor('pending');
         break;
       case 'customer':
-        color = Colors.greenAccent;
+        color = ColorPallete.statusColor('approved');
         break;
       case 'partner':
-        color = Colors.purpleAccent;
+        color = ColorPallete.textSecondary;
         break;
       default:
-        color = Colors.grey;
+        color = ColorPallete.textSecondary;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

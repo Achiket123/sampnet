@@ -12,7 +12,7 @@ class EmailVerificationPage extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: ColorPallete.background2,
+            colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
           ),
@@ -22,7 +22,7 @@ class EmailVerificationPage extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             constraints: const BoxConstraints(maxWidth: 400),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: ColorPallete.textPrimary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -32,13 +32,13 @@ class EmailVerificationPage extends StatelessWidget {
                 const Icon(
                   Icons.mark_email_unread_outlined,
                   size: 64,
-                  color: ColorPallete.white,
+                  color: ColorPallete.textPrimary,
                 ),
                 const SizedBox(height: 24),
                 Text(
                   "Verify Your Email",
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: ColorPallete.white,
+                        color: ColorPallete.textPrimary,
                         fontWeight: FontWeight.bold,
                       ),
                   textAlign: TextAlign.center,
@@ -47,7 +47,7 @@ class EmailVerificationPage extends StatelessWidget {
                 Text(
                   "We've sent a verification link to your email address. Please click the link to verify your account.",
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: ColorPallete.white.withOpacity(0.7),
+                        color: ColorPallete.textPrimary.withOpacity(0.7),
                       ),
                   textAlign: TextAlign.center,
                 ),
@@ -63,7 +63,7 @@ class EmailVerificationPage extends StatelessWidget {
                   onPressed: () => Navigator.of(context).pop(),
                   child: const Text(
                     "Back to Login",
-                    style: TextStyle(color: ColorPallete.white),
+                    style: TextStyle(color: ColorPallete.textPrimary),
                   ),
                 ),
               ],

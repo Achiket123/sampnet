@@ -58,12 +58,12 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF0F0F11),
+        backgroundColor: ColorPallete.backgroundPrimary,
         appBar: AppBar(
-          backgroundColor: ColorPallete.blackSecondary,
+          backgroundColor: ColorPallete.backgroundSecondary,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_back, color: ColorPallete.textPrimary),
             onPressed: () {
               if (_folderStack.isNotEmpty) {
                 setState(() => _folderStack.removeLast());
@@ -79,7 +79,7 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
           ),
           title: Text(
             widget.entry?.title ?? 'Research Workspace',
-            style: const TextStyle(color: Colors.white, fontSize: 16),
+            style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 16),
           ),
         ),
         body: Column(
@@ -97,7 +97,7 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
                     return const Center(
                       child: Text(
                         'This folder is empty. Create a folder or document to start organizing research.',
-                        style: TextStyle(color: Colors.white54),
+                        style: TextStyle(color: ColorPallete.textSecondary),
                         textAlign: TextAlign.center,
                       ),
                     );
@@ -109,8 +109,8 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: ColorPallete.greenPrimary,
-          child: const Icon(Icons.add, color: Colors.white),
+          backgroundColor: ColorPallete.success,
+          child: const Icon(Icons.add, color: ColorPallete.textPrimary),
           onPressed: () => _showCreateMenu(context),
         ),
       ),
@@ -121,7 +121,7 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white10)),
+        border: Border(bottom: BorderSide(color: ColorPallete.divider)),
       ),
       child: Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
@@ -137,11 +137,11 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
             },
             child: const Text('Root',
                 style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
+                    color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
           ),
           for (var i = 0; i < _folderStack.length; i++) ...[
             Text('/',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.4))),
+                style: TextStyle(color: ColorPallete.textPrimary.withValues(alpha: 0.4))),
             InkWell(
               onTap: () {
                 setState(
@@ -154,7 +154,7 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
               },
               child: Text(
                 _folderStack[i].name,
-                style: const TextStyle(color: Colors.white70),
+                style: const TextStyle(color: ColorPallete.textSecondary),
               ),
             ),
           ],
@@ -185,16 +185,16 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: ColorPallete.textPrimary.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white10),
+          border: Border.all(color: ColorPallete.divider),
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.white70, size: 16),
+            Icon(icon, color: ColorPallete.textSecondary, size: 16),
             const SizedBox(width: 6),
             Text(label,
-                style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 12)),
           ],
         ),
       ),
@@ -235,9 +235,9 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: ColorPallete.blackSecondary,
+          color: ColorPallete.backgroundSecondary,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white10),
+          border: Border.all(color: ColorPallete.divider),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,9 +246,9 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Icon(Icons.folder_rounded,
-                    color: Colors.blueAccent, size: 32),
+                    color: ColorPallete.redPrimary, size: 32),
                 PopupMenuButton<String>(
-                  color: ColorPallete.blackSecondary,
+                  color: ColorPallete.backgroundSecondary,
                   onSelected: (value) {
                     if (value == 'delete') {
                       context.read<ResearchWorkspaceBloc>().add(
@@ -264,10 +264,10 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
                     PopupMenuItem(
                         value: 'delete',
                         child: Text('Delete',
-                            style: TextStyle(color: Colors.white))),
+                            style: TextStyle(color: ColorPallete.textPrimary))),
                   ],
                   icon: const Icon(Icons.more_vert,
-                      color: Colors.white54, size: 20),
+                      color: ColorPallete.textSecondary, size: 20),
                 ),
               ],
             ),
@@ -275,7 +275,7 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
             Text(
               folder.name,
               style: const TextStyle(
-                  color: Colors.white,
+                  color: ColorPallete.textPrimary,
                   fontWeight: FontWeight.w600,
                   fontSize: 14),
               maxLines: 2,
@@ -285,7 +285,7 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
             Text(
               'Updated ${DateFormat('MMM d').format(folder.updatedAt)}',
               style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5), fontSize: 11),
+                  color: ColorPallete.textPrimary.withValues(alpha: 0.5), fontSize: 11),
             ),
           ],
         ),
@@ -310,9 +310,9 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: ColorPallete.blackSecondary,
+          color: ColorPallete.backgroundSecondary,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white10),
+          border: Border.all(color: ColorPallete.divider),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,10 +320,10 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.description_outlined,
-                    color: Colors.orangeAccent, size: 32),
+                Icon(Icons.description_outlined,
+                    color: ColorPallete.statusColor('pending'), size: 32),
                 PopupMenuButton<String>(
-                  color: ColorPallete.blackSecondary,
+                  color: ColorPallete.backgroundSecondary,
                   onSelected: (value) {
                     if (value == 'delete') {
                       context.read<ResearchWorkspaceBloc>().add(
@@ -339,10 +339,10 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
                     PopupMenuItem(
                         value: 'delete',
                         child: Text('Delete',
-                            style: TextStyle(color: Colors.white))),
+                            style: TextStyle(color: ColorPallete.textPrimary))),
                   ],
                   icon: const Icon(Icons.more_vert,
-                      color: Colors.white54, size: 20),
+                      color: ColorPallete.textSecondary, size: 20),
                 ),
               ],
             ),
@@ -350,7 +350,7 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
             Text(
               document.title,
               style: const TextStyle(
-                  color: Colors.white,
+                  color: ColorPallete.textPrimary,
                   fontWeight: FontWeight.w600,
                   fontSize: 14),
               maxLines: 2,
@@ -360,7 +360,7 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
             Text(
               'Updated ${DateFormat('MMM d, HH:mm').format(document.updatedAt)}',
               style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5), fontSize: 11),
+                  color: ColorPallete.textPrimary.withValues(alpha: 0.5), fontSize: 11),
             ),
           ],
         ),
@@ -371,26 +371,26 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
   void _showCreateMenu(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: ColorPallete.blackSecondary,
+      backgroundColor: ColorPallete.backgroundSecondary,
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.create_new_folder_outlined,
-                  color: Colors.blueAccent),
+                  color: ColorPallete.redPrimary),
               title:
-                  const Text('Folder', style: TextStyle(color: Colors.white)),
+                  const Text('Folder', style: TextStyle(color: ColorPallete.textPrimary)),
               onTap: () {
                 context.pop();
                 _promptForFolder(this.context);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.description_outlined,
-                  color: Colors.orangeAccent),
+              leading: Icon(Icons.description_outlined,
+                  color: ColorPallete.statusColor('pending')),
               title: const Text('Markdown Document',
-                  style: TextStyle(color: Colors.white)),
+                  style: TextStyle(color: ColorPallete.textPrimary)),
               onTap: () {
                 context.pop();
                 _createDocument(this.context);
@@ -407,15 +407,15 @@ class _ResearchExplorerPageState extends State<ResearchExplorerPage> {
     final created = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: ColorPallete.blackSecondary,
+        backgroundColor: ColorPallete.backgroundSecondary,
         title:
-            const Text('Create Folder', style: TextStyle(color: Colors.white)),
+            const Text('Create Folder', style: TextStyle(color: ColorPallete.textPrimary)),
         content: TextField(
           controller: controller,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: ColorPallete.textPrimary),
           decoration: const InputDecoration(
             hintText: 'Folder name',
-            hintStyle: TextStyle(color: Colors.white38),
+            hintStyle: TextStyle(color: ColorPallete.textDisabled),
           ),
         ),
         actions: [

@@ -5,6 +5,7 @@ import 'package:hackathon/features/notifications/presentation/blocs/notification
 import 'package:hackathon/features/notifications/presentation/blocs/notifications_bloc/notifications_event.dart';
 import 'package:hackathon/features/notifications/presentation/blocs/notifications_bloc/notifications_state.dart';
 import 'package:hackathon/features/notifications/presentation/widgets/notification_panel.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class NotificationBellWidget extends StatefulWidget {
   const NotificationBellWidget({super.key});
@@ -55,7 +56,7 @@ class _NotificationBellWidgetState extends State<NotificationBellWidget> {
             IconButton(
               icon: Icon(
                 unreadCount > 0 ? Icons.notifications : Icons.notifications_outlined,
-                color: Colors.white,
+                color: ColorPallete.textPrimary,
               ),
               onPressed: () {
                 _showNotificationPanel(context);
@@ -68,7 +69,7 @@ class _NotificationBellWidgetState extends State<NotificationBellWidget> {
                 child: Container(
                   padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: ColorPallete.error,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   constraints: const BoxConstraints(
@@ -78,7 +79,7 @@ class _NotificationBellWidgetState extends State<NotificationBellWidget> {
                   child: Text(
                     unreadCount > 99 ? '99+' : unreadCount.toString(),
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: ColorPallete.textPrimary,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),

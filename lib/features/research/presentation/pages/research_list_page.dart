@@ -60,13 +60,13 @@ class _ResearchListPageState extends State<ResearchListPage> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: ColorPallete.background2,
+          colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
       ),
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: ColorPallete.transparent,
         drawer: CustomDrawer(
           selectedIndex: ListOfSideBar.sideBarItems.indexOf('Research'),
         ),
@@ -105,7 +105,7 @@ class _ResearchListPageState extends State<ResearchListPage> {
                         return const Center(
                             child: CircularProgressIndicator(
                                 valueColor:
-                                    AlwaysStoppedAnimation(Colors.white)));
+                                    AlwaysStoppedAnimation(ColorPallete.textPrimary)));
                       } else if (state is ResearchListError) {
                         return _buildErrorState(context, state.message);
                       } else if (state is ResearchListLoaded) {
@@ -132,7 +132,7 @@ class _ResearchListPageState extends State<ResearchListPage> {
                                         padding: EdgeInsets.all(8.0),
                                         child: CircularProgressIndicator(
                                             valueColor: AlwaysStoppedAnimation(
-                                                Colors.white))));
+                                                ColorPallete.textPrimary))));
                               }
                               final entry = state.entries[index];
                               return ResearchEntryCardWidget(
@@ -157,8 +157,8 @@ class _ResearchListPageState extends State<ResearchListPage> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          backgroundColor: ColorPallete.textPrimary,
+          foregroundColor: ColorPallete.textSecondary,
           onPressed: () => context.push(CreateEditResearchPage.routePath),
           child: const Icon(Icons.add),
         ),
@@ -173,7 +173,7 @@ class _ResearchListPageState extends State<ResearchListPage> {
         Text(
           'RESEARCH',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.white,
+                color: ColorPallete.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
         ),
@@ -183,7 +183,7 @@ class _ResearchListPageState extends State<ResearchListPage> {
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
-            icon: const Icon(Icons.menu, color: ColorPallete.white),
+            icon: const Icon(Icons.menu, color: ColorPallete.textPrimary),
           ),
         ),
       ],
@@ -196,23 +196,23 @@ class _ResearchListPageState extends State<ResearchListPage> {
         Container(
           height: 48,
           decoration: BoxDecoration(
-            color: const Color(0xFF16161A),
+            color: ColorPallete.backgroundPrimary,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white10),
+            border: Border.all(color: ColorPallete.divider),
           ),
           child: TextField(
             controller: _searchController,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
+            style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14),
             onChanged: (value) {
               context
                   .read<ResearchListBloc>()
                   .add(SearchQueryChanged(query: value));
             },
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Search research by title...',
-              hintStyle: TextStyle(color: Colors.white24),
+              hintStyle: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.24)),
               prefixIcon:
-                  Icon(Icons.search_rounded, color: Colors.white38, size: 20),
+                  Icon(Icons.search_rounded, color: ColorPallete.textDisabled, size: 20),
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(vertical: 12),
             ),
@@ -248,18 +248,18 @@ class _ResearchListPageState extends State<ResearchListPage> {
                   .read<ResearchListBloc>()
                   .add(FilterByStatus(status: value));
             },
-            backgroundColor: const Color(0xFF16161A),
-            selectedColor: Colors.white,
+            backgroundColor: ColorPallete.backgroundPrimary,
+            selectedColor: ColorPallete.textPrimary,
             showCheckmark: false,
             labelStyle: TextStyle(
-              color: isSelected ? Colors.black : Colors.white60,
+              color: isSelected ? ColorPallete.textSecondary : ColorPallete.textPrimary.withOpacity(0.60),
               fontSize: 12,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
               side:
-                  BorderSide(color: isSelected ? Colors.white : Colors.white10),
+                  BorderSide(color: isSelected ? ColorPallete.textPrimary : ColorPallete.divider),
             ),
           ),
         );
@@ -271,26 +271,26 @@ class _ResearchListPageState extends State<ResearchListPage> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: const Color(0xFF0F0F11),
+        backgroundColor: ColorPallete.backgroundPrimary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Colors.white10),
+          side: const BorderSide(color: ColorPallete.divider),
         ),
         title: const Text('Delete Research Entry',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
         content: const Text(
             'Are you sure you want to delete this entry? This action cannot be undone.',
-            style: TextStyle(color: Colors.white70)),
+            style: TextStyle(color: ColorPallete.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
             child:
-                const Text('Cancel', style: TextStyle(color: Colors.white54)),
+                const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
+              backgroundColor: ColorPallete.error,
+              foregroundColor: ColorPallete.textPrimary,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),
@@ -309,20 +309,20 @@ class _ResearchListPageState extends State<ResearchListPage> {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search_off_rounded, size: 64, color: Colors.white24),
-          SizedBox(height: 16),
-          Text('No research entries found',
+          Icon(Icons.search_off_rounded, size: 64, color: ColorPallete.textPrimary.withOpacity(0.24)),
+          const SizedBox(height: 16),
+          const Text('No research entries found',
               style: TextStyle(
-                  color: Colors.white70,
+                  color: ColorPallete.textSecondary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold)),
-          SizedBox(height: 8),
-          Text('Try adjusting your filters or search query',
-              style: TextStyle(color: Colors.white38, fontSize: 14)),
+          const SizedBox(height: 8),
+          const Text('Try adjusting your filters or search query',
+              style: TextStyle(color: ColorPallete.textDisabled, fontSize: 14)),
         ],
       ),
     );
@@ -334,29 +334,29 @@ class _ResearchListPageState extends State<ResearchListPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.error_outline_rounded,
-              size: 64, color: Colors.redAccent),
+              size: 64, color: ColorPallete.error),
           const SizedBox(height: 16),
           const Text('Something went wrong',
               style: TextStyle(
-                  color: Colors.white70,
+                  color: ColorPallete.textSecondary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Text(message,
-              style: const TextStyle(color: Colors.white38, fontSize: 14),
+              style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 14),
               textAlign: TextAlign.center),
           const SizedBox(height: 16),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white10,
-              side: const BorderSide(color: Colors.white24),
+              backgroundColor: ColorPallete.divider,
+              side:  BorderSide(color: ColorPallete.textPrimary.withOpacity(0.24)),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () => context
                 .read<ResearchListBloc>()
                 .add(const LoadResearchList(isRefresh: true)),
-            child: const Text('Retry', style: TextStyle(color: Colors.white)),
+            child: const Text('Retry', style: TextStyle(color: ColorPallete.textPrimary)),
           ),
         ],
       ),

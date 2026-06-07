@@ -24,7 +24,7 @@ class NavArrowButton extends StatelessWidget {
             shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5), side: BorderSide.none)),
             backgroundColor:
-                WidgetStatePropertyAll(color ?? ColorPallete.blackPrimary)),
+                WidgetStatePropertyAll(color ?? ColorPallete.backgroundPrimary)),
         child: Text(
           text ?? ">",
           style: textStyle ?? textTheme.bodyMedium,

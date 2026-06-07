@@ -21,29 +21,29 @@ class _TaskHorizontalWidgetState extends State<TaskHorizontalWidget> {
     final width = MediaQuery.sizeOf(context).width;
     final height = MediaQuery.sizeOf(context).height;
     final dropDownStyle =
-        Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white);
+        Theme.of(context).textTheme.bodyMedium!.copyWith(color: ColorPallete.textPrimary);
     final textStyle =
-        Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.black);
+        Theme.of(context).textTheme.bodyMedium!.copyWith(color: ColorPallete.textSecondary);
     return GestureDetector(
       onTap: () => context.push('/task-detail/${widget.task.id}'),
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: Draggable(
           feedback: Material(
-            color: Colors.transparent,
+            color: ColorPallete.transparent,
             child: Container(
               padding: const EdgeInsets.all(16.0),
-              color: Colors.blue,
+              color: ColorPallete.redPrimary,
               child: Text(
                 widget.task.title,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: ColorPallete.textPrimary),
               ),
             ),
           ),
           child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: ColorPallete.offWhite,
+            color: ColorPallete.textPrimary,
           ),
           padding: const EdgeInsets.all(10),
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -51,9 +51,9 @@ class _TaskHorizontalWidgetState extends State<TaskHorizontalWidget> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
-            collapsedIconColor: ColorPallete.blackPrimary,
+            collapsedIconColor: ColorPallete.backgroundPrimary,
             leading: const Icon(Icons.menu),
-            iconColor: ColorPallete.blackPrimary,
+            iconColor: ColorPallete.backgroundPrimary,
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -66,7 +66,7 @@ class _TaskHorizontalWidgetState extends State<TaskHorizontalWidget> {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: ColorPallete.offWhite,
+                  color: ColorPallete.textPrimary,
                 ),
                 padding: const EdgeInsets.all(10),
                 margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -109,7 +109,7 @@ class _TaskHorizontalWidgetState extends State<TaskHorizontalWidget> {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
-                  color: ColorPallete.blackPrimary,
+                  color: ColorPallete.backgroundPrimary,
                 ),
                 padding: const EdgeInsets.all(10),
                 margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -151,7 +151,7 @@ class _TaskHorizontalWidgetState extends State<TaskHorizontalWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       margin: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: ColorPallete.textSecondary,
         borderRadius: BorderRadius.circular(5),
       ),
       width: width * 0.20,

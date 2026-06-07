@@ -69,7 +69,7 @@ class _ChatPageState extends State<ChatPage> {
     final swidth = MediaQuery.sizeOf(context).width;
     return Container(
       decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: ColorPallete.background)),
+          color: ColorPallete.backgroundPrimary),
       child: Scaffold(
         drawer: CustomDrawer(
           selectedIndex: ListOfSideBar.sideBarItems.indexOf('Chat'),
@@ -108,7 +108,7 @@ class _ChatPageState extends State<ChatPage> {
                       return Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                            color: ColorPallete.blackSecondary,
+                            color: ColorPallete.backgroundSecondary,
                             borderRadius: BorderRadius.circular(5)),
                         height: sheight * 0.87,
                         width: swidth * 0.25,
@@ -174,7 +174,7 @@ class _ChatPageState extends State<ChatPage> {
                         padding: const EdgeInsets.all(10),
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                            color: ColorPallete.blackTertiary,
+                            color: ColorPallete.backgroundTertiary,
                             borderRadius: BorderRadius.circular(10)),
                         height: sheight * 0.87,
                         // width: swidth * 0.8,
@@ -230,8 +230,6 @@ class _ChatPageState extends State<ChatPage> {
                                     if (snapshot.hasData &&
                                         snapshot.data != null) {
                                       final List<MessageEntity> data = List<MessageEntity>.from(snapshot.data!);
-                                      // _scrollController.jumpTo(_scrollController
-                                      //     .position.maxScrollExtent);
                                       WidgetsBinding.instance
                                           .addPostFrameCallback((_) {
                                         _scrollController.jumpTo(
@@ -256,7 +254,7 @@ class _ChatPageState extends State<ChatPage> {
                               alignment: Alignment.bottomLeft,
                               child: Container(
                                   decoration: BoxDecoration(
-                                      color: ColorPallete.grey,
+                                      color: ColorPallete.textSecondary,
                                       borderRadius: BorderRadius.circular(10)),
                                   child: Row(
                                     children: [
@@ -311,7 +309,6 @@ class _ChatPageState extends State<ChatPage> {
                                                 controller.clear();
                                               },
                                             ),
-                                            const Icon(Icons.camera),
                                           ],
                                         ),
                                       ),
@@ -341,7 +338,7 @@ class _ChatPageState extends State<ChatPage> {
         },
         icon: const Icon(
           Icons.menu,
-          color: ColorPallete.white,
+          color: ColorPallete.textPrimary,
         ),
       ),
     ]);

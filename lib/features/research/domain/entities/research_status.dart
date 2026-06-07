@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 enum ResearchStatus {
   draft,
@@ -39,13 +40,13 @@ extension ResearchStatusX on ResearchStatus {
   Color get color {
     switch (this) {
       case ResearchStatus.draft:
-        return Colors.grey;
+        return ColorPallete.textSecondary;
       case ResearchStatus.inProgress:
-        return Colors.blue;
+        return ColorPallete.redPrimary;
       case ResearchStatus.review:
-        return Colors.orange;
+        return ColorPallete.statusColor('pending');
       case ResearchStatus.published:
-        return Colors.green;
+        return ColorPallete.statusColor('approved');
     }
   }
 

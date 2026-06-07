@@ -57,14 +57,14 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
               constraints: const BoxConstraints(minWidth: 200, maxWidth: 200),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: ColorPallete.blackPrimary,
+                color: ColorPallete.backgroundPrimary,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Center(child: Text('Create Task')),
             ),
             Container(
               decoration: BoxDecoration(
-                color: ColorPallete.blackSecondary,
+                color: ColorPallete.backgroundSecondary,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Form(
@@ -189,19 +189,19 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                             return Container(
                               padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
-                                  color: ColorPallete.offWhite,
+                                  color: ColorPallete.textPrimary,
                                   borderRadius: BorderRadius.circular(20)),
                               child: DropdownButton(
                                   value: projectID,
                                   borderRadius: BorderRadius.circular(20),
-                                  dropdownColor: ColorPallete.offWhite,
+                                  dropdownColor: ColorPallete.textPrimary,
                                   items: projects
                                       .map((e) => DropdownMenuItem(
                                             value: e.id,
                                             child: Text(
                                               e.name,
                                               style: taskStyle.copyWith(
-                                                  color: ColorPallete.black),
+                                                  color: ColorPallete.textSecondary),
                                             ),
                                           ))
                                       .toSet()
@@ -231,19 +231,19 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                             return Container(
                               padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
-                                  color: ColorPallete.offWhite,
+                                  color: ColorPallete.textPrimary,
                                   borderRadius: BorderRadius.circular(20)),
                               child: DropdownButton(
                                   value: teamID,
                                   borderRadius: BorderRadius.circular(20),
-                                  dropdownColor: ColorPallete.offWhite,
+                                  dropdownColor: ColorPallete.textPrimary,
                                   items: teams
                                       .map((e) => DropdownMenuItem(
                                             value: e.id,
                                             child: Text(
                                               e.name,
                                               style: taskStyle.copyWith(
-                                                  color: ColorPallete.black),
+                                                  color: ColorPallete.textSecondary),
                                             ),
                                           ))
                                       .toSet()
@@ -271,7 +271,7 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                             description: const Text(
                               "Task Created Successfully",
                               style:
-                                  TextStyle(color: ColorPallete.blackPrimary),
+                                  TextStyle(color: ColorPallete.backgroundPrimary),
                             ),
                             position: Alignment.bottomRight,
                             width: width * 0.5,
@@ -282,7 +282,7 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                             description: Text(
                               state.error.message,
                               style: const TextStyle(
-                                  color: ColorPallete.blackPrimary),
+                                  color: ColorPallete.backgroundPrimary),
                             ),
                             position: Alignment.bottomRight,
                             width: width * 0.5,
@@ -342,12 +342,7 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
 
   InputDecoration _buildInputDecoration(String hintText) {
     return InputDecoration(
-      focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: ColorPallete.blackPrimary),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       hintText: hintText,
-      filled: true,
     );
   }
 
@@ -372,7 +367,7 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
           width: width * 0.2,
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: ColorPallete.offWhite,
+            color: ColorPallete.textPrimary,
             borderRadius: BorderRadius.circular(5),
           ),
           child: Row(
@@ -383,10 +378,10 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                       : 'Due Date',
                   style: taskStyle.copyWith(
                       fontSize: width * 0.015,
-                      color: ColorPallete.blackPrimary)),
+                      color: ColorPallete.backgroundPrimary)),
               const Spacer(),
               const Icon(Icons.calendar_month,
-                  color: ColorPallete.blackPrimary, size: 20),
+                  color: ColorPallete.backgroundPrimary, size: 20),
             ],
           ),
         ),
@@ -415,18 +410,18 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
       width: width * 0.2,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: ColorPallete.offWhite,
+        color: ColorPallete.textPrimary,
         borderRadius: BorderRadius.circular(5),
       ),
       child: DropdownButton(
         isExpanded: true,
-        dropdownColor: ColorPallete.offWhite,
+        dropdownColor: ColorPallete.textPrimary,
         items: items,
         value: title,
         icon: const Icon(Icons.arrow_drop_down,
-            color: ColorPallete.blackPrimary, size: 20),
+            color: ColorPallete.backgroundPrimary, size: 20),
         style: taskStyle.copyWith(
-            fontSize: width * 0.015, color: ColorPallete.blackPrimary),
+            fontSize: width * 0.015, color: ColorPallete.backgroundPrimary),
         onChanged: (value) {
           onTap(value!);
         },
@@ -453,7 +448,7 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
           decoration: BoxDecoration(
               color: selectedTag == text
                   ? ColorPallete.redPrimary
-                  : ColorPallete.offWhite,
+                  : ColorPallete.textPrimary,
               borderRadius: BorderRadius.circular(5)),
           child: Center(
             child: Text(text,
@@ -462,8 +457,8 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                 style: taskStyle.copyWith(
                     fontSize: width * 0.015,
                     color: selectedTag == text
-                        ? ColorPallete.white
-                        : ColorPallete.blackPrimary)),
+                        ? ColorPallete.textPrimary
+                        : ColorPallete.backgroundPrimary)),
           ),
         ),
       ),

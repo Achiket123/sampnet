@@ -105,26 +105,26 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
   Color _getEventColor(String eventType) {
     switch (eventType.toLowerCase()) {
       case 'task':
-        return Colors.blue;
+        return ColorPallete.redPrimary;
       case 'meeting':
-        return Colors.purple;
+        return ColorPallete.textSecondary;
       case 'notification':
       case 'notifications':
-        return Colors.teal;
+        return ColorPallete.textSecondary;
       case 'appraisal':
       case 'appraisals':
-        return Colors.pink;
+        return ColorPallete.textSecondary;
       case 'milestone':
-        return Colors.orange;
+        return ColorPallete.statusColor('pending');
       case 'leave':
-        return Colors.red;
+        return ColorPallete.error;
       case 'attendance':
-        return Colors.green;
+        return ColorPallete.statusColor('approved');
       case 'project':
       case 'project_deadline':
-        return Colors.cyan;
+        return ColorPallete.textSecondary;
       default:
-        return Colors.blueGrey;
+        return ColorPallete.textSecondary;
     }
   }
 
@@ -137,19 +137,19 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
-          icon: const Icon(Icons.chevron_left, color: Colors.white, size: 28),
+          icon: const Icon(Icons.chevron_left, color: ColorPallete.textPrimary, size: 28),
           onPressed: _previousMonth,
         ),
         Text(
           DateFormat('MMMM yyyy').format(_currentMonth),
           style: const TextStyle(
-            color: Colors.white,
+            color: ColorPallete.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         IconButton(
-          icon: const Icon(Icons.chevron_right, color: Colors.white, size: 28),
+          icon: const Icon(Icons.chevron_right, color: ColorPallete.textPrimary, size: 28),
           onPressed: _nextMonth,
         ),
       ],
@@ -162,13 +162,13 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
       crossAxisCount: 7,
       physics: const NeverScrollableScrollPhysics(),
       children: const [
-        Center(child: Text('M', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))),
-        Center(child: Text('T', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))),
-        Center(child: Text('W', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))),
-        Center(child: Text('T', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))),
-        Center(child: Text('F', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))),
-        Center(child: Text('S', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))),
-        Center(child: Text('S', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))),
+        Center(child: Text('M', style: TextStyle(color: ColorPallete.textSecondary, fontWeight: FontWeight.bold))),
+        Center(child: Text('T', style: TextStyle(color: ColorPallete.textSecondary, fontWeight: FontWeight.bold))),
+        Center(child: Text('W', style: TextStyle(color: ColorPallete.textSecondary, fontWeight: FontWeight.bold))),
+        Center(child: Text('T', style: TextStyle(color: ColorPallete.textSecondary, fontWeight: FontWeight.bold))),
+        Center(child: Text('F', style: TextStyle(color: ColorPallete.textSecondary, fontWeight: FontWeight.bold))),
+        Center(child: Text('S', style: TextStyle(color: ColorPallete.textSecondary, fontWeight: FontWeight.bold))),
+        Center(child: Text('S', style: TextStyle(color: ColorPallete.textSecondary, fontWeight: FontWeight.bold))),
       ],
     );
   }
@@ -176,9 +176,9 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
   Widget _buildDaysGrid(List<DateTime> visibleDays) {
     return Container(
       decoration: BoxDecoration(
-        color: ColorPallete.blackSecondary.withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary.withOpacity(0.5),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: ColorPallete.textPrimary.withOpacity(0.1)),
       ),
       padding: const EdgeInsets.all(8),
       child: GridView.builder(
@@ -213,17 +213,17 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
               margin: const EdgeInsets.all(3),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? Colors.red.withOpacity(0.2)
+                    ? ColorPallete.error.withOpacity(0.2)
                     : isToday
-                        ? Colors.white.withOpacity(0.05)
-                        : Colors.transparent,
+                        ? ColorPallete.textPrimary.withOpacity(0.05)
+                        : ColorPallete.transparent,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: isSelected
-                      ? Colors.red
+                      ? ColorPallete.error
                       : isToday
-                          ? Colors.white.withOpacity(0.3)
-                          : Colors.transparent,
+                          ? ColorPallete.textPrimary.withOpacity(0.3)
+                          : ColorPallete.transparent,
                   width: 1.5,
                 ),
               ),
@@ -234,8 +234,8 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
                     day.day.toString(),
                     style: TextStyle(
                       color: isCurrentMonth
-                          ? Colors.white
-                          : Colors.white.withOpacity(0.25),
+                          ? ColorPallete.textPrimary
+                          : ColorPallete.textPrimary.withOpacity(0.25),
                       fontWeight: isToday || isSelected ? FontWeight.bold : FontWeight.normal,
                       fontSize: 16,
                     ),
@@ -283,7 +283,7 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
               child: Text(
                 "Schedule for ${DateFormat('MMMM d, yyyy').format(_selectedDay)}",
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: ColorPallete.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -295,7 +295,7 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
             Text(
               "Click slot to schedule",
               style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
+                color: ColorPallete.textPrimary.withOpacity(0.4),
                 fontSize: 12,
               ),
             ),
@@ -306,9 +306,9 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
         Container(
           height: 450,
           decoration: BoxDecoration(
-            color: ColorPallete.blackSecondary.withOpacity(0.3),
+            color: ColorPallete.backgroundSecondary.withOpacity(0.3),
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
+            border: Border.all(color: ColorPallete.textPrimary.withOpacity(0.08)),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(15),
@@ -352,7 +352,7 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
             child: Text(
               isHour ? timeStr : DateFormat(':mm').format(slotTime),
               style: TextStyle(
-                color: isHour ? Colors.white70 : Colors.white38,
+                color: isHour ? ColorPallete.textSecondary : ColorPallete.textDisabled,
                 fontSize: 11,
                 fontWeight: isHour ? FontWeight.bold : FontWeight.normal,
               ),
@@ -361,7 +361,7 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
           // Divider between time and slot content
           Container(
             width: 1.5,
-            color: Colors.white.withOpacity(0.08),
+            color: ColorPallete.textPrimary.withOpacity(0.08),
           ),
           // Slot content
           Expanded(
@@ -397,7 +397,7 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
                                     child: Text(
                                       event.title,
                                       style: const TextStyle(
-                                        color: Colors.white,
+                                        color: ColorPallete.textPrimary,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13,
                                       ),
@@ -427,7 +427,7 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
                                 Text(
                                   event.description,
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.7),
+                                    color: ColorPallete.textPrimary.withOpacity(0.7),
                                     fontSize: 11,
                                   ),
                                   maxLines: 1,
@@ -438,7 +438,7 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
                               Text(
                                 "${_formatTime(event.startTime)} - ${_formatTime(event.endTime)}",
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.4),
+                                  color: ColorPallete.textPrimary.withOpacity(0.4),
                                   fontSize: 10,
                                 ),
                               ),
@@ -466,14 +466,14 @@ class _CalendarMonthViewState extends State<CalendarMonthView> {
                             Text(
                               "Free Slot",
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.12),
+                                color: ColorPallete.textPrimary.withOpacity(0.12),
                                 fontSize: 12,
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
                             Icon(
                               Icons.add,
-                              color: Colors.white.withOpacity(0.12),
+                              color: ColorPallete.textPrimary.withOpacity(0.12),
                               size: 16,
                             ),
                           ],

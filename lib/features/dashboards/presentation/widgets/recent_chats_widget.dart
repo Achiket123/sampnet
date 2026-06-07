@@ -29,7 +29,7 @@ class RecentChatsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorPallete.background2[0].withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -41,7 +41,7 @@ class RecentChatsWidget extends StatelessWidget {
               Text(
                 "Recent Chats",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: ColorPallete.white,
+                      color: ColorPallete.textPrimary,
                       fontWeight: FontWeight.bold,
                     ),
               ),
@@ -74,7 +74,7 @@ class RecentChatsWidget extends StatelessWidget {
                 if (chats.isEmpty) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Center(child: Text("No chats yet", style: TextStyle(color: Colors.white54))),
+                    child: Center(child: Text("No chats yet", style: TextStyle(color: ColorPallete.textSecondary))),
                   );
                 }
 
@@ -94,26 +94,26 @@ class RecentChatsWidget extends StatelessWidget {
                       onTap: () => context.push('/chats'),
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
-                        backgroundColor: Colors.blueAccent.withOpacity(0.2),
+                        backgroundColor: ColorPallete.redPrimary.withOpacity(0.2),
                         child: Text(
                           chatName.isNotEmpty ? chatName[0].toUpperCase() : "?",
-                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                          style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14),
                         ),
                       ),
                       title: Text(
                         chatName,
-                        style: const TextStyle(color: ColorPallete.white, fontSize: 14, fontWeight: FontWeight.w500),
+                        style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14, fontWeight: FontWeight.w500),
                       ),
                       subtitle: Text(
                         chat.lastMessage ?? "No messages yet",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: ColorPallete.white.withOpacity(0.6), fontSize: 12),
+                        style: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.6), fontSize: 12),
                       ),
                       trailing: Text(
                         _formatRelativeTime(chat.lastMessageAt),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: ColorPallete.white.withOpacity(0.4),
+                              color: ColorPallete.textPrimary.withOpacity(0.4),
                               fontSize: 10,
                             ),
                       ),
@@ -138,15 +138,15 @@ class _ShimmerChatTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          CircleAvatar(radius: 20, backgroundColor: Colors.white.withOpacity(0.05)),
+          CircleAvatar(radius: 20, backgroundColor: ColorPallete.textPrimary.withOpacity(0.05)),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(width: 100, height: 10, decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(5))),
+                Container(width: 100, height: 10, decoration: BoxDecoration(color: ColorPallete.textPrimary.withOpacity(0.05), borderRadius: BorderRadius.circular(5))),
                 const SizedBox(height: 6),
-                Container(width: 150, height: 8, decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(4))),
+                Container(width: 150, height: 8, decoration: BoxDecoration(color: ColorPallete.textPrimary.withOpacity(0.05), borderRadius: BorderRadius.circular(4))),
               ],
             ),
           ),

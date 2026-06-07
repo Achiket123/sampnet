@@ -1,33 +1,51 @@
 import 'package:flutter/material.dart';
 
 class ColorPallete {
-  static const List<Color> background = [
-    Color.fromARGB(255, 104, 104, 104),
-    Color.fromARGB(255, 28, 28, 28)
-  ];
-  static const List<Color> background2 = [
-    Color.fromARGB(255, 72, 72, 72),
-    Color.fromARGB(255, 28, 28, 28)
-  ];
-  static const List<Color> buttonGradient = [
-    Color.fromARGB(255, 225, 50, 38),
-    Color.fromARGB(255, 170, 32, 22)
-  ];
-  static const greenPrimary = Colors.green;
-  static const white = Colors.white;
-  static const black = Colors.black;
-  static const blackPrimary = Color.fromARGB(255, 66, 66, 66);
-  static const blackTertiary = Color.fromARGB(255, 48, 48, 48);
-  static const redPrimary = Colors.red;
-  static const offWhite = Color.fromARGB(255, 212, 212, 212);
-  static const offWhite2 = Color.fromRGBO(217, 217, 217, 1);
+  // Backgrounds
+  static const backgroundPrimary = Color(0xFF0A0A0A);
+  static const backgroundSecondary = Color(0xFF141414);
+  static const backgroundTertiary = Color(0xFF1E1E1E);
+
+  // Reds
+  static const redPrimary = Color(0xFFE13226);
+  static const redDark = Color(0xFFAA2016);
+  static const redSubtle = Color(0x1AE13226); // 10% opacity red
+
+  // Texts
+  static const textPrimary = Color(0xFFFFFFFF);
+  static const textSecondary = Color(0xFFB0B0B0);
+  static const textMuted = Color(0x80B0B0B0); // 50% opacity textSecondary
+  static const textDisabled = Color(0xFF555555);
+
+  // Miscellaneous
+  static const divider = Color(0xFF2A2A2A);
   static const transparent = Colors.transparent;
-  static const background3 = Color.fromARGB(255, 104, 104, 104);
-  static const bug = Colors.yellow;
-  static const feature = Colors.blue;
-  static const highPriority = Colors.red;
-  static const mediumPriority = Colors.orange;
-  static const lowPriority = Colors.green;
-  static const blackSecondary = Color.fromARGB(255, 34, 34, 34);
-  static const grey = Color.fromARGB(255, 100, 100, 100);
+
+  // Semantic Status Colors
+  static const success = Color(0xFF2ECC71);
+  static const warning = Color(0xFFF39C12);
+  static const error = Color(0xFFE13226); // Same as redPrimary
+
+  /// Standardized status color mapping
+  static Color statusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+      case 'completed':
+      case 'present':
+        return success;
+      case 'pending':
+      case 'in-progress':
+        return warning;
+      case 'rejected':
+      case 'overdue':
+      case 'absent':
+        return error;
+      case 'cancelled':
+      case 'inactive':
+        return textDisabled;
+      default:
+        debugPrint('Warning: Unmapped status string "$status" used in ColorPallete.statusColor()');
+        return textSecondary;
+    }
+  }
 }

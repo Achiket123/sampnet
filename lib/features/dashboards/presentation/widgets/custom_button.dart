@@ -38,7 +38,7 @@ class _CustomButtonState extends State<CustomAttendanceButton> {
         if (state is AttendenceFailure) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text(state.errorModel.message),
-              backgroundColor: Colors.red));
+              backgroundColor: ColorPallete.error));
         }
       },
       bloc: widget.attendenceBloc,
@@ -65,7 +65,7 @@ class _CustomButtonState extends State<CustomAttendanceButton> {
                 ),
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black,
+                  color: ColorPallete.textSecondary,
                   borderRadius: BorderRadius.circular(5),
                   boxShadow: isHovered
                       ? [
@@ -152,7 +152,7 @@ class _DashBoardButtonState extends State<DashBoardButton> {
                 child: Text(
               widget.text,
               style: textTheme.displayMedium!.copyWith(
-                  color: ColorPallete.white, fontWeight: FontWeight.bold),
+                  color: ColorPallete.textPrimary, fontWeight: FontWeight.bold),
             )),
           ),
         ),
@@ -198,12 +198,12 @@ class _DashBoardTextFunctionButtonState
             minWidth: 60,
           ),
           decoration: BoxDecoration(
-            color: ColorPallete.offWhite,
+            color: ColorPallete.textPrimary,
             borderRadius: BorderRadius.circular(10),
             boxShadow: isHovered
                 ? [
                     BoxShadow(
-                      color: Colors.white.withOpacity(0.3),
+                      color: ColorPallete.textPrimary.withOpacity(0.3),
                       blurRadius: 12,
                       spreadRadius: 2,
                     )
@@ -217,7 +217,7 @@ class _DashBoardTextFunctionButtonState
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: textTheme.displaySmall!
-                .copyWith(fontSize: 13, color: Colors.black),
+                .copyWith(fontSize: 13, color: ColorPallete.textSecondary),
           )),
         ),
       ),

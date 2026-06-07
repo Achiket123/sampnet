@@ -81,7 +81,9 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                   context.go(ProjectsListPage.routePath);
                 } else if (index == 9) {
                   context.go(PersonalCalendarPage.routePath);
-              }  else {
+                } else if (index == 10) {
+                  context.go('/analytics');
+                } else {
                   _changeIndex(index);
                 }
               },

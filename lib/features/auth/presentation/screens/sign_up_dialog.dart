@@ -46,10 +46,10 @@ class SignUpDialogState extends State<SignUpDialog> {
     final swidth = MediaQuery.of(context).size.width;
     // final sheight = MediaQuery.of(context).size.height;
     return Material(
-      shadowColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
+      shadowColor: ColorPallete.transparent,
+      surfaceTintColor: ColorPallete.transparent,
       borderRadius: BorderRadius.circular(10),
-      color: Colors.transparent,
+      color: ColorPallete.transparent,
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -64,7 +64,7 @@ class SignUpDialogState extends State<SignUpDialog> {
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   transform: GradientRotation(pi / 4),
-                  colors: ColorPallete.background,
+                  colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -96,36 +96,24 @@ class SignUpDialogState extends State<SignUpDialog> {
                       controller: firstNameController,
                       label: "First Name",
                       hintText: "Enter your first name",
-                      style: const TextStyle(color: Colors.white),
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintStyle: const TextStyle(color: Colors.white),
                     ),
                     AuthCustomTextFormField(
                       width: swidth / 5,
                       controller: lastNameController,
                       label: "Last Name",
                       hintText: "Enter your last name",
-                      style: const TextStyle(color: Colors.white),
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintStyle: const TextStyle(color: Colors.white),
                     ),
                     AuthCustomTextFormField(
                       width: swidth / 5,
                       controller: emailController,
                       label: "Email",
                       hintText: "Enter your email",
-                      style: const TextStyle(color: Colors.white),
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintStyle: const TextStyle(color: Colors.white),
                     ),
                     AuthCustomTextFormField(
                       width: swidth / 5,
                       controller: phoneNumberController,
                       label: "Phone Number",
                       hintText: "Enter your phone number",
-                      style: const TextStyle(color: Colors.white),
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintStyle: const TextStyle(color: Colors.white),
                     ),
                     AuthCustomTextFormField(
                       width: swidth / 5,
@@ -133,15 +121,12 @@ class SignUpDialogState extends State<SignUpDialog> {
                       label: "Password",
                       hintText: "Enter your password",
                       obscureText: _obscurePassword,
-                      style: const TextStyle(color: Colors.white),
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintStyle: const TextStyle(color: Colors.white),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_off
                               : Icons.visibility,
-                          color: Colors.white,
+                          color: ColorPallete.textPrimary,
                         ),
                         onPressed: () {
                           setState(() {
@@ -155,18 +140,12 @@ class SignUpDialogState extends State<SignUpDialog> {
                       controller: cityController,
                       label: "City",
                       hintText: "Enter your city",
-                      style: const TextStyle(color: Colors.white),
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintStyle: const TextStyle(color: Colors.white),
                     ),
                     AuthCustomTextFormField(
                       width: swidth / 5,
                       controller: countryController,
                       label: "Country",
                       hintText: "Enter your country",
-                      style: const TextStyle(color: Colors.white),
-                      labelStyle: const TextStyle(color: Colors.white),
-                      hintStyle: const TextStyle(color: Colors.white),
                     ),
                     SizedBox(
                       width: swidth / 5,

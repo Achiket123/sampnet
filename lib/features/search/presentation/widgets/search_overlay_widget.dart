@@ -38,16 +38,16 @@ class _SearchOverlayWidgetState extends State<SearchOverlayWidget> {
       width: 220,
       child: TextField(
         controller: _controller,
-        style: const TextStyle(color: Colors.white, fontSize: 13),
+        style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 13),
         textInputAction: TextInputAction.search,
         onSubmitted: (_) => _navigate(),
         onTap: _navigate, // opens the full page on focus
         decoration: InputDecoration(
           hintText: 'Search…',
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13),
-          prefixIcon: const Icon(Icons.search, color: Colors.white54, size: 18),
+          hintStyle: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.4), fontSize: 13),
+          prefixIcon: const Icon(Icons.search, color: ColorPallete.textSecondary, size: 18),
           filled: true,
-          fillColor: ColorPallete.blackSecondary,
+          fillColor: ColorPallete.backgroundSecondary,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           border: OutlineInputBorder(

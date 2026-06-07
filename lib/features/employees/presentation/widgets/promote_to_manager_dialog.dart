@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hackathon/features/employees/domain/entities/employee_entity.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class PromoteToManagerDialog extends StatefulWidget {
   final EmployeeEntity employee;
@@ -37,19 +38,19 @@ class _PromoteToManagerDialogState extends State<PromoteToManagerDialog> {
         children: [
           TextField(
             controller: _typeController,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: ColorPallete.textPrimary),
             decoration: const InputDecoration(
               labelText: 'Role/Title',
-              labelStyle: TextStyle(color: Colors.white70),
+              labelStyle: TextStyle(color: ColorPallete.textSecondary),
             ),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _salaryController,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: ColorPallete.textPrimary),
             decoration: const InputDecoration(
               labelText: 'Salary (Optional)',
-              labelStyle: TextStyle(color: Colors.white70),
+              labelStyle: TextStyle(color: ColorPallete.textSecondary),
             ),
           ),
         ],

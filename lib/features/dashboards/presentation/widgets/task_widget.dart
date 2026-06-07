@@ -7,7 +7,7 @@ class TaskWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: ColorPallete.offWhite,
+          color: ColorPallete.textPrimary,
           borderRadius: BorderRadius.circular(10)),
       child:const Row(
         children: [

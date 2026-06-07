@@ -69,10 +69,10 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final taskStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white);
+    final taskStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(color: ColorPallete.textPrimary);
 
     return Dialog(
-      backgroundColor: ColorPallete.blackSecondary,
+      backgroundColor: ColorPallete.backgroundSecondary,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         constraints: const BoxConstraints(minWidth: 320, maxWidth: 500),
@@ -90,13 +90,13 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
                     const Text(
                       'Schedule Event',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: ColorPallete.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white70),
+                      icon: const Icon(Icons.close, color: ColorPallete.textSecondary),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -130,18 +130,18 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: ColorPallete.blackPrimary.withOpacity(0.5),
+                    color: ColorPallete.backgroundPrimary.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withOpacity(0.08)),
+                    border: Border.all(color: ColorPallete.textPrimary.withOpacity(0.08)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.access_time_filled, color: Colors.redAccent, size: 20),
+                      const Icon(Icons.access_time_filled, color: ColorPallete.error, size: 20),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           DateFormat('MMMM d, yyyy  •  hh:mm a').format(_dueDate),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                          style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.w600),
                         ),
                       ),
                     ],
@@ -156,7 +156,7 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Event Type', style: TextStyle(color: Colors.white60, fontSize: 12)),
+                          Text('Event Type', style: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.60), fontSize: 12)),
                           const SizedBox(height: 6),
                           _buildDropdown(
                             value: _eventType,
@@ -175,7 +175,7 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Priority', style: TextStyle(color: Colors.white60, fontSize: 12)),
+                          Text('Priority', style: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.60), fontSize: 12)),
                           const SizedBox(height: 6),
                           _buildDropdown(
                             value: _priority,
@@ -195,7 +195,7 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
 
                 // Assignee & Personal checkbox Row
                 if (widget.viewType == CalendarViewType.team) ...[
-                  const Text('Assign To', style: TextStyle(color: Colors.white60, fontSize: 12)),
+                  Text('Assign To', style: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.60), fontSize: 12)),
                   const SizedBox(height: 6),
                   BlocBuilder<GetEmployeesBloc, GetEmployeesState>(
                     bloc: _getEmployeesBloc,
@@ -207,7 +207,7 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
                           child: const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.red),
+                            child: CircularProgressIndicator(strokeWidth: 2, color: ColorPallete.error),
                           ),
                         );
                       } else if (state is GetEmployeesSuccess) {
@@ -215,16 +215,16 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           decoration: BoxDecoration(
-                            color: ColorPallete.blackPrimary,
+                            color: ColorPallete.backgroundPrimary,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.white.withOpacity(0.08)),
+                            border: Border.all(color: ColorPallete.textPrimary.withOpacity(0.08)),
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<int>(
                               isExpanded: true,
-                              dropdownColor: ColorPallete.blackSecondary,
+                              dropdownColor: ColorPallete.backgroundSecondary,
                               value: _assignedToID,
-                              style: const TextStyle(color: Colors.white),
+                              style: const TextStyle(color: ColorPallete.textPrimary),
                               items: employees.map((e) {
                                 return DropdownMenuItem<int>(
                                   value: e.id,
@@ -253,7 +253,7 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel', style: TextStyle(color: Colors.white60)),
+                      child: Text('Cancel', style: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.60))),
                     ),
                     const SizedBox(width: 12),
                     BlocConsumer<CreateTaskBloc, CreateTaskState>(
@@ -263,7 +263,7 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
                           ElegantNotification.success(
                             description: const Text(
                               "Event scheduled successfully",
-                              style: TextStyle(color: ColorPallete.blackPrimary),
+                              style: TextStyle(color: ColorPallete.backgroundPrimary),
                             ),
                             position: Alignment.bottomRight,
                             width: width * 0.45,
@@ -274,7 +274,7 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
                           ElegantNotification.error(
                             description: Text(
                               state.error.message,
-                              style: const TextStyle(color: ColorPallete.blackPrimary),
+                              style: const TextStyle(color: ColorPallete.backgroundPrimary),
                             ),
                             position: Alignment.bottomRight,
                             width: width * 0.45,
@@ -286,12 +286,12 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
                           return const SizedBox(
                             width: 32,
                             height: 32,
-                            child: CircularProgressIndicator(color: Colors.red),
+                            child: CircularProgressIndicator(color: ColorPallete.error),
                           );
                         }
                         return CustomTextButton(
                           width: 130,
-                          text: const Text('Save Event', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          text: const Text('Save Event', style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
                           onTap: () {
                             if (_formKey.currentState?.validate() ?? false) {
                               final orgId = getIt<User>().organisation?.id ?? 0;
@@ -330,27 +330,7 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
 
   InputDecoration _buildInputDecoration(String hintText) {
     return InputDecoration(
-      filled: true,
-      fillColor: ColorPallete.blackPrimary,
       hintText: hintText,
-      hintStyle: const TextStyle(color: Colors.white30, fontSize: 14),
-      focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Colors.redAccent),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );
   }
 
@@ -362,16 +342,16 @@ class _CreateEventDialogState extends State<CreateEventDialog> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: ColorPallete.blackPrimary,
+        color: ColorPallete.backgroundPrimary,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: ColorPallete.textPrimary.withOpacity(0.08)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           isExpanded: true,
-          dropdownColor: ColorPallete.blackSecondary,
+          dropdownColor: ColorPallete.backgroundSecondary,
           value: value,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: ColorPallete.textPrimary),
           items: items.map((item) {
             return DropdownMenuItem<String>(
               value: item,

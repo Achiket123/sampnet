@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class LeaveBalanceCard extends StatelessWidget {
   const LeaveBalanceCard({super.key});
@@ -14,11 +15,11 @@ class LeaveBalanceCard extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         children: [
           _buildBalanceItem(
-              'Annual Allocation', '24', '18 remaining', Colors.blueAccent),
+              'Annual Allocation', '24', '18 remaining', ColorPallete.redPrimary),
           _buildBalanceItem('Medical Exemption', '10', '7 remaining',
-              Colors.lightGreenAccent),
+              ColorPallete.statusColor('approved')),
           _buildBalanceItem(
-              'Unpaid Contingency', '05', '0 used', Colors.orangeAccent),
+              'Unpaid Contingency', '05', '0 used', ColorPallete.statusColor('pending')),
         ],
       ),
     );
@@ -30,9 +31,9 @@ class LeaveBalanceCard extends StatelessWidget {
       margin: const EdgeInsets.only(right: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF16161A),
+        color: ColorPallete.backgroundPrimary,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: ColorPallete.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +41,7 @@ class LeaveBalanceCard extends StatelessWidget {
         children: [
           Text(type,
               style: const TextStyle(
-                  color: Colors.white38,
+                  color: ColorPallete.textDisabled,
                   fontSize: 11,
                   fontWeight: FontWeight.w600),
               maxLines: 1,
@@ -54,11 +55,11 @@ class LeaveBalanceCard extends StatelessWidget {
                       color: color, fontSize: 22, fontWeight: FontWeight.bold)),
               const SizedBox(width: 4),
               Text('days',
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+                  style: TextStyle(color: ColorPallete.textSecondary, fontSize: 11)),
             ],
           ),
           Text(sub,
-              style: const TextStyle(color: Colors.white70, fontSize: 11)),
+              style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 11)),
         ],
       ),
     );

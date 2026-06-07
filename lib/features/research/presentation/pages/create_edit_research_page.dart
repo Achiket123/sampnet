@@ -15,6 +15,7 @@ import '../blocs/research_list_bloc/research_list_bloc.dart';
 import '../../../projects/presentation/blocs/project_bloc/project_bloc.dart';
 import '../../../projects/presentation/blocs/project_bloc/project_state.dart';
 import '../../../team/presentation/blocs/team_bloc/team_bloc.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class CreateEditResearchPage extends StatefulWidget {
   static const String routePath = '/create-edit-research';
@@ -119,15 +120,15 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F11),
+      backgroundColor: ColorPallete.backgroundPrimary,
       appBar: AppBar(
         title: Text(
             widget.entryToEdit == null ? 'Create Research' : 'Edit Research',
-            style: const TextStyle(color: Colors.white)),
-        backgroundColor: Colors.transparent,
+            style: const TextStyle(color: ColorPallete.textPrimary)),
+        backgroundColor: ColorPallete.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
+          icon: const Icon(Icons.close, color: ColorPallete.textPrimary),
           onPressed: () => context.pop(),
         ),
       ),
@@ -221,8 +222,8 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
                       height: 54,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
+                          backgroundColor: ColorPallete.textPrimary,
+                          foregroundColor: ColorPallete.textSecondary,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
                           elevation: 0,
@@ -261,7 +262,7 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
       children: [
         const Text('Thumbnail',
             style: TextStyle(
-                color: Colors.white70,
+                color: ColorPallete.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
@@ -272,9 +273,9 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
               width: double.infinity,
               height: 160,
               decoration: BoxDecoration(
-                color: const Color(0xFF16161A),
+                color: ColorPallete.backgroundPrimary,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white10),
+                border: Border.all(color: ColorPallete.divider),
                 image: _thumbnailBytes != null
                     ? DecorationImage(
                         image: MemoryImage(_thumbnailBytes!),
@@ -287,11 +288,11 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.add_photo_alternate_outlined,
-                            color: Colors.white.withValues(alpha: 0.3), size: 40),
+                            color: ColorPallete.textPrimary.withValues(alpha: 0.3), size: 40),
                         const SizedBox(height: 8),
                         Text('Add File (Workspace Image)',
                             style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.3),
+                                color: ColorPallete.textPrimary.withValues(alpha: 0.3),
                                 fontSize: 12)),
                       ],
                     )
@@ -301,10 +302,10 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
                           right: 8,
                           top: 8,
                           child: CircleAvatar(
-                            backgroundColor: Colors.black54,
+                            backgroundColor: ColorPallete.textSecondary,
                             radius: 16,
                             child: IconButton(
-                              icon: const Icon(Icons.edit, size: 14, color: Colors.white),
+                              icon: const Icon(Icons.edit, size: 14, color: ColorPallete.textPrimary),
                               onPressed: _pickThumbnail,
                             ),
                           ),
@@ -329,7 +330,7 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
       children: [
         Text(label,
             style: const TextStyle(
-                color: Colors.white70,
+                color: ColorPallete.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
@@ -337,19 +338,19 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
           controller: controller,
           maxLines: maxLines,
           validator: validator,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: ColorPallete.textPrimary),
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color(0xFF16161A),
+            fillColor: ColorPallete.backgroundPrimary,
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.white10)),
+                borderSide: const BorderSide(color: ColorPallete.divider)),
             enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.white10)),
+                borderSide: const BorderSide(color: ColorPallete.divider)),
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.white30)),
+                borderSide: BorderSide(color: ColorPallete.textSecondary)),
             contentPadding: const EdgeInsets.all(16),
           ),
         ),
@@ -368,7 +369,7 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
       children: [
         Text(label,
             style: const TextStyle(
-                color: Colors.white70,
+                color: ColorPallete.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
@@ -376,17 +377,17 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
           value: value,
           items: items,
           onChanged: onChanged,
-          dropdownColor: const Color(0xFF16161A),
-          style: const TextStyle(color: Colors.white),
+          dropdownColor: ColorPallete.backgroundPrimary,
+          style: const TextStyle(color: ColorPallete.textPrimary),
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color(0xFF16161A),
+            fillColor: ColorPallete.backgroundPrimary,
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.white10)),
+                borderSide: const BorderSide(color: ColorPallete.divider)),
             enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.white10)),
+                borderSide: const BorderSide(color: ColorPallete.divider)),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           ),
@@ -401,7 +402,7 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
       children: [
         const Text('Tags',
             style: TextStyle(
-                color: Colors.white70,
+                color: ColorPallete.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
@@ -410,19 +411,19 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
             Expanded(
               child: TextFormField(
                 controller: _tagsController,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: ColorPallete.textPrimary),
                 decoration: InputDecoration(
                   hintText: 'Press enter to add tag',
                   hintStyle:
-                      const TextStyle(color: Colors.white24, fontSize: 14),
+                       TextStyle(color: ColorPallete.textPrimary.withOpacity(0.24), fontSize: 14),
                   filled: true,
-                  fillColor: const Color(0xFF16161A),
+                  fillColor: ColorPallete.backgroundPrimary,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.white10)),
+                      borderSide: const BorderSide(color: ColorPallete.divider)),
                   enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.white10)),
+                      borderSide: const BorderSide(color: ColorPallete.divider)),
                 ),
                 onFieldSubmitted: (v) {
                   if (v.isNotEmpty && !_tags.contains(v)) {
@@ -445,12 +446,12 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
                 .map((tag) => Chip(
                       label: Text(tag),
                       onDeleted: () => setState(() => _tags.remove(tag)),
-                      backgroundColor: Colors.white.withValues(alpha: 0.05),
+                      backgroundColor: ColorPallete.textPrimary.withValues(alpha: 0.05),
                       labelStyle:
-                          const TextStyle(color: Colors.white70, fontSize: 12),
+                          const TextStyle(color: ColorPallete.textSecondary, fontSize: 12),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
-                      deleteIconColor: Colors.white38,
+                      deleteIconColor: ColorPallete.textDisabled,
                       deleteIcon: const Icon(Icons.close, size: 14),
                     ))
                 .toList(),

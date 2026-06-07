@@ -29,12 +29,12 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return Material(
       borderRadius: BorderRadius.circular(10),
-      color: Colors.transparent,
+      color: ColorPallete.transparent,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           gradient: const LinearGradient(
-              colors: ColorPallete.background2,
+              colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter),
         ),
@@ -48,7 +48,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge
-                      ?.copyWith(color: ColorPallete.white)),
+                      ?.copyWith(color: ColorPallete.textPrimary)),
               const SizedBox(height: 20),
               Form(
                   key: formKey,
@@ -137,8 +137,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     .textTheme
                                     .bodyMedium
                                     ?.copyWith(
-                                        color: const Color.fromARGB(
-                                            255, 43, 173, 254)))
+                                        color: ColorPallete.redPrimary))
                           ]))
                     ],
                   ))

@@ -7,6 +7,7 @@ import '../blocs/research_detail_bloc/research_detail_bloc.dart';
 import '../widgets/status_badge_widget.dart';
 import 'create_edit_research_page.dart';
 import 'research_explorer_page.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class ResearchDetailPage extends StatelessWidget {
   static const String routePath = '/research-detail';
@@ -19,12 +20,12 @@ class ResearchDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F11),
+      backgroundColor: ColorPallete.backgroundPrimary,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: ColorPallete.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: ColorPallete.textPrimary),
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -35,14 +36,14 @@ class ResearchDetailPage extends StatelessWidget {
                   children: [
                     IconButton(
                       icon:
-                          const Icon(Icons.edit_outlined, color: Colors.white),
+                          const Icon(Icons.edit_outlined, color: ColorPallete.textPrimary),
                       onPressed: () => context.push(
                           CreateEditResearchPage.routePath,
                           extra: state.entry),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete_outline,
-                          color: Colors.redAccent),
+                          color: ColorPallete.error),
                       onPressed: () => _confirmDelete(context, state.entry.id),
                     ),
                   ],
@@ -72,7 +73,7 @@ class ResearchDetailPage extends StatelessWidget {
           if (state is ResearchDetailLoading) {
             return const Center(
                 child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(Colors.white)));
+                    valueColor: AlwaysStoppedAnimation(ColorPallete.textPrimary)));
           } else if (state is ResearchDetailLoaded) {
             final entry = state.entry;
             return SingleChildScrollView(
@@ -87,7 +88,7 @@ class ResearchDetailPage extends StatelessWidget {
                       Text(
                         DateFormat('MMM dd, yyyy').format(entry.createdAt),
                         style: const TextStyle(
-                            color: Colors.white38, fontSize: 12),
+                            color: ColorPallete.textDisabled, fontSize: 12),
                       ),
                     ],
                   ),
@@ -95,7 +96,7 @@ class ResearchDetailPage extends StatelessWidget {
                   Text(
                     entry.title,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: ColorPallete.textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
@@ -128,7 +129,7 @@ class ResearchDetailPage extends StatelessWidget {
                   const Text(
                     'Description',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: ColorPallete.textSecondary,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -136,8 +137,8 @@ class ResearchDetailPage extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     entry.description,
-                    style: const TextStyle(
-                      color: Colors.white60,
+                    style:  TextStyle(
+                      color: ColorPallete.textPrimary.withOpacity(0.60),
                       fontSize: 16,
                       height: 1.5,
                     ),
@@ -147,7 +148,7 @@ class ResearchDetailPage extends StatelessWidget {
                     const Text(
                       'Tags',
                       style: TextStyle(
-                        color: Colors.white70,
+                        color: ColorPallete.textSecondary,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -159,9 +160,9 @@ class ResearchDetailPage extends StatelessWidget {
                       children: entry.tags
                           .map((tag) => Chip(
                                 label: Text(tag),
-                                backgroundColor: Colors.white10,
+                                backgroundColor: ColorPallete.divider,
                                 labelStyle: const TextStyle(
-                                    color: Colors.white70, fontSize: 12),
+                                    color: ColorPallete.textSecondary, fontSize: 12),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8)),
                               ))
@@ -174,8 +175,8 @@ class ResearchDetailPage extends StatelessWidget {
                     height: 54,
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        foregroundColor: Colors.white,
+                        backgroundColor: ColorPallete.redPrimary,
+                        foregroundColor: ColorPallete.textPrimary,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),
@@ -199,10 +200,10 @@ class ResearchDetailPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.error_outline,
-                      size: 48, color: Colors.redAccent),
+                      size: 48, color: ColorPallete.error),
                   const SizedBox(height: 16),
                   Text(state.message,
-                      style: const TextStyle(color: Colors.white70)),
+                      style: const TextStyle(color: ColorPallete.textSecondary)),
                   TextButton(
                     onPressed: () => context
                         .read<ResearchDetailBloc>()
@@ -233,24 +234,24 @@ class ResearchDetailPage extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.03),
+            color: ColorPallete.textPrimary.withValues(alpha: 0.03),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white10),
+            border: Border.all(color: ColorPallete.divider),
           ),
           child: Row(
             children: [
-              Icon(icon, color: Colors.white38, size: 20),
+              Icon(icon, color: ColorPallete.textDisabled, size: 20),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(label,
                       style:
-                          const TextStyle(color: Colors.white38, fontSize: 10)),
+                          const TextStyle(color: ColorPallete.textDisabled, fontSize: 10)),
                   Text(
                     value,
                     style: TextStyle(
-                      color: onTap != null ? Colors.blueAccent : Colors.white70,
+                      color: onTap != null ? ColorPallete.redPrimary : ColorPallete.textSecondary,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       decoration:
@@ -270,26 +271,26 @@ class ResearchDetailPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: const Color(0xFF0F0F11),
+        backgroundColor: ColorPallete.backgroundPrimary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Colors.white10),
+          side: const BorderSide(color: ColorPallete.divider),
         ),
         title: const Text('Delete Research Entry',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
         content: const Text(
             'Are you sure you want to delete this entry? This action cannot be undone.',
-            style: TextStyle(color: Colors.white70)),
+            style: TextStyle(color: ColorPallete.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
             child:
-                const Text('Cancel', style: TextStyle(color: Colors.white54)),
+                const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
+              backgroundColor: ColorPallete.error,
+              foregroundColor: ColorPallete.textPrimary,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
             ),

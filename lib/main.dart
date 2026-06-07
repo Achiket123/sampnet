@@ -46,6 +46,7 @@ import 'package:hackathon/firebase_options.dart';
 import 'package:hackathon/globals/constants/globals.dart';
 import 'package:hackathon/globals/constants/strings.dart';
 import 'package:hackathon/globals/constants/styles.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 import 'package:hackathon/services/routes.dart';
 import 'package:hackathon/features/chats/data/models/message_hive_model.dart';
 import 'package:hackathon/features/chats/data/models/chat_hive_model.dart';
@@ -196,8 +197,140 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         routerConfig: route,
-        theme: ThemeData.dark().copyWith(
-            textTheme: textTheme, inputDecorationTheme: inputDecorationTheme),
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: ColorPallete.backgroundPrimary,
+          primaryColor: ColorPallete.redPrimary,
+          colorScheme: const ColorScheme.dark(
+            primary: ColorPallete.redPrimary,
+            onPrimary: ColorPallete.textPrimary,
+            secondary: ColorPallete.redDark,
+            onSecondary: ColorPallete.textPrimary,
+            surface: ColorPallete.backgroundSecondary,
+            onSurface: ColorPallete.textPrimary,
+            error: ColorPallete.redPrimary,
+            onError: ColorPallete.textPrimary,
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: ColorPallete.backgroundPrimary,
+            foregroundColor: ColorPallete.textPrimary,
+            elevation: 0,
+            iconTheme: IconThemeData(color: ColorPallete.textPrimary),
+          ),
+          cardTheme: CardTheme(
+            color: ColorPallete.backgroundSecondary,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          inputDecorationTheme: inputDecorationTheme,
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorPallete.redPrimary,
+              foregroundColor: ColorPallete.textPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ).copyWith(
+              overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+                  if (states.contains(WidgetState.pressed)) return ColorPallete.redDark;
+                  return null;
+                },
+              ),
+            ),
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              foregroundColor: ColorPallete.redPrimary,
+            ),
+          ),
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: ColorPallete.redPrimary,
+              side: const BorderSide(color: ColorPallete.redPrimary),
+            ),
+          ),
+          iconTheme: const IconThemeData(color: ColorPallete.textPrimary),
+          dividerTheme: const DividerThemeData(
+            color: ColorPallete.divider,
+            thickness: 1,
+          ),
+          checkboxTheme: CheckboxThemeData(
+            fillColor: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+                if (states.contains(WidgetState.selected)) {
+                  return ColorPallete.redPrimary;
+                }
+                return null;
+              },
+            ),
+          ),
+          radioTheme: RadioThemeData(
+            fillColor: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+                if (states.contains(WidgetState.selected)) {
+                  return ColorPallete.redPrimary;
+                }
+                return null;
+              },
+            ),
+          ),
+          switchTheme: SwitchThemeData(
+            trackColor: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+                if (states.contains(WidgetState.selected)) {
+                  return ColorPallete.redPrimary;
+                }
+                return null;
+              },
+            ),
+            thumbColor: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+                if (states.contains(WidgetState.selected)) {
+                  return ColorPallete.redPrimary;
+                }
+                return null;
+              },
+            ),
+          ),
+          progressIndicatorTheme: const ProgressIndicatorThemeData(
+            color: ColorPallete.redPrimary,
+          ),
+          snackBarTheme: const SnackBarThemeData(
+            backgroundColor: ColorPallete.backgroundTertiary,
+            contentTextStyle: TextStyle(color: ColorPallete.textPrimary),
+          ),
+          dialogTheme: const DialogTheme(
+            backgroundColor: ColorPallete.backgroundTertiary,
+            titleTextStyle: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold),
+          ),
+          bottomSheetTheme: const BottomSheetThemeData(
+            backgroundColor: ColorPallete.backgroundTertiary,
+          ),
+          tabBarTheme: const TabBarTheme(
+            labelColor: ColorPallete.redPrimary,
+            unselectedLabelColor: ColorPallete.textSecondary,
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(color: ColorPallete.redPrimary),
+            ),
+          ),
+          chipTheme: const ChipThemeData(
+            backgroundColor: ColorPallete.backgroundTertiary,
+            selectedColor: ColorPallete.redSubtle,
+            labelStyle: TextStyle(color: ColorPallete.textPrimary),
+            secondaryLabelStyle: TextStyle(color: ColorPallete.redPrimary),
+          ),
+          listTileTheme: const ListTileThemeData(
+            tileColor: ColorPallete.transparent,
+            selectedTileColor: ColorPallete.redSubtle,
+            selectedColor: ColorPallete.redPrimary,
+            iconColor: ColorPallete.textSecondary,
+            textColor: ColorPallete.textPrimary,
+          ),
+          textTheme: textTheme,
+        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hackathon/features/notifications/domain/entities/notification_entity.dart';
 import 'package:hackathon/features/notifications/presentation/blocs/notifications_bloc/notifications_bloc.dart';
 import 'package:hackathon/features/notifications/presentation/blocs/notifications_bloc/notifications_event.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class NotificationItemWidget extends StatelessWidget {
   final NotificationEntity notification;
@@ -22,8 +23,8 @@ class NotificationItemWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: notification.isRead ? Colors.transparent : Colors.white.withValues(alpha: 0.05),
-          border: const Border(bottom: BorderSide(color: Colors.white10, width: 0.5)),
+          color: notification.isRead ? ColorPallete.transparent : ColorPallete.textPrimary.withValues(alpha: 0.05),
+          border: const Border(bottom: BorderSide(color: ColorPallete.divider, width: 0.5)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,7 +38,7 @@ class NotificationItemWidget extends StatelessWidget {
                   Text(
                     notification.title,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
+                      color: ColorPallete.textPrimary.withOpacity(0.9),
                       fontSize: 14,
                       fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
                     ),
@@ -48,7 +49,7 @@ class NotificationItemWidget extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
+                      color: ColorPallete.textPrimary.withOpacity(0.6),
                       fontSize: 13,
                     ),
                   ),
@@ -58,7 +59,7 @@ class NotificationItemWidget extends StatelessWidget {
                     child: Text(
                       _formatRelativeTime(notification.createdAt),
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.3),
+                        color: ColorPallete.textPrimary.withOpacity(0.3),
                         fontSize: 11,
                       ),
                     ),
@@ -80,27 +81,27 @@ class NotificationItemWidget extends StatelessWidget {
       case 'task_assigned':
       case 'task_updated':
         iconData = Icons.assignment_outlined;
-        iconColor = Colors.blueAccent;
+        iconColor = ColorPallete.redPrimary;
         break;
       case 'task_comment':
         iconData = Icons.comment_outlined;
-        iconColor = Colors.orangeAccent;
+        iconColor = ColorPallete.statusColor('pending');
         break;
       case 'leave_request':
         iconData = Icons.calendar_today_outlined;
-        iconColor = Colors.purpleAccent;
+        iconColor = ColorPallete.textSecondary;
         break;
       case 'leave_approved':
         iconData = Icons.check_circle_outline;
-        iconColor = Colors.greenAccent;
+        iconColor = ColorPallete.statusColor('approved');
         break;
       case 'leave_rejected':
         iconData = Icons.cancel_outlined;
-        iconColor = Colors.redAccent;
+        iconColor = ColorPallete.error;
         break;
       default:
         iconData = Icons.notifications_none;
-        iconColor = Colors.grey;
+        iconColor = ColorPallete.textSecondary;
     }
 
     return Container(

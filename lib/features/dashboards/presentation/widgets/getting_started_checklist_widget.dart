@@ -14,7 +14,7 @@ class GettingStartedChecklistWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorPallete.background2[0].withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: BlocBuilder<OnboardingBloc, OnboardingState>(
@@ -30,7 +30,7 @@ class GettingStartedChecklistWidget extends StatelessWidget {
 
           int currentStep = 0;
           bool profileCompleted = false;
-          bool orgJoined = false;
+          bool orgJoined = true;
           bool teamJoined = false;
           bool taskCreated = false;
           bool inviteSent = false;
@@ -71,14 +71,14 @@ class GettingStartedChecklistWidget extends StatelessWidget {
                   Text(
                     "Getting Started",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: ColorPallete.white,
+                          color: ColorPallete.textPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   Text(
                     "${(completionProgress * 100).toInt()}%",
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: ColorPallete.white.withOpacity(0.7),
+                          color: ColorPallete.textPrimary.withOpacity(0.7),
                         ),
                   ),
                 ],
@@ -88,8 +88,8 @@ class GettingStartedChecklistWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
                   value: completionProgress,
-                  backgroundColor: Colors.white10,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.greenAccent),
+                  backgroundColor: ColorPallete.divider,
+                  valueColor: AlwaysStoppedAnimation<Color>(ColorPallete.statusColor('approved')),
                   minHeight: 4,
                 ),
               ),
@@ -105,7 +105,7 @@ class GettingStartedChecklistWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
                     "Error loading progress",
-                    style: TextStyle(color: Colors.redAccent.withOpacity(0.7), fontSize: 11),
+                    style: TextStyle(color: ColorPallete.error.withOpacity(0.7), fontSize: 11),
                   ),
                 ),
               const SizedBox(height: 16),
@@ -127,8 +127,8 @@ class GettingStartedChecklistWidget extends StatelessWidget {
                       context.read<OnboardingBloc>().add(UpdateOnboardingStep(updatedProgress));
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.greenAccent,
-                      foregroundColor: Colors.black87,
+                      backgroundColor: ColorPallete.statusColor('approved'),
+                      foregroundColor: ColorPallete.textPrimary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -162,14 +162,14 @@ class _ChecklistItem extends StatelessWidget {
         children: [
           Icon(
             isDone ? Icons.check_circle : Icons.radio_button_unchecked,
-            color: isDone ? Colors.greenAccent : Colors.white24,
+            color: isDone ? ColorPallete.statusColor('approved') : ColorPallete.textPrimary.withOpacity(0.24),
             size: 18,
           ),
           const SizedBox(width: 8),
           Text(
             text,
             style: TextStyle(
-              color: isDone ? ColorPallete.white.withOpacity(0.5) : ColorPallete.white,
+              color: isDone ? ColorPallete.textPrimary.withOpacity(0.5) : ColorPallete.textPrimary,
               decoration: isDone ? TextDecoration.lineThrough : null,
               fontSize: 13,
             ),

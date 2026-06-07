@@ -161,7 +161,7 @@ class _LandingPageState extends State<LandingPage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: ColorPallete.background,
+            colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
             transform: GradientRotation(1),
           ),
         ),
@@ -195,7 +195,7 @@ class _LandingPageState extends State<LandingPage> {
                               curve: Curves.easeInOut);
                         }
                       },
-                      color: ColorPallete.blackPrimary,
+                      color: ColorPallete.backgroundPrimary,
                     ),
                     Expanded(
                       child: PageView.builder(
@@ -219,7 +219,7 @@ class _LandingPageState extends State<LandingPage> {
                               curve: Curves.easeInOut);
                         }
                       },
-                      color: ColorPallete.blackPrimary,
+                      color: ColorPallete.backgroundPrimary,
                     ),
                   ],
                 ),

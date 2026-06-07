@@ -7,6 +7,7 @@ import '../blocs/people_list_bloc/people_list_event.dart';
 import '../blocs/people_list_bloc/people_list_state.dart';
 import '../widgets/contact_card_widget.dart';
 import '../widgets/add_contact_dialog.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class PeopleListPage extends StatefulWidget {
   static const String routePath = '/people';
@@ -35,7 +36,7 @@ class _PeopleListPageState extends State<PeopleListPage> {
           return Scaffold(
             backgroundColor: const Color.fromARGB(255, 20, 20, 20),
             appBar: AppBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: ColorPallete.transparent,
               elevation: 0,
               title: const Text('People CRM', style: TextStyle(fontWeight: FontWeight.bold)),
               actions: [
@@ -55,11 +56,11 @@ class _PeopleListPageState extends State<PeopleListPage> {
                     icon: const Icon(Icons.person_add, size: 18),
                     label: const Text('Add Contact'),
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.blueAccent,
+                      foregroundColor: ColorPallete.redPrimary,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
-                        side: const BorderSide(color: Colors.white10),
+                        side: const BorderSide(color: ColorPallete.divider),
                       ),
                     ),
                   ),
@@ -70,8 +71,8 @@ class _PeopleListPageState extends State<PeopleListPage> {
               listener: (context, state) {
                 if (state.status == PeopleListStatus.failure || state.status == PeopleListStatus.deleteError) {
                   ElegantNotification.error(
-                    title: const Text("Error",style:TextStyle(color:Colors.black)),
-                    description: Text(state.failureMessage ?? "Something went wrong",style:TextStyle(color:Colors.black)),
+                    title: const Text("Error",style:TextStyle(color:ColorPallete.textSecondary)),
+                    description: Text(state.failureMessage ?? "Something went wrong",style:TextStyle(color:ColorPallete.textSecondary)),
                   ).show(context);
                 }
               },
@@ -81,20 +82,20 @@ class _PeopleListPageState extends State<PeopleListPage> {
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                     child: TextField(
                       controller: _searchController,
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(color: ColorPallete.textPrimary),
                       decoration: InputDecoration(
                         hintText: 'Search contacts...',
-                        hintStyle: const TextStyle(color: Colors.white54),
-                        prefixIcon: const Icon(Icons.search, color: Colors.white54),
+                        hintStyle: const TextStyle(color: ColorPallete.textSecondary),
+                        prefixIcon: const Icon(Icons.search, color: ColorPallete.textSecondary),
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.clear, color: Colors.white54),
+                          icon: const Icon(Icons.clear, color: ColorPallete.textSecondary),
                           onPressed: () {
                             _searchController.clear();
                             context.read<PeopleListBloc>().add(PeopleListSearchCleared());
                           },
                         ),
                         filled: true,
-                        fillColor: Colors.white.withValues(alpha: 0.05),
+                        fillColor: ColorPallete.textPrimary.withValues(alpha: 0.05),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -150,11 +151,11 @@ class _PeopleListPageState extends State<PeopleListPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.contacts_outlined, size: 64, color: Colors.white.withValues(alpha: 0.1)),
+          Icon(Icons.contacts_outlined, size: 64, color: ColorPallete.textPrimary.withValues(alpha: 0.1)),
           const SizedBox(height: 16),
           Text(
             query.isEmpty ? 'No contacts yet' : 'No results found',
-            style: const TextStyle(color: Colors.white70, fontSize: 16),
+            style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 16),
           ),
         ],
       ),

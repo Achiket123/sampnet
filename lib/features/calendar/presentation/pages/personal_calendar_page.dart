@@ -53,28 +53,28 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
         final startStr = DateFormat('MMMM d, yyyy h:mm a').format(event.startTime);
         final endStr = DateFormat('MMMM d, yyyy h:mm a').format(event.endTime);
         
-        Color typeColor = Colors.grey;
+        Color typeColor = ColorPallete.textSecondary;
         switch (event.eventType.toLowerCase()) {
           case 'task':
-            typeColor = Colors.blue;
+            typeColor = ColorPallete.redPrimary;
             break;
           case 'milestone':
-            typeColor = Colors.orange;
+            typeColor = ColorPallete.statusColor('pending');
             break;
           case 'leave':
-            typeColor = Colors.red;
+            typeColor = ColorPallete.error;
             break;
           case 'attendance':
-            typeColor = Colors.green;
+            typeColor = ColorPallete.statusColor('approved');
             break;
           case 'project':
           case 'project_deadline':
-            typeColor = Colors.cyan;
+            typeColor = ColorPallete.textSecondary;
             break;
         }
 
         return Dialog(
-          backgroundColor: ColorPallete.blackSecondary,
+          backgroundColor: ColorPallete.backgroundSecondary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -102,7 +102,7 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white70),
+                      icon: const Icon(Icons.close, color: ColorPallete.textSecondary),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -111,7 +111,7 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                 Text(
                   event.title,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: ColorPallete.textPrimary,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -121,17 +121,17 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                   Text(
                     event.description,
                     style: const TextStyle(
-                      color: Colors.white70,
+                      color: ColorPallete.textSecondary,
                       fontSize: 15,
                     ),
                   ),
                   const SizedBox(height: 15),
                 ],
-                const Divider(color: Colors.white12),
+                Divider(color: ColorPallete.textPrimary.withOpacity(0.12)),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Icon(Icons.access_time, color: Colors.grey, size: 18),
+                    const Icon(Icons.access_time, color: ColorPallete.textSecondary, size: 18),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
@@ -139,11 +139,11 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                         children: [
                           Text(
                             "Starts: $startStr",
-                            style: const TextStyle(color: Colors.white70, fontSize: 13),
+                            style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 13),
                           ),
                           Text(
                             "Ends: $endStr",
-                            style: const TextStyle(color: Colors.white70, fontSize: 13),
+                            style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 13),
                           ),
                         ],
                       ),
@@ -153,11 +153,11 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    const Icon(Icons.info_outline, color: Colors.grey, size: 18),
+                    const Icon(Icons.info_outline, color: ColorPallete.textSecondary, size: 18),
                     const SizedBox(width: 8),
                     Text(
                       "Status: ${event.status}",
-                      style: const TextStyle(color: Colors.white70, fontSize: 13),
+                      style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 13),
                     ),
                   ],
                 ),
@@ -165,11 +165,11 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.person_outline, color: Colors.grey, size: 18),
+                      const Icon(Icons.person_outline, color: ColorPallete.textSecondary, size: 18),
                       const SizedBox(width: 8),
                       Text(
                         "Assigned to: ${event.assignedToName}",
-                        style: const TextStyle(color: Colors.white70, fontSize: 13),
+                        style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 13),
                       ),
                     ],
                   ),
@@ -180,14 +180,14 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: ColorPallete.redPrimary,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       onPressed: () {
                         Navigator.pop(context);
                         context.push('/task-detail/${event.entityId}');
                       },
-                      child: const Text("Go to Task Details", style: TextStyle(color: Colors.white)),
+                      child: const Text("Go to Task Details", style: TextStyle(color: ColorPallete.textPrimary)),
                     ),
                   )
                 else if (event.eventType.toLowerCase() == 'project' || event.eventType.toLowerCase() == 'project_deadline')
@@ -195,14 +195,14 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.cyan,
+                        backgroundColor: ColorPallete.textSecondary,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       onPressed: () {
                         Navigator.pop(context);
                         context.push('${ProjectDetailPage.routePath}/${event.entityId}');
                       },
-                      child: const Text("Go to Project Details", style: TextStyle(color: Colors.white)),
+                      child: const Text("Go to Project Details", style: TextStyle(color: ColorPallete.textPrimary)),
                     ),
                   ),
               ],
@@ -222,7 +222,7 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: ColorPallete.background2,
+          colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -246,9 +246,9 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
             drawer: CustomDrawer(
               selectedIndex: ListOfSideBar.sideBarItems.indexOf('Calendar'),
             ),
-            backgroundColor: Colors.transparent,
+            backgroundColor: ColorPallete.transparent,
             floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.red,
+              backgroundColor: ColorPallete.error,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               onPressed: () {
                 showDialog(
@@ -271,7 +271,7 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                   ),
                 );
               },
-              child: const Icon(Icons.add, color: Colors.white),
+              child: const Icon(Icons.add, color: ColorPallete.textPrimary),
             ),
             body: ListView(
               padding: EdgeInsets.symmetric(
@@ -293,7 +293,7 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                           children: [
                             Text(
                               state.message,
-                              style: const TextStyle(color: Colors.red, fontSize: 16),
+                              style: const TextStyle(color: ColorPallete.error, fontSize: 16),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 15),
@@ -370,9 +370,9 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
                         if (isLoading)
                           Positioned.fill(
                             child: Container(
-                              color: Colors.black.withOpacity(0.25),
+                              color: ColorPallete.textSecondary.withOpacity(0.25),
                               child: const Center(
-                                child: CircularProgressIndicator(color: Colors.red),
+                                child: CircularProgressIndicator(color: ColorPallete.error),
                               ),
                             ),
                           ),
@@ -398,7 +398,7 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
         Text(
           'PERSONAL CALENDAR',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.white,
+                color: ColorPallete.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
         ),
@@ -407,10 +407,10 @@ class _PersonalCalendarPageState extends State<PersonalCalendarPage> {
           onPressed: () {
             context.go(TeamCalendarPage.routePath);
           },
-          icon: const Icon(Icons.people, color: Colors.white),
+          icon: const Icon(Icons.people, color: ColorPallete.textPrimary),
           label: const Text(
             "Team View",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(width: 8),

@@ -16,7 +16,7 @@ class MyTasksSummaryWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorPallete.background2[0].withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: BlocBuilder<TaskBloc, TaskState>(
@@ -47,7 +47,7 @@ class MyTasksSummaryWidget extends StatelessWidget {
                     Text(
                       "My Tasks",
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: ColorPallete.white,
+                            color: ColorPallete.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -61,10 +61,10 @@ class MyTasksSummaryWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _TaskStat(label: "Pending", count: pendingCount.toString(), color: Colors.orangeAccent),
-                    _TaskStat(label: "Active", count: inProgressCount.toString(), color: Colors.blueAccent),
-                    _TaskStat(label: "Blocked", count: blockedCount.toString(), color: Colors.redAccent),
-                    _TaskStat(label: "Done", count: doneCount.toString(), color: Colors.greenAccent),
+                    _TaskStat(label: "Pending", count: pendingCount.toString(), color: ColorPallete.statusColor('pending')),
+                    _TaskStat(label: "Active", count: inProgressCount.toString(), color: ColorPallete.redPrimary),
+                    _TaskStat(label: "Blocked", count: blockedCount.toString(), color: ColorPallete.error),
+                    _TaskStat(label: "Done", count: doneCount.toString(), color: ColorPallete.statusColor('approved')),
                   ],
                 ),
                 if (top3Upcoming.isNotEmpty) ...[
@@ -72,7 +72,7 @@ class MyTasksSummaryWidget extends StatelessWidget {
                   Text(
                     "Upcoming Deadlines",
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: ColorPallete.white.withOpacity(0.5),
+                          color: ColorPallete.textPrimary.withOpacity(0.5),
                           fontWeight: FontWeight.bold,
                         ),
                   ),
@@ -84,7 +84,7 @@ class MyTasksSummaryWidget extends StatelessWidget {
                     child: Center(
                       child: Column(
                         children: [
-                          const Text("No tasks assigned", style: TextStyle(color: Colors.white54, fontSize: 12)),
+                          const Text("No tasks assigned", style: TextStyle(color: ColorPallete.textSecondary, fontSize: 12)),
                           const SizedBox(height: 8),
                           ElevatedButton.icon(
                             onPressed: () {
@@ -96,8 +96,8 @@ class MyTasksSummaryWidget extends StatelessWidget {
                             icon: const Icon(Icons.add, size: 14),
                             label: const Text("Create Task", style: TextStyle(fontSize: 12)),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white10,
-                              foregroundColor: Colors.white,
+                              backgroundColor: ColorPallete.divider,
+                              foregroundColor: ColorPallete.textPrimary,
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                             ),
                           ),
@@ -150,7 +150,7 @@ class _TaskStat extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: ColorPallete.white.withOpacity(0.7),
+                color: ColorPallete.textPrimary.withOpacity(0.7),
                 fontSize: 10,
               ),
         ),
@@ -176,7 +176,7 @@ class _UpcomingTaskTile extends StatelessWidget {
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: task.priority == 'High' ? Colors.redAccent : Colors.blueAccent,
+                color: task.priority == 'High' ? ColorPallete.error : ColorPallete.redPrimary,
                 shape: BoxShape.circle,
               ),
             ),
@@ -186,13 +186,13 @@ class _UpcomingTaskTile extends StatelessWidget {
                 task.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white, fontSize: 13),
+                style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 13),
               ),
             ),
             const SizedBox(width: 8),
             Text(
               DateFormat('dd MMM').format(task.dueDate),
-              style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11),
+              style: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.4), fontSize: 11),
             ),
           ],
         ),
@@ -210,9 +210,9 @@ class _ShimmerTaskSummary extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(3, (index) => Column(
             children: [
-              Container(width: 30, height: 24, decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(4))),
+              Container(width: 30, height: 24, decoration: BoxDecoration(color: ColorPallete.textPrimary.withOpacity(0.05), borderRadius: BorderRadius.circular(4))),
               const SizedBox(height: 8),
-              Container(width: 50, height: 10, decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(5))),
+              Container(width: 50, height: 10, decoration: BoxDecoration(color: ColorPallete.textPrimary.withOpacity(0.05), borderRadius: BorderRadius.circular(5))),
             ],
           )),
         ),

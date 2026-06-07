@@ -17,6 +17,7 @@ import 'package:hackathon/features/chats/domain/entities/chat_entity.dart';
 import 'package:hackathon/features/chats/domain/entities/chat_participant_entity.dart';
 import 'package:hackathon/features/chats/presentation/pages/chat_page.dart';
 import 'package:hackathon/globals/constants/user.dart' as user;
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class EmployeesListPage extends StatefulWidget {
   static const String routePath = '/employees';
@@ -45,7 +46,7 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
           return Scaffold(
             backgroundColor: const Color.fromARGB(255, 20, 20, 20),
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: ColorPallete.transparent,
           elevation: 0,
           title: const Text('Employees', style: TextStyle(fontWeight: FontWeight.bold)),
           actions: [
@@ -57,11 +58,11 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
                   icon: const Icon(Icons.add, size: 18),
                   label: const Text('Add Employee'),
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.blueAccent,
+                    foregroundColor: ColorPallete.redPrimary,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
-                      side: const BorderSide(color: Colors.white10),
+                      side: const BorderSide(color: ColorPallete.divider),
                     ),
                   ),
                 ),
@@ -91,7 +92,7 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
                       builder: (context, state) {
                         return Text(
                           '${state.displayedEmployees.length} members',
-                          style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
+                          style: TextStyle(color: ColorPallete.textPrimary.withValues(alpha: 0.5), fontSize: 13),
                         );
                       },
                     ),
@@ -154,7 +155,7 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
     showModalBottomSheet(
       context: parentContext,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: ColorPallete.transparent,
       builder: (context) => BlocProvider.value(
         value: parentContext.read<EmployeesListBloc>(),
         child: const AddEmployeeModal(),
@@ -219,7 +220,7 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
-          backgroundColor: Colors.transparent,
+          backgroundColor: ColorPallete.transparent,
           builder: (sheetContext) => BlocProvider.value(
             value: context.read<EmployeesListBloc>(),
             child: EditEmployeeModal(employee: employee),
@@ -236,7 +237,7 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
               TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Remove', style: TextStyle(color: Colors.redAccent)),
+                child: const Text('Remove', style: TextStyle(color: ColorPallete.error)),
               ),
             ],
           ),
@@ -256,7 +257,7 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
         child: Container(
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.white10,
+            color: ColorPallete.divider,
             borderRadius: BorderRadius.circular(12),
           ),
         ),
@@ -269,11 +270,11 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.people_outline, size: 64, color: Colors.white.withValues(alpha: 0.1)),
+          Icon(Icons.people_outline, size: 64, color: ColorPallete.textPrimary.withValues(alpha: 0.1)),
           const SizedBox(height: 16),
           Text(
             query.isEmpty ? 'No employees yet' : 'No results found',
-            style: const TextStyle(color: Colors.white70, fontSize: 16),
+            style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 16),
           ),
           if (query.isNotEmpty)
             TextButton(

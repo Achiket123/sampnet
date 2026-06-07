@@ -30,7 +30,7 @@ class CustomTextButton extends StatelessWidget {
             color: color ?? Colors.black,
             gradient: color != null
                 ? const LinearGradient(
-                    colors: ColorPallete.background2,
+                    colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   )

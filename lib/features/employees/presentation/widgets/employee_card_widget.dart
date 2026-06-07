@@ -4,6 +4,7 @@ import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/services/websocket_service.dart';
 
 import 'package:hackathon/globals/constants/user.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class EmployeeCardWidget extends StatelessWidget {
   final EmployeeEntity employee;
@@ -23,12 +24,12 @@ class EmployeeCardWidget extends StatelessWidget {
 
   Color _getAvatarColor() {
     final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.teal,
-      Colors.pink,
+      ColorPallete.redPrimary,
+      ColorPallete.statusColor('approved'),
+      ColorPallete.statusColor('pending'),
+      ColorPallete.textSecondary,
+      ColorPallete.textSecondary,
+      ColorPallete.textSecondary,
     ];
     return colors[employee.userId % colors.length];
   }
@@ -37,10 +38,10 @@ class EmployeeCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: Colors.white.withValues(alpha: 0.05),
+      color: ColorPallete.textPrimary.withValues(alpha: 0.05),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Colors.white10),
+        side: const BorderSide(color: ColorPallete.divider),
       ),
       child: ListTile(
         onTap: onTap,
@@ -56,7 +57,7 @@ class EmployeeCardWidget extends StatelessWidget {
               child: employee.user.profilePic.isEmpty
                   ? Text(
                       employee.user.initials,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold),
                     )
                   : null,
             ),
@@ -73,7 +74,7 @@ class EmployeeCardWidget extends StatelessWidget {
                     width: 12,
                     height: 12,
                     decoration: BoxDecoration(
-                      color: Colors.green,
+                      color: ColorPallete.statusColor('approved'),
                       shape: BoxShape.circle,
                       border: Border.all(color: const Color.fromARGB(255, 30, 30, 30), width: 2),
                     ),
@@ -85,13 +86,13 @@ class EmployeeCardWidget extends StatelessWidget {
         ),
         title: Text(
           employee.user.fullName,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
+          style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.w600, fontSize: 16),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(
             employee.type.isNotEmpty ? employee.type : employee.user.email,
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
+            style: TextStyle(color: ColorPallete.textPrimary.withValues(alpha: 0.5), fontSize: 13),
           ),
         ),
         trailing: isDeleting
@@ -114,12 +115,12 @@ class EmployeeCardWidget extends StatelessWidget {
       children: [
         if (!isMe)
           IconButton(
-            icon: const Icon(Icons.chat_bubble_outline, color: Colors.blueAccent),
+            icon: const Icon(Icons.chat_bubble_outline, color: ColorPallete.redPrimary),
             onPressed: () => onAction('chat'),
           ),
         if (userRole == 'boss' || userRole == 'manager')
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Colors.white70),
+            icon: const Icon(Icons.more_vert, color: ColorPallete.textSecondary),
             onSelected: onAction,
             itemBuilder: (context) => [
               const PopupMenuItem(value: 'profile', child: Text('View Profile')),
@@ -129,7 +130,7 @@ class EmployeeCardWidget extends StatelessWidget {
               if (userRole == 'boss')
                 const PopupMenuItem(
                   value: 'delete',
-                  child: Text('Remove', style: TextStyle(color: Colors.redAccent)),
+                  child: Text('Remove', style: TextStyle(color: ColorPallete.error)),
                 ),
             ],
           ),

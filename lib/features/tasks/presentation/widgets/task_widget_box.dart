@@ -50,14 +50,14 @@ class _TaskWidgetBoxState extends State<TaskWidgetBox> {
                 leading: _statusDropDown(width, height, dropDownStyle),
                 title: Text(widget.task.type,
                     style: taskStyle.copyWith(
-                        fontSize: width * 0.015, color: ColorPallete.bug)),
+                        fontSize: width * 0.015, color: ColorPallete.error)),
                 trailing: Icon(Icons.menu,
                     size: height * 0.025,
                     color: widget.task.priority == 'High'
-                        ? ColorPallete.highPriority
+                        ? ColorPallete.error
                         : widget.task.priority == 'Medium'
-                            ? ColorPallete.mediumPriority
-                            : ColorPallete.lowPriority),
+                            ? ColorPallete.warning
+                            : ColorPallete.success),
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -105,14 +105,14 @@ class _TaskWidgetBoxState extends State<TaskWidgetBox> {
                     leading: _statusDropDown(width, height, dropDownStyle),
                     title: Text(widget.task.type,
                         style: taskStyle.copyWith(
-                            fontSize: width * 0.015, color: ColorPallete.bug)),
+                            fontSize: width * 0.015, color: ColorPallete.error)),
                     trailing: Icon(Icons.menu,
                         size: height * 0.025,
                         color: widget.task.priority == 'High'
-                            ? ColorPallete.highPriority
+                            ? ColorPallete.error
                             : widget.task.priority == 'Medium'
-                                ? ColorPallete.mediumPriority
-                                : ColorPallete.lowPriority),
+                                ? ColorPallete.warning
+                                : ColorPallete.success),
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -139,7 +139,7 @@ class _TaskWidgetBoxState extends State<TaskWidgetBox> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: ColorPallete.textSecondary,
         borderRadius: BorderRadius.circular(2),
       ),
       width: width * 0.05,

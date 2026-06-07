@@ -86,7 +86,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
         ),
       ),
       child: Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: ColorPallete.transparent,
           body: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
@@ -168,21 +168,21 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
     return Container(
       margin: const EdgeInsets.all(40),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(1),
+        color: ColorPallete.textPrimary.withOpacity(1),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: Colors.white.withOpacity(1),
+          color: ColorPallete.textPrimary.withOpacity(1),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.6),
+            color: ColorPallete.textSecondary.withOpacity(0.6),
             blurStyle: BlurStyle.solid,
             blurRadius: 20,
             spreadRadius: 2,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.6),
+            color: ColorPallete.textSecondary.withOpacity(0.6),
             blurRadius: 20,
             spreadRadius: 2,
           ),
@@ -191,8 +191,8 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.white.withOpacity(0.2),
-            Colors.white.withOpacity(0.1),
+            ColorPallete.textPrimary.withOpacity(0.2),
+            ColorPallete.textPrimary.withOpacity(0.1),
           ],
         ),
       ),
@@ -213,7 +213,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Company Name",
                     controller: companyName,
                   ),
@@ -221,7 +221,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Company Code",
                     controller: companyCode,
                   ),
@@ -229,7 +229,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Primary Contact Name",
                     controller: primaryContactNumber,
                   ),
@@ -237,7 +237,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Primary Email",
                     controller: primaryEmail,
                   ),
@@ -245,7 +245,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Phone Number",
                     controller: phoneNumber,
                   ),
@@ -253,7 +253,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Office Address",
                     controller: officeAddress,
                   ),
@@ -261,7 +261,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "City",
                     controller: city,
                   ),
@@ -269,7 +269,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "State",
                     controller: state,
                   ),
@@ -277,7 +277,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Postal Code",
                     controller: postalCode,
                   ),
@@ -285,7 +285,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Country",
                     controller: country,
                   ),
@@ -293,7 +293,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Industry",
                     controller: industry,
                   ),
@@ -301,7 +301,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Billing Address",
                     controller: billingAddress,
                   ),
@@ -309,7 +309,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Company Size",
                     controller: companySize,
                   ),
@@ -317,7 +317,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Max Employees",
                     controller: maxEmployee,
                   ),
@@ -325,7 +325,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 SizedBox(
                   width: 300,
                   child: AuthCustomTextFormField(
-                    style: TextStyle(color: ColorPallete.white),
+                    
                     label: "Plan Status",
                     controller: planStatus,
                   ),
@@ -335,7 +335,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorPallete.redPrimary,
-                      foregroundColor: ColorPallete.white,
+                      foregroundColor: ColorPallete.textPrimary,
                     ),
                     onPressed: () {
                       // Handle registration

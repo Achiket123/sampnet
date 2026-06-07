@@ -54,7 +54,7 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: ColorPallete.background2,
+          colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -66,7 +66,7 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
           drawer: CustomDrawer(
             selectedIndex: ListOfSideBar.sideBarItems.indexOf('Projects'),
           ),
-          backgroundColor: Colors.transparent,
+          backgroundColor: ColorPallete.transparent,
           body: BlocConsumer<ProjectsBloc, ProjectState>(
             listener: (context, state) {
               if (state is ProjectActionSuccess) {
@@ -94,7 +94,7 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
                   
                   if (state is ProjectLoading) ...[
                     const SizedBox(height: 100),
-                    const Center(child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation(Colors.white))),
+                    const Center(child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation(ColorPallete.textPrimary))),
                   ] else if (state is ProjectsLoaded) ...[
                     _buildStatsRow(state.projects),
                     const SizedBox(height: 24),
@@ -105,7 +105,7 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
                     _buildErrorState(context, state.message),
                   ] else ...[
                     const SizedBox(height: 100),
-                    const Center(child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation(Colors.white))),
+                    const Center(child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation(ColorPallete.textPrimary))),
                   ]
                 ],
               );
@@ -123,7 +123,7 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
         Text(
           'PROJECTS',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: Colors.white,
+            color: ColorPallete.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -134,7 +134,7 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
           },
           icon: const Icon(
             Icons.menu,
-            color: ColorPallete.white,
+            color: ColorPallete.textPrimary,
           ),
         ),
       ],
@@ -161,10 +161,10 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
             crossAxisSpacing: 12,
             childAspectRatio: 1.6,
             children: [
-              _statsCard('TOTAL', total.toString(), Colors.blueAccent),
-              _statsCard('ACTIVE', active.toString(), Colors.tealAccent),
-              _statsCard('COMPLETED', completed.toString(), Colors.greenAccent),
-              _statsCard('PAUSED', paused.toString(), Colors.amberAccent),
+              _statsCard('TOTAL', total.toString(), ColorPallete.redPrimary),
+              _statsCard('ACTIVE', active.toString(), ColorPallete.statusColor('approved')),
+              _statsCard('COMPLETED', completed.toString(), ColorPallete.statusColor('approved')),
+              _statsCard('PAUSED', paused.toString(), ColorPallete.statusColor('pending')),
             ],
           );
         }
@@ -172,10 +172,10 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _statsCard('TOTAL', total.toString(), Colors.blueAccent, width: cardWidth),
-            _statsCard('ACTIVE', active.toString(), Colors.tealAccent, width: cardWidth),
-            _statsCard('COMPLETED', completed.toString(), Colors.greenAccent, width: cardWidth),
-            _statsCard('PAUSED', paused.toString(), Colors.amberAccent, width: cardWidth),
+            _statsCard('TOTAL', total.toString(), ColorPallete.redPrimary, width: cardWidth),
+            _statsCard('ACTIVE', active.toString(), ColorPallete.statusColor('approved'), width: cardWidth),
+            _statsCard('COMPLETED', completed.toString(), ColorPallete.statusColor('approved'), width: cardWidth),
+            _statsCard('PAUSED', paused.toString(), ColorPallete.statusColor('pending'), width: cardWidth),
           ],
         );
       },
@@ -187,9 +187,9 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
       width: width,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF16161A),
+        color: ColorPallete.backgroundPrimary,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: ColorPallete.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +201,7 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
               Text(
                 title,
                 style: const TextStyle(
-                  color: Colors.white38,
+                  color: ColorPallete.textDisabled,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
@@ -221,7 +221,7 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
           Text(
             count,
             style: const TextStyle(
-              color: Colors.white,
+              color: ColorPallete.textPrimary,
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -239,17 +239,17 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
           child: Container(
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF16161A),
+              color: ColorPallete.backgroundPrimary,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white10),
+              border: Border.all(color: ColorPallete.divider),
             ),
             child: TextField(
               controller: _searchController,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-              decoration: const InputDecoration(
+              style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14),
+              decoration: InputDecoration(
                 hintText: 'Search projects by name...',
-                hintStyle: TextStyle(color: Colors.white24),
-                prefixIcon: Icon(Icons.search_rounded, color: Colors.white38, size: 20),
+                hintStyle: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.24)),
+                prefixIcon: Icon(Icons.search_rounded, color: ColorPallete.textDisabled, size: 20),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 12),
               ),
@@ -260,8 +260,8 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
         // Action Button
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
+            backgroundColor: ColorPallete.textPrimary,
+            foregroundColor: ColorPallete.textSecondary,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -362,22 +362,22 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
     showDialog<bool>(
       context: parentContext,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0F0F11),
+        backgroundColor: ColorPallete.backgroundPrimary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Colors.white10),
+          side: const BorderSide(color: ColorPallete.divider),
         ),
-        title: const Text('Delete Project', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Text('Are you sure you want to delete "${project.name}"? This action cannot be undone.', style: const TextStyle(color: Colors.white70)),
+        title: const Text('Delete Project', style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
+        content: Text('Are you sure you want to delete "${project.name}"? This action cannot be undone.', style: const TextStyle(color: ColorPallete.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child: const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
+              backgroundColor: ColorPallete.error,
+              foregroundColor: ColorPallete.textPrimary,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () => Navigator.pop(context, true),
@@ -402,16 +402,16 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.assignment_outlined, size: 64, color: Colors.white24),
+             Icon(Icons.assignment_outlined, size: 64, color: ColorPallete.textPrimary.withOpacity(0.24)),
             const SizedBox(height: 16),
             const Text(
               'No projects found',
-              style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(color: ColorPallete.textSecondary, fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(
               _searchQuery.isNotEmpty ? 'Try adjusting your search query.' : 'Click "Create Project" to get started.',
-              style: const TextStyle(color: Colors.white38, fontSize: 13),
+              style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 13),
             ),
           ],
         ),
@@ -426,29 +426,29 @@ class _ProjectsListPageState extends State<ProjectsListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 64, color: Colors.redAccent),
+            const Icon(Icons.error_outline_rounded, size: 64, color: ColorPallete.error),
             const SizedBox(height: 16),
             const Text(
               'Failed to load projects',
-              style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(color: ColorPallete.textSecondary, fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(
               message,
-              style: const TextStyle(color: Colors.white38, fontSize: 13),
+              style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 13),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white10,
-                side: const BorderSide(color: Colors.white24),
+                backgroundColor: ColorPallete.divider,
+                side:  BorderSide(color: ColorPallete.textPrimary.withOpacity(0.24)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () {
                 context.read<ProjectsBloc>().add(LoadProjectsEvent());
               },
-              child: const Text('Retry', style: TextStyle(color: Colors.white)),
+              child: const Text('Retry', style: TextStyle(color: ColorPallete.textPrimary)),
             ),
           ],
         ),

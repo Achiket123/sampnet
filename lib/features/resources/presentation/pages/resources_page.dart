@@ -65,7 +65,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: ColorPallete.background2,
+          colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -80,7 +80,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                 description: Text(
                   state.message,
                   maxLines: 2,
-                  style : const TextStyle(color:Colors.black),
+                  style : const TextStyle(color:ColorPallete.textSecondary),
                   overflow: TextOverflow.ellipsis,
                 ),
                 height: 100,
@@ -92,7 +92,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                 description: Text(
                   state.message,
                   maxLines: 3,
-                  style : const TextStyle(color:Colors.black),
+                  style : const TextStyle(color:ColorPallete.textSecondary),
                   overflow: TextOverflow.ellipsis,
                 ),
                 height: 120,
@@ -109,7 +109,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
               drawer: CustomDrawer(
                 selectedIndex: ListOfSideBar.sideBarItems.indexOf('Resources'),
               ),
-              backgroundColor: Colors.transparent,
+              backgroundColor: ColorPallete.transparent,
               body: ListView(
                 padding: EdgeInsets.symmetric(
                   horizontal: width * 0.04,
@@ -139,7 +139,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
         Text(
           _activeCollection != null ? _activeCollection!.name.toUpperCase() : 'RESOURCES',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: Colors.white,
+            color: ColorPallete.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -154,7 +154,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
             },
             icon: const Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: ColorPallete.textPrimary,
             ),
           ),
         IconButton(
@@ -163,7 +163,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
           },
           icon: const Icon(
             Icons.menu,
-            color: ColorPallete.white,
+            color: ColorPallete.textPrimary,
           ),
         ),
       ],
@@ -195,7 +195,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
             child: Padding(
               padding: EdgeInsets.all(40.0),
               child: CircularProgressIndicator.adaptive(
-                valueColor: AlwaysStoppedAnimation(Colors.white),
+                valueColor: AlwaysStoppedAnimation(ColorPallete.textPrimary),
               ),
             ),
           )
@@ -228,17 +228,17 @@ class _ResourcesPageState extends State<ResourcesPage> {
           child: Container(
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF16161A),
+              color: ColorPallete.backgroundPrimary,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white10),
+              border: Border.all(color: ColorPallete.divider),
             ),
             child: TextField(
               controller: _searchController,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-              decoration: const InputDecoration(
+              style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14),
+              decoration: InputDecoration(
                 hintText: 'Search collections...',
-                hintStyle: TextStyle(color: Colors.white24),
-                prefixIcon: Icon(Icons.search_rounded, color: Colors.white38, size: 20),
+                hintStyle: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.24)),
+                prefixIcon: Icon(Icons.search_rounded, color: ColorPallete.textDisabled, size: 20),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 12),
               ),
@@ -248,8 +248,8 @@ class _ResourcesPageState extends State<ResourcesPage> {
         const SizedBox(width: 16),
         ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
+            backgroundColor: ColorPallete.textPrimary,
+            foregroundColor: ColorPallete.textSecondary,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -270,9 +270,9 @@ class _ResourcesPageState extends State<ResourcesPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF16161A),
+        color: ColorPallete.backgroundPrimary,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: ColorPallete.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +284,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                 child: Text(
                   col.name,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: ColorPallete.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -293,8 +293,8 @@ class _ResourcesPageState extends State<ResourcesPage> {
                 ),
               ),
               PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, color: Colors.white70),
-                color: const Color(0xFF16161A),
+                icon: const Icon(Icons.more_vert, color: ColorPallete.textSecondary),
+                color: ColorPallete.backgroundPrimary,
                 onSelected: (val) {
                   if (val == 'edit') {
                     _showEditCollectionDialog(context, col);
@@ -305,11 +305,11 @@ class _ResourcesPageState extends State<ResourcesPage> {
                 itemBuilder: (context) => [
                   const PopupMenuItem(
                     value: 'edit',
-                    child: Text('Edit', style: TextStyle(color: Colors.white)),
+                    child: Text('Edit', style: TextStyle(color: ColorPallete.textPrimary)),
                   ),
                   const PopupMenuItem(
                     value: 'delete',
-                    child: Text('Delete', style: TextStyle(color: Colors.redAccent)),
+                    child: Text('Delete', style: TextStyle(color: ColorPallete.error)),
                   ),
                 ],
               ),
@@ -319,7 +319,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
           Expanded(
             child: Text(
               col.description.isNotEmpty ? col.description : "No description provided.",
-              style: const TextStyle(color: Colors.white60, fontSize: 13),
+              style:  TextStyle(color: ColorPallete.textPrimary.withOpacity(0.60), fontSize: 13),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
@@ -330,15 +330,15 @@ class _ResourcesPageState extends State<ResourcesPage> {
             children: [
               Text(
                 '${col.fields.length} Fields',
-                style: const TextStyle(color: Colors.white38, fontSize: 11),
+                style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 11),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white10,
-                  foregroundColor: Colors.white,
+                  backgroundColor: ColorPallete.divider,
+                  foregroundColor: ColorPallete.textPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
-                    side: const BorderSide(color: Colors.white24),
+                    side:  BorderSide(color: ColorPallete.textPrimary.withOpacity(0.24)),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
@@ -374,14 +374,14 @@ class _ResourcesPageState extends State<ResourcesPage> {
             Expanded(
               child: Text(
                 col.description.isNotEmpty ? col.description : "Collection records database.",
-                style: const TextStyle(color: Colors.white60, fontSize: 14),
+                style:  TextStyle(color: ColorPallete.textPrimary.withOpacity(0.60), fontSize: 14),
               ),
             ),
             const SizedBox(width: 16),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
+                backgroundColor: ColorPallete.textPrimary,
+                foregroundColor: ColorPallete.textSecondary,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -398,17 +398,17 @@ class _ResourcesPageState extends State<ResourcesPage> {
         Container(
           height: 48,
           decoration: BoxDecoration(
-            color: const Color(0xFF16161A),
+            color: ColorPallete.backgroundPrimary,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white10),
+            border: Border.all(color: ColorPallete.divider),
           ),
           child: TextField(
             controller: _searchController,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-            decoration: const InputDecoration(
+            style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14),
+            decoration: InputDecoration(
               hintText: 'Search records...',
-              hintStyle: TextStyle(color: Colors.white24),
-              prefixIcon: Icon(Icons.search_rounded, color: Colors.white38, size: 20),
+              hintStyle: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.24)),
+              prefixIcon: Icon(Icons.search_rounded, color: ColorPallete.textDisabled, size: 20),
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(vertical: 12),
             ),
@@ -420,21 +420,21 @@ class _ResourcesPageState extends State<ResourcesPage> {
         else
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF16161A),
+              color: ColorPallete.backgroundPrimary,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white10),
+              border: Border.all(color: ColorPallete.divider),
             ),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(
-                headingRowColor: WidgetStateProperty.all(Colors.white.withAlpha(7)),
+                headingRowColor: WidgetStateProperty.all(ColorPallete.textPrimary.withAlpha(7)),
                 columns: [
                   ...col.fields.map(
                     (f) => DataColumn(
                       label: Text(
                         f.label.toUpperCase(),
                         style: const TextStyle(
-                          color: Colors.white70,
+                          color: ColorPallete.textSecondary,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -445,7 +445,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                     label: Text(
                       'ACTIONS',
                       style: TextStyle(
-                        color: Colors.white70,
+                        color: ColorPallete.textSecondary,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
@@ -472,7 +472,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                         return DataCell(
                           Text(
                             displayVal,
-                            style: const TextStyle(color: Colors.white70, fontSize: 13),
+                            style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 13),
                           ),
                         );
                       }),
@@ -481,11 +481,11 @@ class _ResourcesPageState extends State<ResourcesPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blueAccent, size: 18),
+                              icon: const Icon(Icons.edit, color: ColorPallete.redPrimary, size: 18),
                               onPressed: () => _showRecordFormDialog(context, col, rec),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.redAccent, size: 18),
+                              icon: const Icon(Icons.delete, color: ColorPallete.error, size: 18),
                               onPressed: () => _confirmDeleteRecord(context, col.id, rec.id),
                             ),
                           ],
@@ -514,12 +514,12 @@ class _ResourcesPageState extends State<ResourcesPage> {
       context: parentContext,
       builder: (dialogCtx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          backgroundColor: const Color(0xFF0F0F11),
+          backgroundColor: ColorPallete.backgroundPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Colors.white10),
+            side: const BorderSide(color: ColorPallete.divider),
           ),
-          title: const Text('Create Collection', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          title: const Text('Create Collection', style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
           content: SizedBox(
             width: 500,
             child: SingleChildScrollView(
@@ -528,33 +528,33 @@ class _ResourcesPageState extends State<ResourcesPage> {
                 children: [
                   TextField(
                     controller: nameController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: ColorPallete.textPrimary),
                     decoration: const InputDecoration(
                       labelText: 'Collection Name',
-                      labelStyle: TextStyle(color: Colors.white38),
-                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white10)),
-                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                      labelStyle: TextStyle(color: ColorPallete.textDisabled),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: ColorPallete.divider)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: ColorPallete.textPrimary)),
                     ),
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: descController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: ColorPallete.textPrimary),
                     decoration: const InputDecoration(
                       labelText: 'Description',
-                      labelStyle: TextStyle(color: Colors.white38),
-                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white10)),
-                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                      labelStyle: TextStyle(color: ColorPallete.textDisabled),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: ColorPallete.divider)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: ColorPallete.textPrimary)),
                     ),
                   ),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Fields Definition', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+                      const Text('Fields Definition', style: TextStyle(color: ColorPallete.textSecondary, fontWeight: FontWeight.bold)),
                       TextButton.icon(
-                        icon: const Icon(Icons.add, size: 16, color: Colors.blueAccent),
-                        label: const Text('Add Field', style: TextStyle(color: Colors.blueAccent)),
+                        icon: const Icon(Icons.add, size: 16, color: ColorPallete.redPrimary),
+                        label: const Text('Add Field', style: TextStyle(color: ColorPallete.redPrimary)),
                         onPressed: () {
                           setDialogState(() {
                             localFields.add({'label': '', 'type': 'text', 'required': false, 'options': ''});
@@ -563,7 +563,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                       ),
                     ],
                   ),
-                  const Divider(color: Colors.white10),
+                  const Divider(color: ColorPallete.divider),
                   ...localFields.asMap().entries.map((entry) {
                     final idx = entry.key;
                     final field = entry.value;
@@ -574,10 +574,10 @@ class _ResourcesPageState extends State<ResourcesPage> {
                           Expanded(
                             child: TextFormField(
                               initialValue: field['label'],
-                              style: const TextStyle(color: Colors.white, fontSize: 13),
-                              decoration: const InputDecoration(
+                              style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 13),
+                              decoration: InputDecoration(
                                 hintText: 'Label (e.g. Price)',
-                                hintStyle: TextStyle(color: Colors.white24),
+                                hintStyle: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.24)),
                                 border: InputBorder.none,
                               ),
                               onChanged: (val) {
@@ -587,14 +587,14 @@ class _ResourcesPageState extends State<ResourcesPage> {
                           ),
                           const SizedBox(width: 8),
                           DropdownButton<String>(
-                            dropdownColor: const Color(0xFF16161A),
+                            dropdownColor: ColorPallete.backgroundPrimary,
                             value: field['type'],
                             items: const [
-                              DropdownMenuItem(value: 'text', child: Text('Text', style: TextStyle(color: Colors.white, fontSize: 12))),
-                              DropdownMenuItem(value: 'number', child: Text('Number', style: TextStyle(color: Colors.white, fontSize: 12))),
-                              DropdownMenuItem(value: 'boolean', child: Text('Checkbox', style: TextStyle(color: Colors.white, fontSize: 12))),
-                              DropdownMenuItem(value: 'select', child: Text('Dropdown', style: TextStyle(color: Colors.white, fontSize: 12))),
-                              DropdownMenuItem(value: 'date', child: Text('Date', style: TextStyle(color: Colors.white, fontSize: 12))),
+                              DropdownMenuItem(value: 'text', child: Text('Text', style: TextStyle(color: ColorPallete.textPrimary, fontSize: 12))),
+                              DropdownMenuItem(value: 'number', child: Text('Number', style: TextStyle(color: ColorPallete.textPrimary, fontSize: 12))),
+                              DropdownMenuItem(value: 'boolean', child: Text('Checkbox', style: TextStyle(color: ColorPallete.textPrimary, fontSize: 12))),
+                              DropdownMenuItem(value: 'select', child: Text('Dropdown', style: TextStyle(color: ColorPallete.textPrimary, fontSize: 12))),
+                              DropdownMenuItem(value: 'date', child: Text('Date', style: TextStyle(color: ColorPallete.textPrimary, fontSize: 12))),
                             ],
                             onChanged: (val) {
                               if (val != null) {
@@ -613,9 +613,9 @@ class _ResourcesPageState extends State<ResourcesPage> {
                               });
                             },
                           ),
-                          const Text('Req', style: TextStyle(color: Colors.white38, fontSize: 10)),
+                          const Text('Req', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 10)),
                           IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.redAccent, size: 16),
+                            icon: const Icon(Icons.delete, color: ColorPallete.error, size: 16),
                             onPressed: () {
                               setDialogState(() {
                                 localFields.removeAt(idx);
@@ -633,10 +633,10 @@ class _ResourcesPageState extends State<ResourcesPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+              child: const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary)),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
+              style: ElevatedButton.styleFrom(backgroundColor: ColorPallete.textPrimary, foregroundColor: ColorPallete.textSecondary),
               onPressed: () {
                 if (nameController.text.trim().isEmpty) return;
 
@@ -676,35 +676,35 @@ class _ResourcesPageState extends State<ResourcesPage> {
     showDialog(
       context: parentContext,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF0F0F11),
+        backgroundColor: ColorPallete.backgroundPrimary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Colors.white10),
+          side: const BorderSide(color: ColorPallete.divider),
         ),
-        title: const Text('Edit Collection Info', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('Edit Collection Info', style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: 'Name', labelStyle: TextStyle(color: Colors.white38)),
+              style: const TextStyle(color: ColorPallete.textPrimary),
+              decoration: const InputDecoration(labelText: 'Name', labelStyle: TextStyle(color: ColorPallete.textDisabled)),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: descController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: 'Description', labelStyle: TextStyle(color: Colors.white38)),
+              style: const TextStyle(color: ColorPallete.textPrimary),
+              decoration: const InputDecoration(labelText: 'Description', labelStyle: TextStyle(color: ColorPallete.textDisabled)),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child: const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
+            style: ElevatedButton.styleFrom(backgroundColor: ColorPallete.textPrimary, foregroundColor: ColorPallete.textSecondary),
             onPressed: () {
               parentContext.read<ResourcesListBloc>().add(
                 UpdateCollectionEvent(
@@ -727,14 +727,14 @@ class _ResourcesPageState extends State<ResourcesPage> {
     showDialog<bool>(
       context: parentContext,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF0F0F11),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.white10)),
-        title: const Text('Delete Collection', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Text('Are you sure you want to delete "${col.name}"? All records will be permanently lost.', style: const TextStyle(color: Colors.white70)),
+        backgroundColor: ColorPallete.backgroundPrimary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: ColorPallete.divider)),
+        title: const Text('Delete Collection', style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
+        content: Text('Are you sure you want to delete "${col.name}"? All records will be permanently lost.', style: const TextStyle(color: ColorPallete.textSecondary)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel', style: TextStyle(color: Colors.white54))),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary))),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(backgroundColor: ColorPallete.error, foregroundColor: ColorPallete.textPrimary),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
@@ -757,12 +757,12 @@ class _ResourcesPageState extends State<ResourcesPage> {
       context: parentContext,
       builder: (ctx) => StatefulBuilder(
         builder: (dialogCtx, setDialogState) => AlertDialog(
-          backgroundColor: const Color(0xFF0F0F11),
+          backgroundColor: ColorPallete.backgroundPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Colors.white10),
+            side: const BorderSide(color: ColorPallete.divider),
           ),
-          title: Text(existingRecord != null ? 'Edit Record' : 'Add Record', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          title: Text(existingRecord != null ? 'Edit Record' : 'Add Record', style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
           content: SizedBox(
             width: 450,
             child: Form(
@@ -774,7 +774,7 @@ class _ResourcesPageState extends State<ResourcesPage> {
                     if (field.type == 'boolean') {
                       final bool val = recordData[field.key] == true;
                       return SwitchListTile(
-                        title: Text(field.label, style: const TextStyle(color: Colors.white70)),
+                        title: Text(field.label, style: const TextStyle(color: ColorPallete.textSecondary)),
                         value: val,
                         onChanged: (newVal) {
                           setDialogState(() {
@@ -785,16 +785,16 @@ class _ResourcesPageState extends State<ResourcesPage> {
                     } else if (field.type == 'select') {
                       final String? current = recordData[field.key]?.toString();
                       return DropdownButtonFormField<String>(
-                        dropdownColor: const Color(0xFF16161A),
+                        dropdownColor: ColorPallete.backgroundPrimary,
                         value: field.options.contains(current) ? current : null,
                         decoration: InputDecoration(
                           labelText: field.label,
-                          labelStyle: const TextStyle(color: Colors.white38),
+                          labelStyle: const TextStyle(color: ColorPallete.textDisabled),
                         ),
                         items: field.options
                             .map((o) => DropdownMenuItem(
                                   value: o,
-                                  child: Text(o, style: const TextStyle(color: Colors.white)),
+                                  child: Text(o, style: const TextStyle(color: ColorPallete.textPrimary)),
                                 ))
                             .toList(),
                         validator: (v) => field.required && (v == null || v.isEmpty) ? 'Required' : null,
@@ -810,12 +810,12 @@ class _ResourcesPageState extends State<ResourcesPage> {
                       }
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text(field.label, style: const TextStyle(color: Colors.white38, fontSize: 12)),
+                        title: Text(field.label, style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 12)),
                         subtitle: Text(
                           dt != null ? DateFormat('yyyy-MM-dd').format(dt) : 'Choose date...',
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: ColorPallete.textPrimary),
                         ),
-                        trailing: const Icon(Icons.calendar_today, color: Colors.white54, size: 18),
+                        trailing: const Icon(Icons.calendar_today, color: ColorPallete.textSecondary, size: 18),
                         onTap: () async {
                           final selected = await showDatePicker(
                             context: dialogCtx,
@@ -833,10 +833,10 @@ class _ResourcesPageState extends State<ResourcesPage> {
                     } else {
                       return TextFormField(
                         initialValue: recordData[field.key]?.toString(),
-                        style: const TextStyle(color: Colors.white),
+                        style: const TextStyle(color: ColorPallete.textPrimary),
                         decoration: InputDecoration(
                           labelText: field.label,
-                          labelStyle: const TextStyle(color: Colors.white38),
+                          labelStyle: const TextStyle(color: ColorPallete.textDisabled),
                         ),
                         keyboardType: field.type == 'number' ? TextInputType.number : TextInputType.text,
                         validator: (v) => field.required && (v == null || v.isEmpty) ? 'Required' : null,
@@ -857,10 +857,10 @@ class _ResourcesPageState extends State<ResourcesPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+              child: const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary)),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
+              style: ElevatedButton.styleFrom(backgroundColor: ColorPallete.textPrimary, foregroundColor: ColorPallete.textSecondary),
               onPressed: () {
                 if (formKey.currentState?.validate() ?? false) {
                   final token = getIt<User>().token ?? '';
@@ -897,14 +897,14 @@ class _ResourcesPageState extends State<ResourcesPage> {
     showDialog<bool>(
       context: parentContext,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF0F0F11),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.white10)),
-        title: const Text('Delete Record', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: const Text('Are you sure you want to delete this record?', style: TextStyle(color: Colors.white70)),
+        backgroundColor: ColorPallete.backgroundPrimary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: ColorPallete.divider)),
+        title: const Text('Delete Record', style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
+        content: const Text('Are you sure you want to delete this record?', style: TextStyle(color: ColorPallete.textSecondary)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel', style: TextStyle(color: Colors.white54))),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary))),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(backgroundColor: ColorPallete.error, foregroundColor: ColorPallete.textPrimary),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
@@ -930,16 +930,16 @@ class _ResourcesPageState extends State<ResourcesPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.folder_open, size: 64, color: Colors.white24),
+             Icon(Icons.folder_open, size: 64, color: ColorPallete.textPrimary.withOpacity(0.24)),
             const SizedBox(height: 16),
             Text(
               title,
-              style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(
               subtitle,
-              style: const TextStyle(color: Colors.white38, fontSize: 13),
+              style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 13),
             ),
           ],
         ),

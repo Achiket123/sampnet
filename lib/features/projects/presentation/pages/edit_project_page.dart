@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hackathon/features/projects/presentation/widgets/create_project_dialog.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class EditProjectPage extends StatelessWidget {
   const EditProjectPage({super.key});
@@ -8,12 +9,12 @@ class EditProjectPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F11),
+      backgroundColor: ColorPallete.backgroundPrimary,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: ColorPallete.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: ColorPallete.textPrimary),
           onPressed: () => context.pop(),
         ),
       ),

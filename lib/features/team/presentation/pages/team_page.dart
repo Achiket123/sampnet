@@ -46,7 +46,7 @@ class _TeamPageState extends State<TeamPage> {
         height: MediaQuery.sizeOf(context).height,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: ColorPallete.background,
+            colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -65,7 +65,7 @@ class _TeamPageState extends State<TeamPage> {
                 IconButton(
                     icon: const Icon(
                       Icons.menu,
-                      color: Colors.white,
+                      color: ColorPallete.textPrimary,
                     ),
                     onPressed: () {
                       teamPageKey.currentState!.openDrawer();
@@ -91,10 +91,10 @@ class _TeamPageState extends State<TeamPage> {
                     ElegantNotification.error(
                             description: Text(
                               state.error.message,
-                              style: const TextStyle(color: Colors.black),
+                              style: const TextStyle(color: ColorPallete.textSecondary),
                             ),
                             title: const Text("Error",
-                                style: TextStyle(color: Colors.black)))
+                                style: TextStyle(color: ColorPallete.textSecondary)))
                         .show(context);
                   }
                 },
@@ -134,11 +134,11 @@ class TeamContainer extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: ColorPallete.blackTertiary,
+        color: ColorPallete.backgroundTertiary,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: ColorPallete.textSecondary.withOpacity(0.5),
             blurRadius: 10,
             spreadRadius: 1,
             offset: const Offset(0, 0),

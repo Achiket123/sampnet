@@ -48,9 +48,9 @@ class _DashAppBarState extends State<DashAppBar> {
         width: widget.swidth,
         height: 60,
         decoration: const BoxDecoration(
-            color: Colors.red,
+            color: ColorPallete.error,
             boxShadow: [
-              BoxShadow(color: ColorPallete.blackPrimary, blurRadius: 15),
+              BoxShadow(color: ColorPallete.backgroundPrimary, blurRadius: 15),
             ],
             borderRadius: BorderRadius.all(Radius.circular(15))),
         child: widget.isdashboard

@@ -14,7 +14,7 @@ class AttendanceSummaryWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorPallete.background2[0].withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: BlocBuilder<AttendenceBloc, AttendenceState>(
@@ -37,7 +37,7 @@ class AttendanceSummaryWidget extends StatelessWidget {
                     Text(
                       "Attendance",
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: ColorPallete.white,
+                            color: ColorPallete.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -49,7 +49,7 @@ class AttendanceSummaryWidget extends StatelessWidget {
                               ? "Shift ended at ${DateFormat('HH:mm').format(attendance.checkoutTime!)}"
                               : "Checked in at ${DateFormat('HH:mm').format(attendance.checkinTime!)}",
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: !hasCheckedIn ? Colors.redAccent : Colors.greenAccent,
+                            color: !hasCheckedIn ? ColorPallete.error : ColorPallete.statusColor('approved'),
                           ),
                     ),
                   ],
@@ -60,15 +60,15 @@ class AttendanceSummaryWidget extends StatelessWidget {
                     icon: const Icon(Icons.login, size: 16),
                     label: const Text("Check In"),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      foregroundColor: Colors.white,
+                      backgroundColor: ColorPallete.redPrimary,
+                      foregroundColor: ColorPallete.textPrimary,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                     ),
                   )
                 else if (!hasCheckedOut)
-                  const Icon(Icons.check_circle, color: Colors.greenAccent)
+                  Icon(Icons.check_circle, color: ColorPallete.statusColor('approved'))
                 else
-                  const Icon(Icons.done_all, color: Colors.blueAccent),
+                  const Icon(Icons.done_all, color: ColorPallete.redPrimary),
               ],
             );
           }
@@ -89,12 +89,12 @@ class _ShimmerAttendance extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(width: 80, height: 12, decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(6))),
+            Container(width: 80, height: 12, decoration: BoxDecoration(color: ColorPallete.textPrimary.withOpacity(0.05), borderRadius: BorderRadius.circular(6))),
             const SizedBox(height: 8),
-            Container(width: 120, height: 8, decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(4))),
+            Container(width: 120, height: 8, decoration: BoxDecoration(color: ColorPallete.textPrimary.withOpacity(0.05), borderRadius: BorderRadius.circular(4))),
           ],
         ),
-        Container(width: 80, height: 32, decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(16))),
+        Container(width: 80, height: 32, decoration: BoxDecoration(color: ColorPallete.textPrimary.withOpacity(0.05), borderRadius: BorderRadius.circular(16))),
       ],
     );
   }

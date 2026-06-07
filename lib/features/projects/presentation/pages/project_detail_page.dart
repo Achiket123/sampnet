@@ -51,7 +51,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: ColorPallete.background2,
+          colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -59,17 +59,17 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
       child: BlocProvider(
         create: (context) => getIt<ProjectsBloc>()..add(LoadProjectDetailEvent(widget.projectId)),
         child: Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: ColorPallete.transparent,
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: ColorPallete.transparent,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: const Icon(Icons.arrow_back, color: ColorPallete.textPrimary),
               onPressed: () => context.pop(),
             ),
             title: const Text(
               'Project Details',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold),
             ),
           ),
           body: BlocConsumer<ProjectsBloc, ProjectState>(
@@ -89,7 +89,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
             },
             builder: (context, state) {
               if (state is ProjectLoading) {
-                return const Center(child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation(Colors.white)));
+                return const Center(child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation(ColorPallete.textPrimary)));
               } else if (state is ProjectDetailLoaded) {
                 final project = state.project;
                 return Padding(
@@ -119,7 +119,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
               } else if (state is ProjectError) {
                 return _buildErrorState(context, state.message);
               } else {
-                return const Center(child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation(Colors.white)));
+                return const Center(child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation(ColorPallete.textPrimary)));
               }
             },
           ),
@@ -159,9 +159,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF16161A),
+        color: ColorPallete.backgroundPrimary,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: ColorPallete.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,12 +176,12 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                   children: [
                     Text(
                       project.name,
-                      style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       project.description.isNotEmpty ? project.description : 'No description provided.',
-                      style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+                      style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 14, height: 1.4),
                     ),
                   ],
                 ),
@@ -200,9 +200,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.people_outline_rounded, size: 16, color: Colors.white38),
+                      const Icon(Icons.people_outline_rounded, size: 16, color: ColorPallete.textDisabled),
                       const SizedBox(width: 6),
-                      Text('Team ID: ${project.teamId}', style: const TextStyle(color: Colors.white38, fontSize: 13)),
+                      Text('Team ID: ${project.teamId}', style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 13)),
                     ],
                   ),
                 ],
@@ -210,18 +210,18 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
             ],
           ),
           const SizedBox(height: 20),
-          const Divider(color: Colors.white10),
+          const Divider(color: ColorPallete.divider),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  const Icon(Icons.calendar_month_rounded, size: 16, color: Colors.white54),
+                  const Icon(Icons.calendar_month_rounded, size: 16, color: ColorPallete.textSecondary),
                   const SizedBox(width: 8),
                   Text(
                     dateRangeStr,
-                    style: const TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500),
+                    style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -229,11 +229,11 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                 children: [
                   const Text(
                     'Progress: ',
-                    style: TextStyle(color: Colors.white38, fontSize: 14, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: ColorPallete.textDisabled, fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     '${(progress * 100).toInt()}%',
-                    style: const TextStyle(color: Colors.tealAccent, fontSize: 15, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: ColorPallete.statusColor('approved'), fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -244,8 +244,8 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: progress,
-              backgroundColor: Colors.white.withAlpha(15),
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.tealAccent),
+              backgroundColor: ColorPallete.textPrimary.withAlpha(15),
+              valueColor: AlwaysStoppedAnimation<Color>(ColorPallete.statusColor('approved')),
               minHeight: 8,
             ),
           ),
@@ -257,20 +257,20 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
   Widget _buildTabBar() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF16161A),
+        color: ColorPallete.backgroundPrimary,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: ColorPallete.divider),
       ),
       child: TabBar(
         controller: _tabController,
         indicatorSize: TabBarIndicatorSize.tab,
-        dividerColor: Colors.transparent,
+        dividerColor: ColorPallete.transparent,
         indicator: BoxDecoration(
-          color: Colors.white.withAlpha(15),
+          color: ColorPallete.textPrimary.withAlpha(15),
           borderRadius: BorderRadius.circular(10),
         ),
-        labelColor: Colors.white,
-        unselectedLabelColor: Colors.white38,
+        labelColor: ColorPallete.textPrimary,
+        unselectedLabelColor: ColorPallete.textDisabled,
         tabs: const [
           Tab(
             child: Row(
@@ -306,12 +306,12 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
           children: [
             Text(
               '${project.milestones.length} Milestones',
-              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
+                backgroundColor: ColorPallete.textPrimary,
+                foregroundColor: ColorPallete.textSecondary,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
@@ -354,17 +354,17 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF16161A),
+        color: ColorPallete.backgroundPrimary,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: milestone.isOverdue && !isCompleted ? Colors.redAccent.withAlpha(50) : Colors.white10,
+          color: milestone.isOverdue && !isCompleted ? ColorPallete.error.withAlpha(50) : ColorPallete.divider,
         ),
       ),
       child: Row(
         children: [
           Icon(
             isCompleted ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
-            color: isCompleted ? const Color(0xFF34D399) : Colors.white38,
+            color: isCompleted ? const Color(0xFF34D399) : ColorPallete.textDisabled,
             size: 24,
           ),
           const SizedBox(width: 14),
@@ -375,7 +375,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                 Text(
                   milestone.title,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: ColorPallete.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     decoration: isCompleted ? TextDecoration.lineThrough : null,
@@ -384,17 +384,17 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                 const SizedBox(height: 4),
                 Text(
                   milestone.description.isNotEmpty ? milestone.description : 'No details provided.',
-                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                  style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 13),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today_rounded, size: 11, color: milestone.isOverdue && !isCompleted ? Colors.redAccent : Colors.white38),
+                    Icon(Icons.calendar_today_rounded, size: 11, color: milestone.isOverdue && !isCompleted ? ColorPallete.error : ColorPallete.textDisabled),
                     const SizedBox(width: 4),
                     Text(
                       'Due: ${DateFormat('MMM dd, yyyy').format(milestone.dueDate)}',
                       style: TextStyle(
-                        color: milestone.isOverdue && !isCompleted ? Colors.redAccent : Colors.white54,
+                        color: milestone.isOverdue && !isCompleted ? ColorPallete.error : ColorPallete.textSecondary,
                         fontSize: 11,
                         fontWeight: milestone.isOverdue && !isCompleted ? FontWeight.bold : FontWeight.normal,
                       ),
@@ -427,8 +427,8 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
           ),
           const SizedBox(width: 8),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert_rounded, color: Colors.white54),
-            color: const Color(0xFF16161A),
+            icon: const Icon(Icons.more_vert_rounded, color: ColorPallete.textSecondary),
+            color: ColorPallete.backgroundPrimary,
             onSelected: (val) {
               if (val == 'edit') {
                 _showMilestoneDialog(parentContext, milestone.projectId, milestone);
@@ -441,9 +441,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                 value: 'edit',
                 child: Row(
                   children: [
-                    Icon(Icons.edit_outlined, size: 16, color: Colors.white70),
+                    Icon(Icons.edit_outlined, size: 16, color: ColorPallete.textSecondary),
                     SizedBox(width: 8),
-                    Text('Edit Details', style: TextStyle(color: Colors.white70)),
+                    Text('Edit Details', style: TextStyle(color: ColorPallete.textSecondary)),
                   ],
                 ),
               ),
@@ -451,9 +451,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete_outline_rounded, size: 16, color: Colors.redAccent),
+                    Icon(Icons.delete_outline_rounded, size: 16, color: ColorPallete.error),
                     SizedBox(width: 8),
-                    Text('Delete Milestone', style: TextStyle(color: Colors.redAccent)),
+                    Text('Delete Milestone', style: TextStyle(color: ColorPallete.error)),
                   ],
                 ),
               ),
@@ -484,15 +484,15 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF16161A),
+                  color: ColorPallete.backgroundPrimary,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white10),
+                  border: Border.all(color: ColorPallete.divider),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       task.type.toLowerCase() == 'bug' ? Icons.bug_report_outlined : Icons.assignment_outlined,
-                      color: task.type.toLowerCase() == 'bug' ? Colors.redAccent : Colors.tealAccent,
+                      color: task.type.toLowerCase() == 'bug' ? ColorPallete.error : ColorPallete.statusColor('approved'),
                       size: 20,
                     ),
                     const SizedBox(width: 14),
@@ -502,21 +502,21 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                         children: [
                           Text(
                             task.title,
-                            style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                            style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             task.description ?? 'No details provided.',
-                            style: const TextStyle(color: Colors.white54, fontSize: 12),
+                            style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 12),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              Text('Priority: ${task.priority}', style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                              Text('Priority: ${task.priority}', style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 11)),
                               const SizedBox(width: 12),
-                              Text('Assigned User ID: ${task.assignedTo}', style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                              Text('Assigned User ID: ${task.assignedTo}', style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 11)),
                             ],
                           ),
                         ],
@@ -526,12 +526,12 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(10),
+                        color: ColorPallete.textPrimary.withAlpha(10),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         task.status,
-                        style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 10, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -558,14 +558,14 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
       context: parentContext,
       builder: (dialogCtx) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          backgroundColor: const Color(0xFF0F0F11),
+          backgroundColor: ColorPallete.backgroundPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Colors.white10),
+            side: const BorderSide(color: ColorPallete.divider),
           ),
           title: Text(
             milestoneToEdit == null ? 'Add Milestone' : 'Edit Milestone',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold),
           ),
           content: Form(
             key: formKey,
@@ -574,47 +574,47 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('TITLE', style: TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
+                  const Text('TITLE', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 9, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: titleController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: ColorPallete.textPrimary),
                     decoration: InputDecoration(
                       hintText: 'Milestone target name',
-                      hintStyle: const TextStyle(color: Colors.white24),
+                      hintStyle:  TextStyle(color: ColorPallete.textPrimary.withOpacity(0.24)),
                       filled: true,
-                      fillColor: const Color(0xFF16161A),
+                      fillColor: ColorPallete.backgroundPrimary,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white10),
+                        borderSide: const BorderSide(color: ColorPallete.divider),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white38),
+                        borderSide: const BorderSide(color: ColorPallete.textDisabled),
                       ),
                     ),
                     validator: (val) => (val == null || val.trim().isEmpty) ? 'Title is required' : null,
                   ),
                   const SizedBox(height: 12),
 
-                  const Text('DETAILS', style: TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
+                  const Text('DETAILS', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 9, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: descController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: ColorPallete.textPrimary),
                     maxLines: 2,
                     decoration: InputDecoration(
                       hintText: 'Scope description',
-                      hintStyle: const TextStyle(color: Colors.white24),
+                      hintStyle:  TextStyle(color: ColorPallete.textPrimary.withOpacity(0.24)),
                       filled: true,
-                      fillColor: const Color(0xFF16161A),
+                      fillColor: ColorPallete.backgroundPrimary,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white10),
+                        borderSide: const BorderSide(color: ColorPallete.divider),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white38),
+                        borderSide: const BorderSide(color: ColorPallete.textDisabled),
                       ),
                     ),
                   ),
@@ -633,10 +633,10 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                               builder: (context, child) => Theme(
                                 data: ThemeData.dark().copyWith(
                                   colorScheme: const ColorScheme.dark(
-                                    primary: Colors.white,
-                                    onPrimary: Colors.black,
-                                    surface: Color(0xFF16161A),
-                                    onSurface: Colors.white,
+                                    primary: ColorPallete.textPrimary,
+                                    onPrimary: ColorPallete.textSecondary,
+                                    surface: ColorPallete.backgroundPrimary,
+                                    onSurface: ColorPallete.textPrimary,
                                   ),
                                 ),
                                 child: child!,
@@ -651,16 +651,16 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                           child: Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF16161A),
+                              color: ColorPallete.backgroundPrimary,
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.white10),
+                              border: Border.all(color: ColorPallete.divider),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('DUE DATE', style: TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
+                                const Text('DUE DATE', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 9, fontWeight: FontWeight.bold)),
                                 const SizedBox(height: 4),
-                                Text(DateFormat('MMM dd, yyyy').format(selectedDueDate), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                Text(DateFormat('MMM dd, yyyy').format(selectedDueDate), style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
@@ -671,18 +671,18 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('STATUS', style: TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
+                            const Text('STATUS', style: TextStyle(color: ColorPallete.textDisabled, fontSize: 9, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
                             DropdownButtonFormField<String>(
                               value: selectedStatus,
-                              dropdownColor: const Color(0xFF16161A),
-                              style: const TextStyle(color: Colors.white, fontSize: 13),
+                              dropdownColor: ColorPallete.backgroundPrimary,
+                              style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 13),
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: const Color(0xFF16161A),
+                                fillColor: ColorPallete.backgroundPrimary,
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(color: Colors.white10),
+                                  borderSide: const BorderSide(color: ColorPallete.divider),
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                               ),
@@ -706,12 +706,12 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+              child: const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
+                backgroundColor: ColorPallete.textPrimary,
+                foregroundColor: ColorPallete.textSecondary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
               onPressed: () {
@@ -752,22 +752,22 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
     showDialog<bool>(
       context: parentContext,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0F0F11),
+        backgroundColor: ColorPallete.backgroundPrimary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Colors.white10),
+          side: const BorderSide(color: ColorPallete.divider),
         ),
-        title: const Text('Delete Milestone', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Text('Are you sure you want to delete "${milestone.title}"?', style: const TextStyle(color: Colors.white70)),
+        title: const Text('Delete Milestone', style: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold)),
+        content: Text('Are you sure you want to delete "${milestone.title}"?', style: const TextStyle(color: ColorPallete.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child: const Text('Cancel', style: TextStyle(color: ColorPallete.textSecondary)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
+              backgroundColor: ColorPallete.error,
+              foregroundColor: ColorPallete.textPrimary,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: () => Navigator.pop(context, true),
@@ -795,18 +795,18 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 48, color: Colors.white24),
+            Icon(icon, size: 48, color: ColorPallete.textPrimary.withOpacity(0.24)),
             const SizedBox(height: 12),
             Text(
               title,
-              style: const TextStyle(color: Colors.white70, fontSize: 15, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 15, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Text(
                 subText,
-                style: const TextStyle(color: Colors.white38, fontSize: 12),
+                style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 12),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -821,22 +821,22 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> with SingleTicker
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 64, color: Colors.redAccent),
+          const Icon(Icons.error_outline_rounded, size: 64, color: ColorPallete.error),
           const SizedBox(height: 16),
-          const Text('Error Loading Details', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text('Error Loading Details', style: TextStyle(color: ColorPallete.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 6),
-          Text(message, style: const TextStyle(color: Colors.white54, fontSize: 13), textAlign: TextAlign.center),
+          Text(message, style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 13), textAlign: TextAlign.center),
           const SizedBox(height: 16),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white10,
-              side: const BorderSide(color: Colors.white24),
+              backgroundColor: ColorPallete.divider,
+              side:  BorderSide(color: ColorPallete.textPrimary.withOpacity(0.24)),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: () {
               context.read<ProjectsBloc>().add(LoadProjectDetailEvent(widget.projectId));
             },
-            child: const Text('Retry', style: TextStyle(color: Colors.white)),
+            child: const Text('Retry', style: TextStyle(color: ColorPallete.textPrimary)),
           ),
         ],
       ),

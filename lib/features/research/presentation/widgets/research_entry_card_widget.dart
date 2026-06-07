@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/research_entry_entity.dart';
 import 'status_badge_widget.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class ResearchEntryCardWidget extends StatelessWidget {
   final ResearchEntryEntity entry;
@@ -93,13 +94,13 @@ class ResearchEntryCardWidget extends StatelessWidget {
                   Text(
                     'By ${entry.authorName}',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Colors.grey,
+                          color: ColorPallete.textSecondary,
                         ),
                   ),
                   Text(
                     DateFormat('MMM dd, yyyy').format(entry.updatedAt),
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Colors.grey,
+                          color: ColorPallete.textSecondary,
                         ),
                   ),
                 ],

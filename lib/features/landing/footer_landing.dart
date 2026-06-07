@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class FooterWidget extends StatelessWidget {
   final List<String> footerItems = [
@@ -31,7 +32,7 @@ class FooterWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-          color: Colors.grey[900],
+          color: ColorPallete.textSecondary,
           borderRadius:
               BorderRadius.circular(10)), // Background color for footer
       child: Column(
@@ -53,7 +54,7 @@ class FooterWidget extends StatelessWidget {
               return Text(
                 footerItems[index],
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: ColorPallete.textPrimary,
                   fontSize: 14,
                 ),
               );

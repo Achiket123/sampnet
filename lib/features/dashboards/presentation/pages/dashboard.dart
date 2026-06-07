@@ -85,7 +85,7 @@ class _DashboardState extends State<Dashboard> {
             }
             return Container(
               decoration: const BoxDecoration(
-                  gradient: LinearGradient(colors: ColorPallete.background)),
+                  color: ColorPallete.backgroundPrimary),
               child: SingleChildScrollView(
                 child: Column(
                   children: [

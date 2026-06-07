@@ -23,7 +23,7 @@ class GreetingWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorPallete.background2[0].withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -32,7 +32,7 @@ class GreetingWidget extends StatelessWidget {
           Text(
             "$greetingPrefix, $firstName!",
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: ColorPallete.white,
+                  color: ColorPallete.textPrimary,
                   fontWeight: FontWeight.bold,
                 ),
           ),
@@ -40,7 +40,7 @@ class GreetingWidget extends StatelessWidget {
           Text(
             "Here's what's happening today.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: ColorPallete.white.withOpacity(0.7),
+                  color: ColorPallete.textPrimary.withOpacity(0.7),
                 ),
           ),
           if (organisation != null) ...[
@@ -48,7 +48,7 @@ class GreetingWidget extends StatelessWidget {
             Text(
               organisation.companyName,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: ColorPallete.white.withOpacity(0.5),
+                    color: ColorPallete.textPrimary.withOpacity(0.5),
                   ),
             ),
           ],

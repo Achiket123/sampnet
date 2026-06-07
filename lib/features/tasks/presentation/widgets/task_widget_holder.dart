@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hackathon/widgets/task_button.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 // ignore: must_be_immutable
 class TaskWidgetHolder extends StatelessWidget {
@@ -16,7 +17,7 @@ class TaskWidgetHolder extends StatelessWidget {
         child: Column(
           children: [
             CustomTextButton(
-              color: Colors.grey,
+              color: ColorPallete.textSecondary,
               width: width * 0.2,
               text: text,
               onTap: () {},
@@ -25,7 +26,7 @@ class TaskWidgetHolder extends StatelessWidget {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  // color: ColorPallete.background3,
+                  // color: ColorPallete.backgroundPrimary,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 width: width * 0.8,

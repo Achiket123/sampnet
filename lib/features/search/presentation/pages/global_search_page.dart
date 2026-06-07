@@ -130,7 +130,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage> {
     return BlocProvider.value(
       value: _bloc,
       child: Scaffold(
-        backgroundColor: ColorPallete.blackPrimary,
+        backgroundColor: ColorPallete.backgroundPrimary,
         body: SafeArea(
           child: Column(
             children: [
@@ -157,7 +157,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage> {
                       return Center(
                         child: Text(
                           state.message,
-                          style: const TextStyle(color: Colors.red),
+                          style: const TextStyle(color: ColorPallete.error),
                           textAlign: TextAlign.center,
                         ),
                       );
@@ -178,7 +178,7 @@ class _GlobalSearchPageState extends State<GlobalSearchPage> {
                         if (loading)
                           const LinearProgressIndicator(
                             minHeight: 2,
-                            color: ColorPallete.greenPrimary,
+                            color: ColorPallete.success,
                           ),
                         if (results != null)
                           Expanded(
@@ -220,23 +220,23 @@ class _SearchBar extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
       decoration: BoxDecoration(
-        color: ColorPallete.blackSecondary,
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
         controller: controller,
         autofocus: true,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: ColorPallete.textPrimary),
         onChanged: onChanged,
         decoration: InputDecoration(
           hintText: 'Search tasks, projects, teams, employees…',
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
-          prefixIcon: const Icon(Icons.search, color: Colors.white54),
+          hintStyle: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.4)),
+          prefixIcon: const Icon(Icons.search, color: ColorPallete.textSecondary),
           suffixIcon: ValueListenableBuilder<TextEditingValue>(
             valueListenable: controller,
             builder: (_, value, __) => value.text.isNotEmpty
                 ? IconButton(
-                    icon: const Icon(Icons.clear, color: Colors.white54),
+                    icon: const Icon(Icons.clear, color: ColorPallete.textSecondary),
                     onPressed: onClear,
                   )
                 : const SizedBox.shrink(),
@@ -280,13 +280,13 @@ class _TypeFilterRow extends StatelessWidget {
             label: Text(
               type == 'all' ? 'All' : _capitalise(type),
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white60,
+                color: isSelected ? ColorPallete.textPrimary : ColorPallete.textPrimary.withOpacity(0.60),
                 fontSize: 12,
               ),
             ),
             selected: isSelected,
-            selectedColor: ColorPallete.greenPrimary,
-            backgroundColor: ColorPallete.blackSecondary,
+            selectedColor: ColorPallete.success,
+            backgroundColor: ColorPallete.backgroundSecondary,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             onSelected: (_) => onTap(type),
@@ -307,13 +307,13 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.search, size: 64, color: Colors.white.withOpacity(0.2)),
+          Icon(Icons.search, size: 64, color: ColorPallete.textPrimary.withOpacity(0.2)),
           const SizedBox(height: 16),
           Text(
             'Search across tasks, projects,\nteams, employees and chats',
             textAlign: TextAlign.center,
             style:
-                TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14),
+                TextStyle(color: ColorPallete.textPrimary.withOpacity(0.4), fontSize: 14),
           ),
         ],
       ),
@@ -333,7 +333,7 @@ class _ResultsList extends StatelessWidget {
       return Center(
         child: Text(
           'No results for "${results.query}"',
-          style: TextStyle(color: Colors.white.withOpacity(0.5)),
+          style: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.5)),
         ),
       );
     }
@@ -399,7 +399,7 @@ class _SectionHeader extends StatelessWidget {
       child: Text(
         '${_label(type)} ($count)',
         style: const TextStyle(
-          color: Colors.white54,
+          color: ColorPallete.textSecondary,
           fontSize: 12,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.8,
@@ -438,12 +438,12 @@ class _SearchResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: ColorPallete.blackSecondary,
-        child: Icon(_iconFor(item.type), color: Colors.white70, size: 20),
+        backgroundColor: ColorPallete.backgroundSecondary,
+        child: Icon(_iconFor(item.type), color: ColorPallete.textSecondary, size: 20),
       ),
       title: Text(
         item.title,
-        style: const TextStyle(color: Colors.white, fontSize: 14),
+        style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
@@ -451,7 +451,7 @@ class _SearchResultTile extends StatelessWidget {
           ? Text(
               item.subtitle,
               style:
-                  TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                  TextStyle(color: ColorPallete.textPrimary.withOpacity(0.5), fontSize: 12),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             )

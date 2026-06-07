@@ -44,8 +44,8 @@ class IncomingCallOverlayService {
     _elegantNotification = ElegantNotification(
       title: const Text("Incoming video call...", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
       description: Text("$callingFirstName $callingLastName", style: const TextStyle(color: Colors.white70)),
-      icon: const Icon(Icons.call, color: ColorPallete.greenPrimary),
-      background: ColorPallete.blackSecondary,
+      icon: const Icon(Icons.call, color: ColorPallete.success),
+      background: ColorPallete.backgroundSecondary,
       animation: AnimationType.fromTop,
       position: Alignment.topCenter,
       autoDismiss: false,

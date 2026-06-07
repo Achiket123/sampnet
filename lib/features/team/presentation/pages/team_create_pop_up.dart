@@ -59,7 +59,7 @@ class _TeamCreatePopUpState extends State<TeamCreatePopUp> {
         minWidth: screenWidth * 0.6,
       ),
       decoration: BoxDecoration(
-        color: ColorPallete.blackTertiary,
+        color: ColorPallete.backgroundTertiary,
         borderRadius: BorderRadius.circular(20),
       ),
       padding: const EdgeInsets.all(10),
@@ -155,15 +155,15 @@ class _TeamCreatePopUpState extends State<TeamCreatePopUp> {
                       return Container(
                         margin: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                            color: ColorPallete.blackTertiary,
+                            color: ColorPallete.backgroundTertiary,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: ColorPallete.white,
+                              color: ColorPallete.textPrimary,
                               width: 2,
                             ),
                             boxShadow: const [
                               BoxShadow(
-                                color: ColorPallete.black,
+                                color: ColorPallete.textSecondary,
                                 blurRadius: 10,
                               ),
                             ]),
@@ -241,15 +241,15 @@ class _TeamCreatePopUpState extends State<TeamCreatePopUp> {
                     return Container(
                       margin: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                          color: ColorPallete.blackTertiary,
+                          color: ColorPallete.backgroundTertiary,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: ColorPallete.white,
+                            color: ColorPallete.textPrimary,
                             width: 2,
                           ),
                           boxShadow: const [
                             BoxShadow(
-                              color: ColorPallete.black,
+                              color: ColorPallete.textSecondary,
                               blurRadius: 10,
                             ),
                           ]),
@@ -292,15 +292,15 @@ class _TeamCreatePopUpState extends State<TeamCreatePopUp> {
                 child: Container(
                   margin: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                      color: ColorPallete.blackTertiary,
+                      color: ColorPallete.backgroundTertiary,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: ColorPallete.white,
+                        color: ColorPallete.textPrimary,
                         width: 2,
                       ),
                       boxShadow: const [
                         BoxShadow(
-                          color: ColorPallete.black,
+                          color: ColorPallete.textSecondary,
                           blurRadius: 10,
                         ),
                       ]),
@@ -363,7 +363,7 @@ class _TeamCreatePopUpState extends State<TeamCreatePopUp> {
                               border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20),
                             borderSide: const BorderSide(
-                                color: ColorPallete.white, width: 2.0),
+                                color: ColorPallete.textPrimary, width: 2.0),
                           )),
                           dropdownMenuEntries: data
                               .map<DropdownMenuEntry<ProjectEntity>>((e) =>
@@ -379,15 +379,15 @@ class _TeamCreatePopUpState extends State<TeamCreatePopUp> {
             padding: const EdgeInsets.all(10),
             margin: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-                color: ColorPallete.blackTertiary,
+                color: ColorPallete.backgroundTertiary,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: ColorPallete.white,
+                  color: ColorPallete.textPrimary,
                   width: 2,
                 ),
                 boxShadow: const [
                   BoxShadow(
-                    color: ColorPallete.black,
+                    color: ColorPallete.textSecondary,
                     blurRadius: 10,
                   ),
                 ]),
@@ -434,12 +434,7 @@ class _TeamCreatePopUpState extends State<TeamCreatePopUp> {
 
   InputDecoration _buildInputDecoration(String hintText) {
     return InputDecoration(
-      focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: ColorPallete.blackPrimary),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       hintText: hintText,
-      filled: true,
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hackathon/features/tasks/domain/entities/task_comment_entity.dart';
 import 'package:intl/intl.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class TaskCommentSection extends StatefulWidget {
   final List<TaskCommentEntity> comments;
@@ -74,7 +75,7 @@ class _TaskCommentSectionState extends State<TaskCommentSection> {
                               DateFormat('MMM dd, hh:mm a')
                                   .format(comment.createdAt),
                               style: const TextStyle(
-                                  fontSize: 12, color: Colors.grey),
+                                  fontSize: 12, color: ColorPallete.textSecondary),
                             ),
                           ],
                         ),
@@ -86,7 +87,7 @@ class _TaskCommentSectionState extends State<TaskCommentSection> {
                   if (comment.userId == widget.currentUserId)
                     IconButton(
                       icon:
-                          const Icon(Icons.delete, color: Colors.red, size: 20),
+                          const Icon(Icons.delete, color: ColorPallete.error, size: 20),
                       onPressed: () => widget.onDeleteComment(comment.id),
                     ),
                 ],
@@ -100,7 +101,7 @@ class _TaskCommentSectionState extends State<TaskCommentSection> {
             Expanded(
               child: TextField(
                 controller: _controller,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: ColorPallete.textPrimary),
                 decoration: const InputDecoration(
                   hintText: "Add a comment...",
                   border: OutlineInputBorder(),

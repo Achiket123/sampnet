@@ -7,6 +7,7 @@ import 'package:hackathon/features/leave/presentation/blocs/leave_bloc/leave_eve
 import 'package:hackathon/features/leave/presentation/blocs/leave_bloc/leave_state.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:intl/intl.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class LeaveRequestPage extends StatefulWidget {
   static const routePath = '/leave-request';
@@ -42,9 +43,9 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
       builder: (context, child) => Theme(
         data: ThemeData.dark().copyWith(
           colorScheme: const ColorScheme.dark(
-              primary: Colors.white,
-              onPrimary: Colors.black,
-              surface: Color(0xFF16161A)),
+              primary: ColorPallete.textPrimary,
+              onPrimary: ColorPallete.textSecondary,
+              surface: ColorPallete.backgroundPrimary),
         ),
         child: child!,
       ),
@@ -66,15 +67,15 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F11),
+      backgroundColor: ColorPallete.backgroundPrimary,
       appBar: AppBar(
-        backgroundColor: Colors.red,
+        backgroundColor: ColorPallete.error,
         elevation: 0,
         leading: IconButton(
-            icon: const Icon(Icons.close_rounded, color: Colors.white),
+            icon: const Icon(Icons.close_rounded, color: ColorPallete.textPrimary),
             onPressed: () => Navigator.pop(context)),
         title: const Text('Time Off Request',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+            style: TextStyle(fontWeight: FontWeight.bold, color: ColorPallete.textPrimary)),
       ),
       body: BlocListener<LeaveBloc, LeaveState>(
         listener: (context, state) {
@@ -97,19 +98,12 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   value: _selectedLeaveType,
-                  dropdownColor: const Color(0xFF16161A),
-                  style: const TextStyle(color: Colors.white, fontSize: 15),
-                  decoration: InputDecoration(
+                  dropdownColor: ColorPallete.backgroundPrimary,
+                  style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 15),
+                  decoration: const InputDecoration(
                     labelText: 'Absence Framework Type',
-                    labelStyle: const TextStyle(color: Colors.white38),
-                    prefixIcon: const Icon(Icons.category_rounded,
-                        color: Colors.white54),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(color: Colors.white10)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(color: Colors.white38)),
+                    prefixIcon: Icon(Icons.category_rounded,
+                        color: ColorPallete.textSecondary),
                   ),
                   items: _leaveTypes.map((type) {
                     return DropdownMenuItem(
@@ -136,17 +130,10 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _reasonController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
+                  style: const TextStyle(color: ColorPallete.textPrimary),
+                  decoration: const InputDecoration(
                     labelText: 'Reason Statement',
-                    labelStyle: const TextStyle(color: Colors.white38),
                     alignLabelWithHint: true,
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(color: Colors.white10)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(color: Colors.white38)),
                   ),
                   maxLines: 4,
                   validator: (value) => (value == null || value.isEmpty)
@@ -162,7 +149,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                     }
                     return ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: ColorPallete.textPrimary,
                         minimumSize: const Size(double.infinity, 52),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14)),
@@ -187,7 +174,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                       },
                       child: const Text('Transmit Request File',
                           style: TextStyle(
-                              color: Colors.black,
+                              color: ColorPallete.textSecondary,
                               fontWeight: FontWeight.w800,
                               fontSize: 15)),
                     );
@@ -208,16 +195,16 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-            color: const Color(0xFF16161A),
+            color: ColorPallete.backgroundPrimary,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white10)),
+            border: Border.all(color: ColorPallete.divider)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title,
                 style: const TextStyle(
                     fontSize: 10,
-                    color: Colors.white38,
+                    color: ColorPallete.textDisabled,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5)),
             const SizedBox(height: 6),
@@ -226,11 +213,11 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
               children: [
                 Text(DateFormat('MMM dd, yyyy').format(date),
                     style: const TextStyle(
-                        color: Colors.white,
+                        color: ColorPallete.textPrimary,
                         fontWeight: FontWeight.bold,
                         fontSize: 14)),
                 const Icon(Icons.calendar_month_rounded,
-                    size: 16, color: Colors.white54),
+                    size: 16, color: ColorPallete.textSecondary),
               ],
             )
           ],

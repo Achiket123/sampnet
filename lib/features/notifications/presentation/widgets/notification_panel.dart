@@ -4,6 +4,7 @@ import 'package:hackathon/features/notifications/presentation/blocs/notification
 import 'package:hackathon/features/notifications/presentation/blocs/notifications_bloc/notifications_event.dart';
 import 'package:hackathon/features/notifications/presentation/blocs/notifications_bloc/notifications_state.dart';
 import 'package:hackathon/features/notifications/presentation/widgets/notification_item_widget.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class NotificationPanel extends StatefulWidget {
   const NotificationPanel({super.key});
@@ -44,20 +45,20 @@ class _NotificationPanelState extends State<NotificationPanel> {
     return Align(
       alignment: Alignment.centerRight,
       child: Material(
-        color: Colors.transparent,
+        color: ColorPallete.transparent,
         child: Container(
           width: swidth > 600 ? 400 : swidth * 0.85,
           height: double.infinity,
           decoration: const BoxDecoration(
             color: Color.fromARGB(255, 30, 30, 30),
             boxShadow: [
-              BoxShadow(color: Colors.black54, blurRadius: 10, spreadRadius: 2),
+              BoxShadow(color: ColorPallete.textSecondary, blurRadius: 10, spreadRadius: 2),
             ],
           ),
           child: Column(
             children: [
               _buildHeader(context),
-              const Divider(height: 1, color: Colors.white10),
+              const Divider(height: 1, color: ColorPallete.divider),
               Expanded(child: _buildContent(context)),
             ],
           ),
@@ -75,7 +76,7 @@ class _NotificationPanelState extends State<NotificationPanel> {
           const Text(
             'Notifications',
             style: TextStyle(
-              color: Colors.white,
+              color: ColorPallete.textPrimary,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -91,13 +92,13 @@ class _NotificationPanelState extends State<NotificationPanel> {
                 },
                 child: const Text(
                   'Mark all as read',
-                  style: TextStyle(color: Colors.blueAccent, fontSize: 13),
+                  style: TextStyle(color: ColorPallete.redPrimary, fontSize: 13),
                 ),
               );
             },
           ),
           IconButton(
-            icon: const Icon(Icons.close, color: Colors.white70),
+            icon: const Icon(Icons.close, color: ColorPallete.textSecondary),
             onPressed: () => Navigator.pop(context),
           ),
         ],
@@ -113,7 +114,7 @@ class _NotificationPanelState extends State<NotificationPanel> {
         } else if (state is NotificationsEmpty) {
           return _buildEmpty();
         } else if (state is NotificationsError) {
-          return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
+          return Center(child: Text(state.message, style: const TextStyle(color: ColorPallete.error)));
         } else if (state is NotificationsLoaded) {
           return ListView.builder(
             controller: _scrollController,
@@ -144,15 +145,15 @@ class _NotificationPanelState extends State<NotificationPanel> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         child: Row(
           children: [
-            Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(20))),
+            Container(width: 40, height: 40, decoration: BoxDecoration(color: ColorPallete.divider, borderRadius: BorderRadius.circular(20))),
             const SizedBox(width: 15),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(width: 150, height: 12, color: Colors.white10),
+                  Container(width: 150, height: 12, color: ColorPallete.divider),
                   const SizedBox(height: 8),
-                  Container(width: double.infinity, height: 10, color: Colors.white10),
+                  Container(width: double.infinity, height: 10, color: ColorPallete.divider),
                 ],
               ),
             ),
@@ -167,11 +168,11 @@ class _NotificationPanelState extends State<NotificationPanel> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.done_all, size: 64, color: Colors.white.withValues(alpha: 0.2)),
+          Icon(Icons.done_all, size: 64, color: ColorPallete.textPrimary.withValues(alpha: 0.2)),
           const SizedBox(height: 16),
           Text(
             "You're all caught up",
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 16),
+            style: TextStyle(color: ColorPallete.textPrimary.withValues(alpha: 0.5), fontSize: 16),
           ),
         ],
       ),

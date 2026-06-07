@@ -182,8 +182,8 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
     final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: ColorPallete.blackSecondary,
-        title: const Text('Add Link', style: TextStyle(color: Colors.white)),
+        backgroundColor: ColorPallete.backgroundSecondary,
+        title: const Text('Add Link', style: TextStyle(color: ColorPallete.textPrimary)),
         content: SizedBox(
           width: 420,
           child: Column(
@@ -191,21 +191,21 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
             children: [
               TextField(
                 controller: labelController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
+                style: const TextStyle(color: ColorPallete.textPrimary),
+                decoration: InputDecoration(
                   labelText: 'Label',
-                  labelStyle: TextStyle(color: Colors.white60),
+                  labelStyle: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.60)),
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: urlController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
+                style: const TextStyle(color: ColorPallete.textPrimary),
+                decoration: InputDecoration(
                   labelText: 'URL',
-                  labelStyle: TextStyle(color: Colors.white60),
+                  labelStyle: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.60)),
                   hintText: 'https://example.com',
-                  hintStyle: TextStyle(color: Colors.white38),
+                  hintStyle: TextStyle(color: ColorPallete.textDisabled),
                 ),
               ),
             ],
@@ -267,19 +267,19 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: const Color(0xFF0F0F11),
+          backgroundColor: ColorPallete.backgroundPrimary,
           appBar: AppBar(
-            backgroundColor: ColorPallete.blackSecondary,
+            backgroundColor: ColorPallete.backgroundSecondary,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: const Icon(Icons.arrow_back, color: ColorPallete.textPrimary),
               onPressed: () => context.pop(),
             ),
             title: TextField(
               controller: _titleController,
               onChanged: (_) => _scheduleAutosave(),
               style: const TextStyle(
-                  color: Colors.white,
+                  color: ColorPallete.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.bold),
               decoration: const InputDecoration(border: InputBorder.none),
@@ -290,7 +290,7 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
                     _isPreviewMode
                         ? Icons.edit_outlined
                         : Icons.visibility_outlined,
-                    color: Colors.white),
+                    color: ColorPallete.textPrimary),
                 onPressed: () =>
                     setState(() => _isPreviewMode = !_isPreviewMode),
               ),
@@ -300,9 +300,9 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                            strokeWidth: 2, color: ColorPallete.textPrimary),
                       )
-                    : const Icon(Icons.save_outlined, color: Colors.white),
+                    : const Icon(Icons.save_outlined, color: ColorPallete.textPrimary),
                 onPressed: () {
                   context.read<MarkdownEditorBloc>().add(
                         SaveMarkdownDocument(
@@ -333,7 +333,7 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
                                 ? _buildPreview()
                                 : _buildEditor(),
                           ),
-                          Container(width: 1, color: Colors.white10),
+                          Container(width: 1, color: ColorPallete.divider),
                           SizedBox(
                             width: 380,
                             child: _buildArtifactsPanel(state),
@@ -352,8 +352,8 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
   Widget _buildToolbar() {
     return Container(
       decoration: const BoxDecoration(
-        color: ColorPallete.blackSecondary,
-        border: Border(bottom: BorderSide(color: Colors.white10)),
+        color: ColorPallete.backgroundSecondary,
+        border: Border(bottom: BorderSide(color: ColorPallete.divider)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       child: SingleChildScrollView(
@@ -379,7 +379,7 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
   Widget _toolbarButton(IconData icon, VoidCallback onPressed) {
     return IconButton(
       onPressed: onPressed,
-      icon: Icon(icon, color: Colors.white60, size: 20),
+      icon: Icon(icon, color: ColorPallete.textPrimary.withOpacity(0.60), size: 20),
       constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
       splashRadius: 20,
     );
@@ -392,17 +392,17 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
         controller: _contentController,
         onChanged: (_) => _scheduleAutosave(),
         style: const TextStyle(
-          color: Colors.white,
+          color: ColorPallete.textPrimary,
           fontSize: 16,
           height: 1.5,
           fontFamily: 'monospace',
         ),
         maxLines: null,
         expands: true,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           border: InputBorder.none,
           hintText: 'Start writing your research notes here...',
-          hintStyle: TextStyle(color: Colors.white24),
+          hintStyle: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.24)),
         ),
       ),
     );
@@ -418,11 +418,11 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
             : _contentController.text,
         selectable: true,
         styleSheet: MarkdownStyleSheet(
-          p: const TextStyle(color: Colors.white70, fontSize: 16, height: 1.6),
+          p: const TextStyle(color: ColorPallete.textSecondary, fontSize: 16, height: 1.6),
           h1: const TextStyle(
-              color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+              color: ColorPallete.textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
           code: const TextStyle(
-              backgroundColor: Colors.white10, fontFamily: 'monospace'),
+              backgroundColor: ColorPallete.divider, fontFamily: 'monospace'),
         ),
       ),
     );
@@ -441,7 +441,7 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
                   width: 150,
                   child: _buildArtifactsSidebar(state),
                 ),
-                Container(width: 1, color: Colors.white10),
+                Container(width: 1, color: ColorPallete.divider),
                 Expanded(
                   child: _buildArtifactPreview(),
                 ),
@@ -457,8 +457,8 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
-        color: ColorPallete.blackSecondary,
-        border: Border(bottom: BorderSide(color: Colors.white10)),
+        color: ColorPallete.backgroundSecondary,
+        border: Border(bottom: BorderSide(color: ColorPallete.divider)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -466,7 +466,7 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
           const Text(
             'Artifacts',
             style: TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                color: ColorPallete.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Row(
@@ -515,8 +515,8 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         title,
-        style: const TextStyle(
-          color: Colors.white60,
+        style:  TextStyle(
+          color: ColorPallete.textPrimary.withOpacity(0.60),
           fontSize: 12,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.6,
@@ -530,7 +530,7 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
       padding: const EdgeInsets.only(bottom: 12),
       child: Text(
         text,
-        style: const TextStyle(color: Colors.white30, fontSize: 12),
+        style: TextStyle(color: ColorPallete.textSecondary, fontSize: 12),
       ),
     );
   }
@@ -553,7 +553,7 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
     return _buildTile(
       label: artifact.title,
       icon: Icons.link,
-      color: Colors.lightBlueAccent,
+      color: ColorPallete.textSecondary,
       isSelected: isSelected,
       onTap: () => setState(() => _selectedArtifact = artifact),
     );
@@ -575,11 +575,11 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: isSelected
-                ? Colors.blueAccent.withValues(alpha: 0.18)
-                : Colors.white.withValues(alpha: 0.04),
+                ? ColorPallete.redPrimary.withValues(alpha: 0.18)
+                : ColorPallete.textPrimary.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? Colors.blueAccent : Colors.white10,
+              color: isSelected ? ColorPallete.redPrimary : ColorPallete.divider,
             ),
           ),
           child: Row(
@@ -591,7 +591,7 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
                   label,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 12),
                 ),
               ),
             ],
@@ -607,7 +607,7 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
       return const Center(
         child: Text(
           'Select an artifact to preview it here.',
-          style: TextStyle(color: Colors.white38),
+          style: TextStyle(color: ColorPallete.textDisabled),
           textAlign: TextAlign.center,
         ),
       );
@@ -628,33 +628,33 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
           const Text(
             'Link',
             style: TextStyle(
-                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                color: ColorPallete.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Text(
             artifact.title,
             style: const TextStyle(
-                color: Colors.white70,
+                color: ColorPallete.textSecondary,
                 fontSize: 14,
                 fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           SelectableText(
             artifact.url ?? '',
-            style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 13),
+            style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 16),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.04),
+              color: ColorPallete.textPrimary.withValues(alpha: 0.04),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white10),
+              border: Border.all(color: ColorPallete.divider),
             ),
-            child: const Text(
+            child: Text(
               'Link artifacts are kept separate from uploaded files. Use the button below to open the URL when needed.',
-              style: TextStyle(color: Colors.white60, height: 1.5),
+              style: TextStyle(color: ColorPallete.textPrimary.withOpacity(0.60), height: 1.5),
             ),
           ),
           const SizedBox(height: 16),
@@ -692,21 +692,21 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
           Text(
             artifact.fileName,
             style: const TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                color: ColorPallete.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 6),
           Text(
             _buildFileMeta(artifact),
-            style: const TextStyle(color: Colors.white38, fontSize: 12),
+            style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 12),
           ),
           const SizedBox(height: 16),
           Expanded(
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.03),
+                color: ColorPallete.textPrimary.withValues(alpha: 0.03),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white10),
+                border: Border.all(color: ColorPallete.divider),
               ),
               clipBehavior: Clip.antiAlias,
               child: _buildFilePreviewBody(artifact),
@@ -753,7 +753,7 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
     return const Center(
       child: Text(
         'Preview is only enabled for PDFs and images right now.',
-        style: TextStyle(color: Colors.white38),
+        style: TextStyle(color: ColorPallete.textDisabled),
         textAlign: TextAlign.center,
       ),
     );
@@ -789,12 +789,12 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
 
   Color _fileColor(String mimeType) {
     if (mimeType == 'application/pdf') {
-      return Colors.redAccent;
+      return ColorPallete.error;
     }
     if (mimeType.startsWith('image/')) {
-      return Colors.greenAccent;
+      return ColorPallete.statusColor('approved');
     }
-    return Colors.white54;
+    return ColorPallete.textSecondary;
   }
 
   Widget _buildStatusBar(MarkdownEditorState state) {
@@ -802,18 +802,18 @@ class _MarkdownEditorPageState extends State<MarkdownEditorPage> {
         ? 0
         : _contentController.text.trim().split(RegExp(r'\s+')).length;
     return Container(
-      color: ColorPallete.blackSecondary,
+      color: ColorPallete.backgroundSecondary,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             '$words words | ${_contentController.text.length} chars',
-            style: const TextStyle(color: Colors.white38, fontSize: 12),
+            style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 12),
           ),
           Text(
             state.isSaving ? 'Saving...' : (state.saveMessage ?? 'Ready'),
-            style: const TextStyle(color: Colors.white38, fontSize: 12),
+            style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 12),
           ),
         ],
       ),

@@ -16,7 +16,7 @@ class ChatBubble extends StatelessWidget {
     final testStyle = Theme.of(context)
         .textTheme
         .bodySmall!
-        .copyWith(color: ColorPallete.blackPrimary, fontSize: 16);
+      .copyWith(color: ColorPallete.textSecondary, fontSize: 16);
     return ListTile(
       title: Align(
         alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
@@ -32,7 +32,7 @@ class ChatBubble extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           margin: const EdgeInsets.symmetric(vertical: 2.5),
           decoration: BoxDecoration(
-            color: ColorPallete.offWhite2,
+            color: ColorPallete.textPrimary.withOpacity(0.02),
             borderRadius: BorderRadius.circular(5),
           ),
           child: Text(

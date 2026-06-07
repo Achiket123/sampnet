@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hackathon/features/employees/domain/entities/employee_entity.dart';
 import 'package:hackathon/features/employees/presentation/blocs/employees_list_bloc/employees_list_bloc.dart';
 import 'package:hackathon/features/employees/presentation/blocs/employees_list_bloc/employees_list_event.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class EditEmployeeModal extends StatefulWidget {
   final EmployeeEntity employee;
@@ -57,10 +58,10 @@ class _EditEmployeeModalState extends State<EditEmployeeModal> {
             children: [
               Text(
                 widget.isOwnProfile ? 'Edit Profile' : 'Edit ${widget.employee.user.firstName}',
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
               ),
               IconButton(
-                icon: const Icon(Icons.close, color: Colors.white70),
+                icon: const Icon(Icons.close, color: ColorPallete.textSecondary),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -69,51 +70,36 @@ class _EditEmployeeModalState extends State<EditEmployeeModal> {
           if (widget.isOwnProfile) ...[
             TextField(
               controller: _firstNameController,
-              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 labelText: 'First Name',
-                labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white10)),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _lastNameController,
-              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 labelText: 'Last Name',
-                labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white10)),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _phoneController,
-              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 labelText: 'Phone Number',
-                labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white10)),
               ),
             ),
           ] else ...[
             TextField(
               controller: _typeController,
-              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 labelText: 'Designation / Type',
-                labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white10)),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _salaryController,
-              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 labelText: 'Salary',
-                labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white10)),
               ),
             ),
           ],
@@ -134,8 +120,8 @@ class _EditEmployeeModalState extends State<EditEmployeeModal> {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
+                backgroundColor: ColorPallete.redPrimary,
+                foregroundColor: ColorPallete.textPrimary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.bold)),

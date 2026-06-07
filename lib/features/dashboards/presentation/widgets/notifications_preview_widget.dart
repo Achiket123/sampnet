@@ -9,7 +9,7 @@ class NotificationsPreviewWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorPallete.background2[0].withOpacity(0.5),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -21,11 +21,11 @@ class NotificationsPreviewWidget extends StatelessWidget {
               Text(
                 "Notifications",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: ColorPallete.white,
+                      color: ColorPallete.textPrimary,
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const Icon(Icons.notifications_none, color: ColorPallete.white, size: 20),
+              const Icon(Icons.notifications_none, color: ColorPallete.textPrimary, size: 20),
             ],
           ),
           const SizedBox(height: 12),
@@ -33,14 +33,14 @@ class NotificationsPreviewWidget extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: 2,
-            separatorBuilder: (context, index) => const Divider(color: Colors.white10),
+            separatorBuilder: (context, index) => const Divider(color: ColorPallete.divider),
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Text(
                   "You were assigned a new task: 'Design UI for Dashboard'",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: ColorPallete.white.withOpacity(0.8),
+                        color: ColorPallete.textPrimary.withOpacity(0.8),
                       ),
                 ),
               );

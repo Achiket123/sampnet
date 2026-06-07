@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hackathon/features/projects/domain/entities/project_entity.dart';
 import 'package:hackathon/features/projects/presentation/widgets/project_status_badge.dart';
 import 'package:intl/intl.dart';
+import 'package:hackathon/globals/constants/color_pallete.dart';
 
 class ProjectCardWidget extends StatelessWidget {
   final Project project;
@@ -57,11 +58,11 @@ class ProjectCardWidget extends StatelessWidget {
     }
 
     return Card(
-      color: const Color(0xFF16161A),
+      color: ColorPallete.backgroundPrimary,
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Colors.white10),
+        side: const BorderSide(color: ColorPallete.divider),
       ),
       child: InkWell(
         onTap: onTap,
@@ -82,7 +83,7 @@ class ProjectCardWidget extends StatelessWidget {
                         Text(
                           project.name,
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: ColorPallete.textPrimary,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -92,11 +93,11 @@ class ProjectCardWidget extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(Icons.people_outline_rounded, size: 14, color: Colors.white38),
+                            const Icon(Icons.people_outline_rounded, size: 14, color: ColorPallete.textDisabled),
                             const SizedBox(width: 4),
                             Text(
                               'Team ID: ${project.teamId}',
-                              style: const TextStyle(color: Colors.white38, fontSize: 12),
+                              style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 12),
                             ),
                           ],
                         ),
@@ -106,12 +107,12 @@ class ProjectCardWidget extends StatelessWidget {
                   Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.edit_outlined, size: 20, color: Colors.white54),
+                        icon: const Icon(Icons.edit_outlined, size: 20, color: ColorPallete.textSecondary),
                         onPressed: onEdit,
                         tooltip: 'Edit Project',
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline_rounded, size: 20, color: Colors.redAccent),
+                        icon: const Icon(Icons.delete_outline_rounded, size: 20, color: ColorPallete.error),
                         onPressed: onDelete,
                         tooltip: 'Delete Project',
                       ),
@@ -125,7 +126,7 @@ class ProjectCardWidget extends StatelessWidget {
               Text(
                 project.description.isNotEmpty ? project.description : 'No description provided.',
                 style: const TextStyle(
-                  color: Colors.white70,
+                  color: ColorPallete.textSecondary,
                   fontSize: 13,
                   height: 1.4,
                 ),
@@ -147,11 +148,11 @@ class ProjectCardWidget extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today_rounded, size: 12, color: Colors.white54),
+                      const Icon(Icons.calendar_today_rounded, size: 12, color: ColorPallete.textSecondary),
                       const SizedBox(width: 6),
                       Text(
                         dateRangeStr,
-                        style: const TextStyle(color: Colors.white54, fontSize: 12),
+                        style: const TextStyle(color: ColorPallete.textSecondary, fontSize: 12),
                       ),
                     ],
                   ),
@@ -169,7 +170,7 @@ class ProjectCardWidget extends StatelessWidget {
                       Text(
                         'Completion Status: ${project.completionStatus.toUpperCase()}',
                         style: const TextStyle(
-                          color: Colors.white38,
+                          color: ColorPallete.textDisabled,
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
                         ),
@@ -189,7 +190,7 @@ class ProjectCardWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
                       value: progress,
-                      backgroundColor: Colors.white.withAlpha(15),
+                      backgroundColor: ColorPallete.textPrimary.withAlpha(15),
                       valueColor: AlwaysStoppedAnimation<Color>(progressColor),
                       minHeight: 6,
                     ),
@@ -201,11 +202,11 @@ class ProjectCardWidget extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    const Icon(Icons.flag_outlined, size: 14, color: Colors.white38),
+                    const Icon(Icons.flag_outlined, size: 14, color: ColorPallete.textDisabled),
                     const SizedBox(width: 4),
                     Text(
                       '${project.milestones.length} Milestones (${project.milestones.where((m) => m.status.toLowerCase() == 'completed').length} completed)',
-                      style: const TextStyle(color: Colors.white38, fontSize: 12),
+                      style: const TextStyle(color: ColorPallete.textDisabled, fontSize: 12),
                     ),
                   ],
                 )

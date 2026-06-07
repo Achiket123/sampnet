@@ -44,7 +44,7 @@ class _TaskPageState extends State<TaskPage> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: ColorPallete.background2,
+          colors: [ColorPallete.backgroundPrimary, ColorPallete.backgroundSecondary],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -54,7 +54,7 @@ class _TaskPageState extends State<TaskPage> {
         drawer: CustomDrawer(
           selectedIndex: ListOfSideBar.sideBarItems.indexOf('Tasks'),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: ColorPallete.transparent,
         body: ListView(
           children: [
             _appBar(context),
@@ -75,7 +75,7 @@ class _TaskPageState extends State<TaskPage> {
           horizontal: width * 0.02, vertical: height * 0.02),
       padding: EdgeInsets.symmetric(vertical: height * 0.012),
       decoration: BoxDecoration(
-        color: const Color(0xFF242424),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(10),
       ),
       child: BlocBuilder<TaskBloc, TaskState>(builder: (context, state) {
@@ -113,7 +113,7 @@ class _TaskPageState extends State<TaskPage> {
           horizontal: width * 0.02, vertical: height * 0.02),
       padding: EdgeInsets.symmetric(vertical: height * 0.012),
       decoration: BoxDecoration(
-        color: const Color(0xFF242424),
+        color: ColorPallete.backgroundSecondary,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -124,7 +124,7 @@ class _TaskPageState extends State<TaskPage> {
                 ElegantNotification.error(
                     description: const Text(
                   "data not found",
-                  style: TextStyle(color: ColorPallete.blackPrimary),
+                  style: TextStyle(color: ColorPallete.backgroundPrimary),
                 )).show(context);
               }
             },
@@ -171,7 +171,7 @@ class _TaskPageState extends State<TaskPage> {
             },
           ),
           const VerticalDivider(
-            color: ColorPallete.white,
+            color: ColorPallete.textPrimary,
             thickness: 2,
           ),
           BlocBuilder<TaskBloc, TaskState>(
@@ -206,7 +206,7 @@ class _TaskPageState extends State<TaskPage> {
             },
           ),
           const VerticalDivider(
-            color: ColorPallete.white,
+            color: ColorPallete.textPrimary,
             thickness: 2,
           ),
           BlocBuilder<TaskBloc, TaskState>(
@@ -240,7 +240,7 @@ class _TaskPageState extends State<TaskPage> {
             },
           ),
           const VerticalDivider(
-            color: ColorPallete.white,
+            color: ColorPallete.textPrimary,
             thickness: 2,
           ),
           BlocBuilder<TaskBloc, TaskState>(
@@ -288,7 +288,7 @@ class _TaskPageState extends State<TaskPage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
-              color: Colors.black,
+              color: ColorPallete.textSecondary,
               borderRadius: BorderRadius.circular(10),
             ),
             width: width * 0.15,
@@ -379,7 +379,7 @@ class _TaskPageState extends State<TaskPage> {
           },
           icon: const Icon(
             Icons.menu,
-            color: ColorPallete.white,
+            color: ColorPallete.textPrimary,
           ),
         ),
       ],
