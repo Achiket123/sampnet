@@ -1,6 +1,5 @@
 FROM ghcr.io/cirruslabs/flutter:3.29.0 AS build
 
-USER root
 WORKDIR /app
 
 COPY pubspec.* ./

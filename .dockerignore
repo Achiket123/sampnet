@@ -1,0 +1,8 @@
+.dart_tool/
+.packages
+build/
+.pub-cache/
+.pub/
+.fvm/
+coverage/
+*.log
