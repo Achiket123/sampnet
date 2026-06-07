@@ -1,4 +1,4 @@
-FROM fischerscode/flutter:3.29.0 AS build
+FROM fischerscode/flutter:latest AS build
 
 WORKDIR /app
 
