@@ -64,7 +64,6 @@ jobs:
       - name: Deploy Frontend
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-            cd /opt/sampnet &&
             docker compose pull frontend &&
             docker compose up -d frontend
           "
