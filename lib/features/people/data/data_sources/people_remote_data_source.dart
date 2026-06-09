@@ -1,7 +1,7 @@
 import 'dart:convert';
 import '../../../../services/api_client.dart';
 import '../models/people_models.dart';
-
+import 'package:hackathon/globals/constants/api_end_points.dart';
 abstract class PeopleRemoteDataSource {
   Future<List<PeopleContactModel>> getContacts({int? stageId, int? listId, String? search});
   Future<PeopleContactModel> getContactDetails(int id);
@@ -37,7 +37,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
       queryString = '?' + queryParams.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&');
     }
 
-    final response = await apiClient.get('/people/contacts$queryString');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/people/contacts$queryString');
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final List<dynamic> data = jsonDecode(response.body)["contacts"];
       return data.map((json) => PeopleContactModel.fromJson(json)).toList();
@@ -47,7 +47,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<PeopleContactModel> getContactDetails(int id) async {
-    final response = await apiClient.get('/people/contacts/$id');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/people/contacts/$id');
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return PeopleContactModel.fromJson(jsonDecode(response.body));
     }
@@ -56,7 +56,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<PeopleContactModel> createContact(PeopleContactModel contact) async {
-    final response = await apiClient.post('/people/contacts', body: contact.toJson());
+    final response = await apiClient.post('${ApiConstants.baseUrl}/people/contacts', body: contact.toJson());
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return PeopleContactModel.fromJson(jsonDecode(response.body));
     }
@@ -65,7 +65,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<PeopleContactModel> updateContact(PeopleContactModel contact) async {
-    final response = await apiClient.put('/people/contacts/${contact.id}', body: contact.toJson());
+    final response = await apiClient.put('${ApiConstants.baseUrl}/people/contacts/${contact.id}', body: contact.toJson());
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return PeopleContactModel.fromJson(jsonDecode(response.body));
     }
@@ -74,7 +74,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<void> deleteContact(int id) async {
-    final response = await apiClient.delete('/people/contacts/$id');
+    final response = await apiClient.delete('${ApiConstants.baseUrl}/people/contacts/$id');
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Failed to delete contact');
     }
@@ -82,7 +82,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<List<PeopleInteractionModel>> getInteractions(int contactId) async {
-    final response = await apiClient.get('/people/contacts/$contactId/interactions');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/people/contacts/$contactId/interactions');
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((json) => PeopleInteractionModel.fromJson(json)).toList();
@@ -92,7 +92,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<PeopleInteractionModel> createInteraction(PeopleInteractionModel interaction) async {
-    final response = await apiClient.post('/people/contacts/${interaction.contactId}/interactions', body: interaction.toJson());
+    final response = await apiClient.post('${ApiConstants.baseUrl}/people/contacts/${interaction.contactId}/interactions', body: interaction.toJson());
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return PeopleInteractionModel.fromJson(jsonDecode(response.body));
     }
@@ -101,7 +101,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<List<PipelineStageModel>> getPipelineStages() async {
-    final response = await apiClient.get('/people/pipeline/stages');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/people/pipeline/stages');
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((json) => PipelineStageModel.fromJson(json)).toList();
@@ -111,7 +111,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<PipelineStageModel> createPipelineStage(PipelineStageModel stage) async {
-    final response = await apiClient.post('/people/pipeline/stages', body: stage.toJson());
+    final response = await apiClient.post('${ApiConstants.baseUrl}/people/pipeline/stages', body: stage.toJson());
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return PipelineStageModel.fromJson(jsonDecode(response.body));
     }
@@ -120,7 +120,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<PipelineStageModel> updatePipelineStage(PipelineStageModel stage) async {
-    final response = await apiClient.put('/people/pipeline/stages/${stage.id}', body: stage.toJson());
+    final response = await apiClient.put('${ApiConstants.baseUrl}/people/pipeline/stages/${stage.id}', body: stage.toJson());
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return PipelineStageModel.fromJson(jsonDecode(response.body));
     }
@@ -129,7 +129,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<List<PeopleListModel>> getLists() async {
-    final response = await apiClient.get('/people/lists');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/people/lists');
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((json) => PeopleListModel.fromJson(json)).toList();
@@ -139,7 +139,7 @@ class PeopleRemoteDataSourceImpl implements PeopleRemoteDataSource {
 
   @override
   Future<PeopleListModel> createList(PeopleListModel list) async {
-    final response = await apiClient.post('/people/lists', body: list.toJson());
+    final response = await apiClient.post('${ApiConstants.baseUrl}/people/lists', body: list.toJson());
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return PeopleListModel.fromJson(jsonDecode(response.body));
     }

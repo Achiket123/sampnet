@@ -30,3 +30,12 @@ final class AuthGetTokenSuccess extends AuthState {
   final String token;
   AuthGetTokenSuccess({required this.token});
 }
+
+final class AuthVerificationEmailSent extends AuthState {}
+
+final class AuthVerifyEmailSuccess extends AuthState {}
+
+final class AuthGetMeSuccess extends AuthState {
+  final AuthResponseEntity auth;
+  AuthGetMeSuccess({required this.auth});
+}

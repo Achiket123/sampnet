@@ -46,6 +46,9 @@ import 'package:hackathon/features/team/presentation/blocs/team_bloc/team_bloc.d
 import 'package:hackathon/features/people/presentation/pages/people_list_page.dart';
 import 'package:hackathon/features/analytics/presentation/pages/org_analytics_dashboard_page.dart';
 import 'package:hackathon/features/analytics/presentation/pages/employee_analytics_profile_page.dart';
+import 'package:hackathon/features/auth/presentation/screens/accept_invite_page.dart';
+import 'package:hackathon/features/auth/presentation/screens/email_verification_page.dart';
+import 'package:hackathon/features/auth/presentation/screens/email_verified_page.dart';
 
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/models/organisation_model.dart';
@@ -77,6 +80,30 @@ final GoRouter route = GoRouter(
       path: LandingPage.routePath,
       builder: safeBuilder(
         (context, state) => const LandingPage(),
+      ),
+    ),
+    GoRoute(
+      path: AcceptInvitePage.routePath,
+      builder: safeBuilder(
+        (context, state) {
+          final token = state.uri.queryParameters['token'];
+          return AcceptInvitePage(token: token);
+        },
+      ),
+    ),
+    GoRoute(
+      path: EmailVerificationPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const EmailVerificationPage(),
+      ),
+    ),
+    GoRoute(
+      path: EmailVerifiedPage.routePath,
+      builder: safeBuilder(
+        (context, state) {
+          final token = state.uri.queryParameters['token'];
+          return EmailVerifiedPage(token: token);
+        },
       ),
     ),
     GoRoute(
@@ -393,11 +420,18 @@ Widget Function(BuildContext, GoRouterState) safeBuilder(
     }
   };
 }
-
 String? handleRouteGuard(GoRouterState state) {
   try {
     debugPrint("ROUTE GUARD");
     debugPrint(state.fullPath);
+
+    final currentPath = state.fullPath;
+
+    // Check if the current route is exempt from any guards
+    if (currentPath == AcceptInvitePage.routePath || 
+        currentPath == EmailVerifiedPage.routePath) {
+      return null;
+    }
 
     final response = getIt<GetTokenUsecase>().call(null);
 
@@ -409,12 +443,30 @@ String? handleRouteGuard(GoRouterState state) {
       handleToken,
     );
 
-    final currentPath = state.fullPath;
-
-    final isAuthPage = currentPath == LandingPage.routePath;
-
-    if (path != LandingPage.routePath && isAuthPage) {
-      return path;
+    if (path != LandingPage.routePath) {
+      // User is authenticated, path is target page (dashboard, register company, or verify email)
+      
+      // If we are currently at landing, go to target page
+      if (currentPath == LandingPage.routePath) {
+        return path;
+      }
+      
+      // If target page is verification page, force user there unless already there
+      if (path == EmailVerificationPage.routePath && currentPath != EmailVerificationPage.routePath) {
+        return EmailVerificationPage.routePath;
+      }
+      
+      // If target page is company registration page, force user there (unless on verify/register already)
+      if (path == RegisterCompanyPage.routePath && 
+          currentPath != RegisterCompanyPage.routePath && 
+          currentPath != EmailVerificationPage.routePath) {
+        return RegisterCompanyPage.routePath;
+      }
+    } else {
+      // User is not authenticated, must go to landing page
+      if (currentPath != LandingPage.routePath) {
+        return LandingPage.routePath;
+      }
     }
 
     return null;
@@ -480,6 +532,12 @@ String handleToken(dynamic token) {
     getIt<User>().user = UserModel.fromJson(payload['user']);
     getIt<User>().token = token;
 
+    if (!getIt<User>().user!.isVerified) {
+      debugPrint("USER IS NOT VERIFIED");
+      getIt<WebsocketService>().disconnect();
+      return EmailVerificationPage.routePath;
+    }
+
     final organisationDataRaw =
         Hive.box(Strings.authBox).get(Strings.organisationKey);
     if (organisationDataRaw != null) {
@@ -491,7 +549,7 @@ String handleToken(dynamic token) {
 
     final empToken = Hive.box(Strings.authBox).get(Strings.employeeTokenKey);
     getIt<User>().employeeToken = empToken;
-
+    debugPrint("EMPT TOKEN: ${getIt<User>().employeeToken}");
     if (getIt<User>().employeeToken != null &&
         !JwtToken.isExpired(getIt<User>().employeeToken!)) {
       final empPayload = JwtToken.payload(getIt<User>().employeeToken!);

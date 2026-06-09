@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:hackathon/features/calendar/data/models/calendar_event_model.dart';
 import 'package:hackathon/features/calendar/domain/entities/calendar_event_entity.dart';
 import 'package:hackathon/services/api_client.dart';
-
+import 'package:hackathon/globals/constants/api_end_points.dart';
 abstract class CalendarRemoteDataSource {
   Future<List<CalendarEventModel>> getEvents({
     required DateTime startDate,
@@ -23,7 +23,7 @@ class CalendarRemoteDataSourceImpl implements CalendarRemoteDataSource {
     required CalendarViewType viewType,
   }) async {
     final uri = Uri(
-      path: '/calendar/events',
+      path: '${ApiConstants.baseUrl}/calendar/events',
       queryParameters: {
         'start_date': startDate.toUtc().toIso8601String(),
         'end_date': endDate.toUtc().toIso8601String(),

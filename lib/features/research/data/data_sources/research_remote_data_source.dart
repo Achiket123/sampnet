@@ -7,7 +7,7 @@ import '../models/research_file_model.dart';
 import '../models/research_reference_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-
+import 'package:hackathon/globals/constants/api_end_points.dart';
 abstract class ResearchRemoteDataSource {
   Future<ResearchEntryModel> createEntry(ResearchEntryModel entry);
   Future<ResearchEntryModel> getEntry(int id);
@@ -84,7 +84,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
 
   @override
   Future<ResearchEntryModel> createEntry(ResearchEntryModel entry) async {
-    final response = await apiClient.post('/research', body: entry.toJson());
+    final response = await apiClient.post('${ApiConstants.baseUrl}/research', body: entry.toJson());
     if (response.statusCode == 201) {
       return ResearchEntryModel.fromJson(_decode(response.body)['data']);
     }
@@ -94,7 +94,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
 
   @override
   Future<ResearchEntryModel> getEntry(int id) async {
-    final response = await apiClient.get('/research/$id');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/research/$id');
     if (response.statusCode == 200) {
       return ResearchEntryModel.fromJson(_decode(response.body)['data']);
     }
@@ -131,7 +131,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
   @override
   Future<void> updateEntry(ResearchEntryModel entry) async {
     final response =
-        await apiClient.put('/research/${entry.id}', body: entry.toJson());
+        await apiClient.put('${ApiConstants.baseUrl}/research/${entry.id}', body: entry.toJson());
     if (response.statusCode != 200) {
       throw Exception(_extractError(response.body,
           fallback: 'Failed to update research entry'));
@@ -140,7 +140,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
 
   @override
   Future<void> deleteEntry(int id) async {
-    final response = await apiClient.delete('/research/$id');
+    final response = await apiClient.delete('${ApiConstants.baseUrl}/research/$id');
     if (response.statusCode != 200) {
       throw Exception(_extractError(response.body,
           fallback: 'Failed to delete research entry'));
@@ -159,7 +159,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
       if (parentFolderId != null) 'parent_id': '$parentFolderId',
     };
     final endpoint =
-        Uri(path: '/research/folders', queryParameters: params).toString();
+        Uri(path: '${ApiConstants.baseUrl}/research/folders', queryParameters: params).toString();
     final response = await apiClient.get(endpoint);
     if (response.statusCode != 200) {
       throw Exception(
@@ -176,7 +176,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     int? parentFolderId,
   }) async {
     final response = await apiClient.post(
-      '/research/folders',
+      '${ApiConstants.baseUrl}/research/folders',
       body: {
         'research_id': researchId,
         'name': name,
@@ -197,7 +197,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     int? parentFolderId,
   }) async {
     final response = await apiClient.put(
-      '/research/folders/$folderId',
+      '${ApiConstants.baseUrl}/research/folders/$folderId',
       body: {
         'name': name,
         if (parentFolderId != null) 'parent_id': parentFolderId,
@@ -211,7 +211,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
 
   @override
   Future<void> deleteFolder(int folderId) async {
-    final response = await apiClient.delete('/research/folders/$folderId');
+    final response = await apiClient.delete('${ApiConstants.baseUrl}/research/folders/$folderId');
     if (response.statusCode != 200) {
       throw Exception(
           _extractError(response.body, fallback: 'Failed to delete folder'));
@@ -230,7 +230,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
       if (folderId != null) 'folder_id': '$folderId',
     };
     final endpoint =
-        Uri(path: '/research/documents', queryParameters: params).toString();
+        Uri(path: '${ApiConstants.baseUrl}/research/documents', queryParameters: params).toString();
     final response = await apiClient.get(endpoint);
     if (response.statusCode != 200) {
       throw Exception(
@@ -242,7 +242,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
 
   @override
   Future<ResearchDocumentModel> getDocument(int id) async {
-    final response = await apiClient.get('/research/documents/$id');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/research/documents/$id');
     if (response.statusCode != 200) {
       throw Exception(
           _extractError(response.body, fallback: 'Failed to get document'));
@@ -258,7 +258,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     int? folderId,
   }) async {
     final response = await apiClient.post(
-      '/research/documents',
+      '${ApiConstants.baseUrl}/research/documents',
       body: {
         'research_id': researchId,
         'title': title,
@@ -281,7 +281,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     int? folderId,
   }) async {
     final response = await apiClient.put(
-      '/research/documents/$documentId',
+      '${ApiConstants.baseUrl}/research/documents/$documentId',
       body: {
         'title': title,
         'content': content,
@@ -296,7 +296,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
 
   @override
   Future<void> deleteDocument(int documentId) async {
-    final response = await apiClient.delete('/research/documents/$documentId');
+    final response = await apiClient.delete('${ApiConstants.baseUrl}/research/documents/$documentId');
     if (response.statusCode != 200) {
       throw Exception(
           _extractError(response.body, fallback: 'Failed to delete document'));
@@ -308,7 +308,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
   @override
   Future<List<ResearchFileModel>> getFilesByDocument(int documentId) async {
     final response =
-        await apiClient.get('/research/files?document_id=$documentId');
+        await apiClient.get('${ApiConstants.baseUrl}/research/files?document_id=$documentId');
     if (response.statusCode != 200) {
       throw Exception(_extractError(response.body,
           fallback: 'Failed to get document files'));
@@ -360,7 +360,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
 
   @override
   Future<void> deleteFile(int fileId) async {
-    final response = await apiClient.delete('/research/files/$fileId');
+    final response = await apiClient.delete('${ApiConstants.baseUrl}/research/files/$fileId');
     if (response.statusCode != 200) {
       throw Exception(
           _extractError(response.body, fallback: 'Failed to delete file'));
@@ -373,7 +373,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
   Future<List<ResearchReferenceModel>> getReferencesByDocument(
       int documentId) async {
     final response =
-        await apiClient.get('/research/references?document_id=$documentId');
+        await apiClient.get('${ApiConstants.baseUrl}/research/references?document_id=$documentId');
     if (response.statusCode != 200) {
       throw Exception(_extractError(response.body,
           fallback: 'Failed to get document references'));
@@ -391,7 +391,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     String? authors,
   }) async {
     final response = await apiClient.post(
-      '/research/references',
+      '${ApiConstants.baseUrl}/research/references',
       body: {
         'research_id': researchId,
         if (documentId != null) 'document_id': documentId,
@@ -410,7 +410,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
   @override
   Future<void> deleteReference(int referenceId) async {
     final response =
-        await apiClient.delete('/research/references/$referenceId');
+        await apiClient.delete('${ApiConstants.baseUrl}/research/references/$referenceId');
     if (response.statusCode != 200) {
       throw Exception(
           _extractError(response.body, fallback: 'Failed to delete reference'));

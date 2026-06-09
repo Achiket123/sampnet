@@ -30,4 +30,27 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<ErrorModel, void>> saveToken(String token) async {
     return await localDataSource.saveToken(token);
   }
+
+  @override
+  Future<Either<ErrorModel, AuthResponseModel>> acceptInvite({
+    required String token,
+    required String password,
+  }) {
+    return remoteDataSource.acceptInvite(token: token, password: password);
+  }
+
+  @override
+  Future<Either<ErrorModel, void>> sendVerificationEmail() {
+    return remoteDataSource.sendVerificationEmail();
+  }
+
+  @override
+  Future<Either<ErrorModel, void>> verifyEmail(String token) {
+    return remoteDataSource.verifyEmail(token);
+  }
+
+  @override
+  Future<Either<ErrorModel, AuthResponseModel>> getMe() {
+    return remoteDataSource.getMe();
+  }
 }

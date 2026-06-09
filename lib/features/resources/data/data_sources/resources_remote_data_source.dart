@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:hackathon/features/resources/data/models/resource_file_model.dart';
 import 'package:hackathon/services/api_client.dart';
 import 'package:flutter/foundation.dart';
-
+import 'package:hackathon/globals/constants/api_end_points.dart';
 abstract class ResourcesRemoteDataSource {
   Future<ResourceCollectionModel> createCollection({
     required String name,
@@ -79,7 +79,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     required List<Map<String, dynamic>> fields,
   }) async {
     final response = await apiClient.post(
-      '/resources/collections',
+      '${ApiConstants.baseUrl}/resources/collections',
       body: {
         'name': name,
         'description': description,
@@ -96,7 +96,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
 
   @override
   Future<ResourceCollectionModel> getCollection({required int id}) async {
-    final response = await apiClient.get('/resources/collections/$id');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/resources/collections/$id');
 
     if (response.statusCode == 200) {
       return ResourceCollectionModel.fromJson(json.decode(response.body));
@@ -107,7 +107,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
 
   @override
   Future<List<ResourceCollectionModel>> listCollections() async {
-    final response = await apiClient.get('/resources/collections');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/resources/collections');
 
     if (response.statusCode == 200) {
       debugPrint(response.body);
@@ -127,7 +127,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     required String description,
   }) async {
     final response = await apiClient.put(
-      '/resources/collections/$id',
+      '${ApiConstants.baseUrl}/resources/collections/$id',
       body: {
         'name': name,
         'description': description,
@@ -143,7 +143,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
 
   @override
   Future<void> deleteCollection({required int id}) async {
-    final response = await apiClient.delete('/resources/collections/$id');
+    final response = await apiClient.delete('${ApiConstants.baseUrl}/resources/collections/$id');
 
     if (response.statusCode != 200 && response.statusCode != 204) {
       throw Exception('Failed to delete collection: ${response.body}');
@@ -156,7 +156,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     required Map<String, dynamic> field,
   }) async {
     final response = await apiClient.post(
-      '/resources/collections/$collectionId/fields',
+      '${ApiConstants.baseUrl}/resources/collections/$collectionId/fields',
       body: field,
     );
 
@@ -174,7 +174,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     required Map<String, dynamic> field,
   }) async {
     final response = await apiClient.put(
-      '/resources/collections/$collectionId/fields/$key',
+      '${ApiConstants.baseUrl}/resources/collections/$collectionId/fields/$key',
       body: field,
     );
 
@@ -191,7 +191,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     required String key,
   }) async {
     final response = await apiClient.delete(
-      '/resources/collections/$collectionId/fields/$key',
+      '${ApiConstants.baseUrl}/resources/collections/$collectionId/fields/$key',
     );
 
     if (response.statusCode == 200) {
@@ -207,7 +207,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     required Map<String, dynamic> data,
   }) async {
     final response = await apiClient.post(
-      '/resources/collections/$collectionId/records',
+      '${ApiConstants.baseUrl}/resources/collections/$collectionId/records',
       body: {
         'data': data,
       },
@@ -226,7 +226,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     required int recordId,
   }) async {
     final response = await apiClient.get(
-      '/resources/collections/$collectionId/records/$recordId',
+      '${ApiConstants.baseUrl}/resources/collections/$collectionId/records/$recordId',
     );
 
     if (response.statusCode == 200) {
@@ -240,7 +240,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
   Future<List<ResourceRecordModel>> listRecords(
       {required int collectionId}) async {
     final response = await apiClient.get(
-      '/resources/collections/$collectionId/records',
+      '${ApiConstants.baseUrl}/resources/collections/$collectionId/records',
     );
 
     if (response.statusCode == 200) {
@@ -258,7 +258,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     required Map<String, dynamic> data,
   }) async {
     final response = await apiClient.put(
-      '/resources/collections/$collectionId/records/$recordId',
+      '${ApiConstants.baseUrl}/resources/collections/$collectionId/records/$recordId',
       body: {
         'data': data,
       },
@@ -277,7 +277,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     required int recordId,
   }) async {
     final response = await apiClient.delete(
-      '/resources/collections/$collectionId/records/$recordId',
+      '${ApiConstants.baseUrl}/resources/collections/$collectionId/records/$recordId',
     );
 
     if (response.statusCode != 200 && response.statusCode != 204) {
@@ -291,7 +291,7 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     required List<Map<String, dynamic>> records,
   }) async {
     final response = await apiClient.post(
-      '/resources/collections/$collectionId/bulk',
+      '${ApiConstants.baseUrl}/resources/collections/$collectionId/bulk',
       body: {
         'records': records,
       },

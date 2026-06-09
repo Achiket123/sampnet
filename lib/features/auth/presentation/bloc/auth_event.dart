@@ -15,3 +15,12 @@ class SignInEvent extends AuthEvent {
 class SignOutEvent extends AuthEvent{}
 
 class GetTokenEvent extends AuthEvent{}
+
+class SendVerificationEmailEvent extends AuthEvent {}
+
+class VerifyEmailEvent extends AuthEvent {
+  final String token;
+  VerifyEmailEvent({required this.token});
+}
+
+class GetMeEvent extends AuthEvent {}

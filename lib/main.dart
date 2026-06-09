@@ -107,6 +107,9 @@ class _MyAppState extends State<MyApp> {
             signUpUsecase: getIt<SignUpUsecase>(),
             getTokenUsecase: getIt<GetTokenUsecase>(),
             signInUsecase: getIt<SignInUsecase>(),
+            sendVerificationEmailUsecase: getIt<SendVerificationEmailUsecase>(),
+            verifyEmailUsecase: getIt<VerifyEmailUsecase>(),
+            getMeUsecase: getIt<GetMeUsecase>(),
           ),
         ),
         // The upload file bloc

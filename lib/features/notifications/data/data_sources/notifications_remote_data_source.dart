@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:hackathon/features/notifications/data/models/notification_model.dart';
 import 'package:hackathon/services/api_client.dart';
+import 'package:hackathon/globals/constants/api_end_points.dart';
 
 abstract class NotificationsRemoteDataSource {
   Future<List<NotificationModel>> getNotifications(int offset);
@@ -16,7 +17,7 @@ class NotificationsRemoteDataSourceImpl
 
   @override
   Future<List<NotificationModel>> getNotifications(int offset) async {
-    final response = await apiClient.get('/notifications/?offset=$offset');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/notifications/?offset=$offset');
 
     if (response.statusCode >= 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -32,7 +33,7 @@ class NotificationsRemoteDataSourceImpl
   @override
   Future<void> markRead(int notificationId) async {
     final response =
-        await apiClient.put('/notifications/$notificationId/read', body: {});
+        await apiClient.put('${ApiConstants.baseUrl}/notifications/$notificationId/read', body: {});
 
     if (response.statusCode != 200) {
       throw Exception('Failed to mark notification as read: ${response.body}');
@@ -41,7 +42,7 @@ class NotificationsRemoteDataSourceImpl
 
   @override
   Future<void> markAllRead() async {
-    final response = await apiClient.put('/notifications/read-all', body: {});
+    final response = await apiClient.put('${ApiConstants.baseUrl}/notifications/read-all', body: {});
 
     if (response.statusCode != 200) {
       throw Exception(

@@ -8,4 +8,11 @@ abstract class AuthRepository {
   Future<Either<ErrorModel, AuthResponseEntity>> signUp(SignUpParams params);
   Future<Either<ErrorModel, void>> saveToken(String token);
   Either<ErrorModel, String> getToken();
+  Future<Either<ErrorModel, AuthResponseEntity>> acceptInvite({
+    required String token,
+    required String password,
+  });
+  Future<Either<ErrorModel, void>> sendVerificationEmail();
+  Future<Either<ErrorModel, void>> verifyEmail(String token);
+  Future<Either<ErrorModel, AuthResponseEntity>> getMe();
 }

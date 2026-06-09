@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/services/token_manager.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:get_it/get_it.dart';
+import 'package:hackathon/dependency_injection.g.dart';
+import 'package:hackathon/globals/constants/user.dart';
 class ApiClient {
   final String baseUrl;
   final TokenManager tokenManager;
@@ -20,9 +22,10 @@ class ApiClient {
 
   Map<String, String> _authHeaders({Map<String, String>? extra}) {
     final token = tokenManager.getAccessToken();
+    final empToken = getIt<User>().employeeToken;
     return {
       'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
+      if (token != null) 'Authorization': 'Bearer $token $empToken',
       if (extra != null) ...extra,
     };
   }
@@ -35,7 +38,7 @@ class ApiClient {
     Map<String, String>? headers,
   }) async {
     return _sendWithRetry(() => client.get(
-          Uri.parse('$baseUrl$endpoint'),
+          Uri.parse(endpoint),
           headers: _authHeaders(extra: headers),
         ));
   }
@@ -72,8 +75,9 @@ class ApiClient {
     Map<String, dynamic>? body,
     Map<String, String>? headers,
   }) async {
+    debugPrint("post: $body");
     return _sendWithRetry(() => client.post(
-          Uri.parse('$baseUrl$endpoint'),
+          Uri.parse(endpoint),
           headers: _authHeaders(extra: headers),
           body: body != null ? jsonEncode(body) : null,
         ));
@@ -85,7 +89,7 @@ class ApiClient {
     Map<String, String>? headers,
   }) async {
     return _sendWithRetry(() => client.put(
-          Uri.parse('$baseUrl$endpoint'),
+          Uri.parse(endpoint),
           headers: _authHeaders(extra: headers),
           body: body != null ? jsonEncode(body) : null,
         ));
@@ -96,7 +100,7 @@ class ApiClient {
     Map<String, String>? headers,
   }) async {
     return _sendWithRetry(() => client.delete(
-          Uri.parse('$baseUrl$endpoint'),
+          Uri.parse(endpoint),
           headers: _authHeaders(extra: headers),
         ));
   }
@@ -132,7 +136,7 @@ class ApiClient {
 
     try {
       final response = await client.post(
-        Uri.parse('$baseUrl${ApiConstants.refresh}'),
+        Uri.parse(ApiConstants.refresh),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'refresh_token': refreshToken}),
       );

@@ -4,7 +4,7 @@ import 'package:hackathon/features/employees/data/models/add_employee_request_mo
 import 'package:hackathon/features/employees/data/models/employee_model.dart';
 import 'package:hackathon/features/employees/data/models/make_manager_request_model.dart';
 import 'package:hackathon/services/api_client.dart';
-
+import 'package:hackathon/globals/constants/api_end_points.dart';
 abstract class EmployeesRemoteDataSource {
   Future<List<EmployeeModel>> getEmployees(int organisationId);
   Future<EmployeeModel> getEmployeeById(int employeeId);
@@ -22,7 +22,7 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
 
   @override
   Future<List<EmployeeModel>> getEmployees(int organisationId) async {
-    final response = await apiClient.get('/employees/get/$organisationId');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/employees/get/$organisationId');
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -37,7 +37,7 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
   @override
   Future<EmployeeModel> getEmployeeById(int employeeId) async {
     debugPrint('getEmployeeById: $employeeId');
-    final response = await apiClient.get('/employees/list/$employeeId');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/employees/list/$employeeId');
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -55,18 +55,19 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
   @override
   Future<void> addEmployee(AddEmployeeRequestModel request) async {
     final response =
-        await apiClient.post('/employees/add', body: request.toJson());
+        await apiClient.post('${ApiConstants.baseUrl}/employees/add', body: request.toJson());
 
     if (response.statusCode != 200 && response.statusCode != 201) {
       final Map<String, dynamic> data = json.decode(response.body);
       throw AddEmployeeException(
           data['error'] ?? data['message'] ?? 'Failed to add employee');
     }
+    await apiClient.post("${ApiConstants.baseUrl}/employees/invite",body:request.toJson());
   }
 
   @override
   Future<void> updateEmployee(int employeeId, EmployeeModel updated) async {
-    final response = await apiClient.put('/employees/update/$employeeId',
+    final response = await apiClient.put('${ApiConstants.baseUrl}/employees/update/$employeeId',
         body: updated.toJson());
 
     if (response.statusCode != 200) {
@@ -77,7 +78,7 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
 
   @override
   Future<void> deleteEmployee(int employeeId) async {
-    final response = await apiClient.delete('/employees/delete/$employeeId');
+    final response = await apiClient.delete('${ApiConstants.baseUrl}/employees/delete/$employeeId');
 
     if (response.statusCode != 200) {
       throw DeleteEmployeeException(
@@ -87,7 +88,7 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
 
   @override
   Future<List<EmployeeModel>> searchEmployees(String query) async {
-    final response = await apiClient.get('/employees/search?query=$query');
+    final response = await apiClient.get('${ApiConstants.baseUrl}/employees/search?query=$query');
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -102,7 +103,7 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
   @override
   Future<void> makeManager(MakeManagerRequestModel request) async {
     final response =
-        await apiClient.post('/employees/make-manager', body: request.toJson());
+        await apiClient.post('${ApiConstants.baseUrl}/employees/make-manager', body: request.toJson());
 
     if (response.statusCode != 200) {
       throw MakeManagerException(

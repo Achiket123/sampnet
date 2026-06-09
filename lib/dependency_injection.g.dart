@@ -212,6 +212,7 @@ import 'package:hackathon/features/analytics/domain/use_cases/get_employee_analy
 import 'package:hackathon/features/analytics/domain/use_cases/get_org_employee_monitor_usecase.dart';
 import 'package:hackathon/features/analytics/presentation/blocs/org_analytics_bloc/org_analytics_bloc.dart';
 
+import 'package:hackathon/services/token_manager.dart';
 final getIt = GetIt.instance;
 
 void initDependencies() {
@@ -239,7 +240,7 @@ void initDependencies() {
   // Data Sources
 
   getIt.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(apiClient: getIt()),
+    () => AuthRemoteDataSourceImpl(apiClient: getIt(), tokenManager: getIt()),
   );
   getIt.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(hive: Hive),
@@ -447,6 +448,18 @@ void initDependencies() {
   );
   getIt.registerLazySingleton<SaveTokenUsecase>(
     () => SaveTokenUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<AcceptInviteUseCase>(
+    () => AcceptInviteUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<SendVerificationEmailUsecase>(
+    () => SendVerificationEmailUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<VerifyEmailUsecase>(
+    () => VerifyEmailUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton<GetMeUsecase>(
+    () => GetMeUsecase(repository: getIt()),
   );
   getIt.registerLazySingleton<UploadFileUsecase>(
     () => UploadFileUsecase(uploadFileRepository: getIt()),
@@ -757,7 +770,10 @@ void initDependencies() {
       getTokenUsecase: getIt(),
       saveTokenUsecase: getIt(),
       signInUsecase: getIt(),
-      signUpUsecase: getIt()));
+      signUpUsecase: getIt(),
+      sendVerificationEmailUsecase: getIt(),
+      verifyEmailUsecase: getIt(),
+      getMeUsecase: getIt()));
   getIt.registerFactory<TaskDetailBloc>(
     () => TaskDetailBloc(
       getTaskUsecase: getIt(),
@@ -913,4 +929,5 @@ void initDependencies() {
       getEmployeeAnalyticsUseCase: getIt(),
     ),
   );
+  getIt.registerFactory<TokenManager>(()=>TokenManager());
 }

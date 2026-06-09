@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:hackathon/features/analytics/data/models/employee_analytics_model.dart';
 import 'package:hackathon/services/api_client.dart';
-
+import 'package:hackathon/globals/constants/api_end_points.dart';
 abstract class AnalyticsRemoteDataSource {
   Future<EmployeeAnalyticsSummaryModel> getEmployeeAnalytics(int employeeId, int orgId, String period);
   Future<List<EmployeeMonitorResponseModel>> getOrgEmployeeMonitor(int orgId);
@@ -15,7 +15,7 @@ class AnalyticsRemoteDataSourceImpl implements AnalyticsRemoteDataSource {
   @override
   Future<EmployeeAnalyticsSummaryModel> getEmployeeAnalytics(int employeeId, int orgId, String period) async {
     final response = await apiClient.get(
-      '/analytics/employee/$employeeId?organisation_id=$orgId&period=$period',
+      '${ApiConstants.baseUrl}/analytics/employee/$employeeId?organisation_id=$orgId&period=$period',
     );
 
     if (response.statusCode == 200) {
@@ -28,7 +28,7 @@ class AnalyticsRemoteDataSourceImpl implements AnalyticsRemoteDataSource {
   @override
   Future<List<EmployeeMonitorResponseModel>> getOrgEmployeeMonitor(int orgId) async {
     final response = await apiClient.get(
-      '/analytics/organisation/$orgId/employees',
+      '${ApiConstants.baseUrl}/analytics/organisation/$orgId/employees',
     );
 
     if (response.statusCode == 200) {
