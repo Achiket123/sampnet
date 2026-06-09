@@ -38,8 +38,8 @@ class CompanyRemoteDataSourceImpl implements CompanyRemoteDataSource {
       if (response.statusCode >= 200) {
         final data = jsonDecode(response.body);
         Organisation org = Organisation.fromJson(data["organisation"]);
-        EmpModel emp = EmpModel.fromJson(data["employee"]);
         getIt<User>().organisation = org;
+        EmpModel emp = EmpModel.fromJson(data["employee"]);
         getIt<User>().employee = emp;
         await Hive.box(Strings.authBox)
             .put(Strings.organisationKey, data["organisation"]);
@@ -58,6 +58,8 @@ class CompanyRemoteDataSourceImpl implements CompanyRemoteDataSource {
   @override
   Future<Either<ErrorModel, void>> fetchEmployeeData(String employeeId) async {
     try {
+      debugPrint('fetchEmployeeData: $employeeId');
+      debugPrint('fetchEmployeeData: ${getIt<User>().token}');
       final response = await apiClient.get(
         Uri.parse("${ApiConstants.getEmployeeById}/$employeeId"),
         headers: {

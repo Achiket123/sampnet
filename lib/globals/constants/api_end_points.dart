@@ -2,8 +2,8 @@ import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/globals/constants/user.dart';
 
 class ApiConstants {
-  static const String baseUrl = "/api/v1";
-  static const String websocketBaseUrl = "/api/v1";
+  static const String baseUrl = "http://localhost:8000/api/v1";
+  static const String websocketBaseUrl = "http://localhost:8000/api/v1";
   // Authentication Endpoints
   static const String signIn = "$baseUrl/auth/signin";
   static const String signUp = "$baseUrl/auth/signup";
@@ -40,7 +40,8 @@ class ApiConstants {
   static String getOrganisationTasks =
       "$baseUrl/tasks/organisation/${getIt<User>().organisation!.id}";
   static const String getTaskByTitle = "$baseUrl/tasks/title";
-  static String getTaskActivity(String taskId) => "$baseUrl/tasks/$taskId/activity";
+  static String getTaskActivity(String taskId) =>
+      "$baseUrl/tasks/$taskId/activity";
 
   // Team Endpoints
   static const String getTeams = "$baseUrl/teams/get";
@@ -60,9 +61,12 @@ class ApiConstants {
   static const String projectLessData = "/projects/less-data";
 
   // Milestone Endpoints
-  static String createMilestone(int projectId) => "/projects/$projectId/milestones";
-  static String updateMilestone(int projectId, int milestoneId) => "/projects/$projectId/milestones/$milestoneId";
-  static String deleteMilestone(int projectId, int milestoneId) => "/projects/$projectId/milestones/$milestoneId";
+  static String createMilestone(int projectId) =>
+      "/projects/$projectId/milestones";
+  static String updateMilestone(int projectId, int milestoneId) =>
+      "/projects/$projectId/milestones/$milestoneId";
+  static String deleteMilestone(int projectId, int milestoneId) =>
+      "/projects/$projectId/milestones/$milestoneId";
 
   // Notification Endpoints
   static const String notifications = "/notifications";

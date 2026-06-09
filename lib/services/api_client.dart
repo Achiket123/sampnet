@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:hackathon/dependency_injection.g.dart';
+import 'package:hackathon/globals/constants/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hackathon/globals/constants/strings.dart';
@@ -7,11 +10,15 @@ class ApiClient {
   final http.Client _client;
   final String baseUrl;
 
-  ApiClient({required http.Client client, required this.baseUrl}) : _client = client;
+  ApiClient({required http.Client client, required this.baseUrl})
+      : _client = client;
 
   Map<String, String> _getHeaders() {
     final empToken = Hive.box(Strings.authBox).get(Strings.employeeTokenKey);
-    final token = empToken ?? Hive.box(Strings.authBox).get(Strings.tokenKey);
+    final token = empToken ??
+        getIt<User>().token ??
+        Hive.box(Strings.authBox).get(Strings.tokenKey);
+    debugPrint('token: $token');
     return {
       'Authorization': token ?? '',
       'Content-Type': 'application/json',
@@ -43,10 +50,12 @@ class ApiClient {
 
   Future<http.Response> delete(String endpoint) async {
     final headers = _getHeaders();
-    return await _client.delete(Uri.parse('$baseUrl$endpoint'), headers: headers);
+    return await _client.delete(Uri.parse('$baseUrl$endpoint'),
+        headers: headers);
   }
 
-  Future<http.StreamedResponse> sendMultipart(http.MultipartRequest request) async {
+  Future<http.StreamedResponse> sendMultipart(
+      http.MultipartRequest request) async {
     final headers = _getHeaders();
     // Content-Type is set by MultipartRequest automatically, don't overwrite it here
     headers.remove('Content-Type');

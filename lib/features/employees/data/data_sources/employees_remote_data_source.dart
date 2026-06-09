@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:hackathon/features/employees/data/models/add_employee_request_model.dart';
 import 'package:hackathon/features/employees/data/models/employee_model.dart';
 import 'package:hackathon/features/employees/data/models/make_manager_request_model.dart';
@@ -28,12 +29,14 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
       final List<dynamic> usersJson = data['users'] ?? [];
       return usersJson.map((json) => EmployeeModel.fromJson(json)).toList();
     } else {
-      throw EmployeesFetchException('Failed to fetch employees: ${response.body}');
+      throw EmployeesFetchException(
+          'Failed to fetch employees: ${response.body}');
     }
   }
 
   @override
   Future<EmployeeModel> getEmployeeById(int employeeId) async {
+    debugPrint('getEmployeeById: $employeeId');
     final response = await apiClient.get('/employees/list/$employeeId');
 
     if (response.statusCode == 200) {
@@ -44,26 +47,31 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
     } else if (response.statusCode == 404) {
       throw EmployeeNotFoundException();
     } else {
-      throw EmployeesFetchException('Failed to fetch employee: ${response.body}');
+      throw EmployeesFetchException(
+          'Failed to fetch employee: ${response.body}');
     }
   }
 
   @override
   Future<void> addEmployee(AddEmployeeRequestModel request) async {
-    final response = await apiClient.post('/employees/add', body: request.toJson());
+    final response =
+        await apiClient.post('/employees/add', body: request.toJson());
 
     if (response.statusCode != 200 && response.statusCode != 201) {
       final Map<String, dynamic> data = json.decode(response.body);
-      throw AddEmployeeException(data['error'] ?? data['message'] ?? 'Failed to add employee');
+      throw AddEmployeeException(
+          data['error'] ?? data['message'] ?? 'Failed to add employee');
     }
   }
 
   @override
   Future<void> updateEmployee(int employeeId, EmployeeModel updated) async {
-    final response = await apiClient.put('/employees/update/$employeeId', body: updated.toJson());
+    final response = await apiClient.put('/employees/update/$employeeId',
+        body: updated.toJson());
 
     if (response.statusCode != 200) {
-      throw UpdateEmployeeException('Failed to update employee: ${response.body}');
+      throw UpdateEmployeeException(
+          'Failed to update employee: ${response.body}');
     }
   }
 
@@ -72,7 +80,8 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
     final response = await apiClient.delete('/employees/delete/$employeeId');
 
     if (response.statusCode != 200) {
-      throw DeleteEmployeeException('Failed to delete employee: ${response.body}');
+      throw DeleteEmployeeException(
+          'Failed to delete employee: ${response.body}');
     }
   }
 
@@ -85,16 +94,19 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
       final List<dynamic> usersJson = data['users'] ?? [];
       return usersJson.map((json) => EmployeeModel.fromJson(json)).toList();
     } else {
-      throw EmployeesFetchException('Failed to search employees: ${response.body}');
+      throw EmployeesFetchException(
+          'Failed to search employees: ${response.body}');
     }
   }
 
   @override
   Future<void> makeManager(MakeManagerRequestModel request) async {
-    final response = await apiClient.post('/employees/make-manager', body: request.toJson());
+    final response =
+        await apiClient.post('/employees/make-manager', body: request.toJson());
 
     if (response.statusCode != 200) {
-      throw MakeManagerException('Failed to promote to manager: ${response.body}');
+      throw MakeManagerException(
+          'Failed to promote to manager: ${response.body}');
     }
   }
 }
