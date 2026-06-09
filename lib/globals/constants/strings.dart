@@ -29,7 +29,10 @@ mixin Strings {
     mediumCompany,
     largeCompany
   ];
+  static const String refreshTokenKey = 'refresh_token_key';
+  static const String userKey = 'user_key';
 }
+
 enum CompanySize {
   small,
   medium,

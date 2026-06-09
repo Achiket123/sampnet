@@ -52,8 +52,8 @@ class UpdateTaskParams {
       this.organisation,
       this.status});
 
-  String toJson() {
-    return jsonEncode({
+  Map<String, dynamic> toMap() {
+    return {
       'id': id,
       if (title != null) 'title': title,
       if (dueDate != null) 'due_date': dueDate?.toUtc().toIso8601String(),
@@ -70,7 +70,7 @@ class UpdateTaskParams {
       if (description != null) 'description': description,
       if (organisation != null) 'organisation': organisation,
       if (status != null) 'status': status
-    });
+    };
   }
 }
 
@@ -83,13 +83,13 @@ abstract class FetchTaskRepository {
   Future<Either<ErrorModel, TaskEntity>> fetchTaskById(String token, String id);
   Future<Either<ErrorModel, List<TaskEntity>>> fetchTasksByOrganisationId(
       String token, String organisationId);
-  Future<Either<ErrorModel, List<TaskActivityEntity>>> fetchTaskActivity(String token, String taskId);
+  Future<Either<ErrorModel, List<TaskActivityEntity>>> fetchTaskActivity(
+      String token, String taskId);
 }
 
 abstract class UpdateTaskRepository {
   Future<Either<ErrorModel, List<TaskEntity>>> updateTask(
-    UpdateTaskParams params
-  );
+      UpdateTaskParams params);
   Future<Either<ErrorModel, Unit>> deleteTask(String token, String id);
 }
 

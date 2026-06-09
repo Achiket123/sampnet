@@ -221,7 +221,7 @@ void initDependencies() {
   // Services
   getIt.registerLazySingleton<WebsocketService>(
       () => WebsocketService(user: getIt<User>()));
-  
+
   getIt.registerLazySingleton<WebRtcService>(
       () => WebRtcService(websocketService: getIt()));
 
@@ -232,8 +232,9 @@ void initDependencies() {
   getIt.registerLazySingleton(() => http.Client());
 
   // Api Client
-  getIt.registerLazySingleton(
-      () => ApiClient(client: getIt(), baseUrl: ApiConstants.baseUrl));
+  getIt.registerLazySingleton(() => ApiClient(
+    
+      client: getIt(), baseUrl: ApiConstants.baseUrl, tokenManager: getIt()));
 
   // Data Sources
 

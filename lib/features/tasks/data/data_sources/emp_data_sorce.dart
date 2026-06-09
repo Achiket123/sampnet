@@ -5,6 +5,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:hackathon/features/tasks/data/models/assignee_model.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
+import 'package:hackathon/services/api_client.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:hackathon/dependency_injection.g.dart';
@@ -15,18 +16,15 @@ abstract class EmployeeDataSource {
 }
 
 class EmployeeDataSourceImpl implements EmployeeDataSource {
-  final http.Client apiService;
+  final ApiClient apiService;
   EmployeeDataSourceImpl({required this.apiService});
   @override
   @override
   Future<Either<ErrorModel, List<AssigneeModel>>> getEmployees(
       String token) async {
     try {
-      final activeToken = getIt<User>().employeeToken ?? token;
-      final url = Uri.parse(ApiConstants.getEmployees);
-      final response = await apiService.get(url, headers: {
-        'Authorization': activeToken,
-      });
+      final url = ApiConstants.getEmployees;
+      final response = await apiService.get(url);
       if (response.statusCode == 200) {
         debugPrint(response.body);
         final decodedData = jsonDecode(response.body);

@@ -10,6 +10,7 @@ import 'package:hackathon/globals/constants/strings.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:hackathon/globals/models/organisation_model.dart';
+import 'package:hackathon/services/api_client.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,7 +21,7 @@ abstract class CompanyRemoteDataSource {
 }
 
 class CompanyRemoteDataSourceImpl implements CompanyRemoteDataSource {
-  final http.Client apiClient;
+  final ApiClient apiClient;
 
   CompanyRemoteDataSourceImpl({required this.apiClient});
 
@@ -29,11 +30,8 @@ class CompanyRemoteDataSourceImpl implements CompanyRemoteDataSource {
       RegisterCompanyParams params) async {
     try {
       final response = await apiClient.post(
-        Uri.parse(ApiConstants.registerOrganisation),
-        headers: {
-          'Authorization': getIt<User>().token!,
-        },
-        body: jsonEncode(params.toJson()),
+        ApiConstants.registerOrganisation,
+        body: params.toJson(),
       );
       if (response.statusCode >= 200) {
         final data = jsonDecode(response.body);
@@ -61,10 +59,7 @@ class CompanyRemoteDataSourceImpl implements CompanyRemoteDataSource {
       debugPrint('fetchEmployeeData: $employeeId');
       debugPrint('fetchEmployeeData: ${getIt<User>().token}');
       final response = await apiClient.get(
-        Uri.parse("${ApiConstants.getEmployeeById}/$employeeId"),
-        headers: {
-          'Authorization': getIt<User>().token!,
-        },
+        "${ApiConstants.getEmployeeById}/$employeeId",
       );
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);

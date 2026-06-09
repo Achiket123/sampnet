@@ -115,4 +115,7 @@ class ApiConstants {
 
   // Search Endpoints
   static const String globalSearch = "/search";
+
+  // Token Endpoints
+  static const String refresh = "/auth/refresh";
 }

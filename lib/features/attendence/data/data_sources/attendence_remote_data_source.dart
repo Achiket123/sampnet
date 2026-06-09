@@ -8,6 +8,7 @@ import 'package:hackathon/features/attendence/domain/use_cases/attendence_params
 import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
+import 'package:hackathon/services/api_client.dart';
 import 'package:http/http.dart' as http;
 
 abstract class AttendenceRemoteDataSource {
@@ -19,7 +20,7 @@ abstract class AttendenceRemoteDataSource {
 }
 
 class AttendenceRemoteDataSourceImpl extends AttendenceRemoteDataSource {
-  final http.Client client;
+  final ApiClient client;
   AttendenceRemoteDataSourceImpl({required this.client});
   @override
   Future<Either<ErrorModel, AttendenceModel>> checkInAttendence(
@@ -36,11 +37,7 @@ class AttendenceRemoteDataSourceImpl extends AttendenceRemoteDataSource {
         data.toString(),
       );
       final response =
-          await client.post(Uri.parse(ApiConstants.attendenceCheckInUrl),
-              headers: {
-                'Authorization': getIt<User>().token!,
-              },
-              body: jsonEncode(data));
+          await client.post(ApiConstants.attendenceCheckInUrl, body: data);
       debugPrint(
         response.body,
       );
@@ -73,12 +70,8 @@ class AttendenceRemoteDataSourceImpl extends AttendenceRemoteDataSource {
               organisationId: params.organisationId)
           .toMap();
       final response = await client.put(
-          Uri.parse(
-              "${ApiConstants.attendenceCheckOutUrl}/${getIt<User>().user!.id}"),
-          headers: {
-            'Authorization': getIt<User>().token!,
-          },
-          body: jsonEncode(data));
+          "${ApiConstants.attendenceCheckOutUrl}/${getIt<User>().user!.id}",
+          body: data);
       if (response.statusCode == 200) {
         return right(
             AttendenceModel.fromJson(jsonDecode(response.body)['attendance']));
@@ -97,10 +90,8 @@ class AttendenceRemoteDataSourceImpl extends AttendenceRemoteDataSource {
   @override
   Future<Either<ErrorModel, AttendenceModel>> getAttendence(int userId) async {
     try {
-      final response = await client
-          .get(Uri.parse("${ApiConstants.getAttendence}/$userId"), headers: {
-        'Authorization': getIt<User>().token!,
-      });
+      final response =
+          await client.get("${ApiConstants.getAttendence}/$userId");
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)["attendance"];

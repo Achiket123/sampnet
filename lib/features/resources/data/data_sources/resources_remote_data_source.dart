@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:hackathon/features/resources/data/models/resource_file_model.dart';
 import 'package:hackathon/services/api_client.dart';
 import 'package:flutter/foundation.dart';
+
 abstract class ResourcesRemoteDataSource {
   Future<ResourceCollectionModel> createCollection({
     required String name,
@@ -111,7 +112,9 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
     if (response.statusCode == 200) {
       debugPrint(response.body);
       final List<dynamic> list = json.decode(response.body)["collections"];
-      return list.map((json) => ResourceCollectionModel.fromJson(json)).toList();
+      return list
+          .map((json) => ResourceCollectionModel.fromJson(json))
+          .toList();
     } else {
       throw Exception('Failed to list collections: ${response.body}');
     }
@@ -234,7 +237,8 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
   }
 
   @override
-  Future<List<ResourceRecordModel>> listRecords({required int collectionId}) async {
+  Future<List<ResourceRecordModel>> listRecords(
+      {required int collectionId}) async {
     final response = await apiClient.get(
       '/resources/collections/$collectionId/records',
     );
@@ -288,7 +292,9 @@ class ResourcesRemoteDataSourceImpl implements ResourcesRemoteDataSource {
   }) async {
     final response = await apiClient.post(
       '/resources/collections/$collectionId/bulk',
-      body: records,
+      body: {
+        'records': records,
+      },
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {

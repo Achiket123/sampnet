@@ -1,65 +1,162 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:hackathon/dependency_injection.g.dart';
-import 'package:hackathon/globals/constants/user.dart';
+import 'package:flutter/material.dart';
+import 'package:hackathon/globals/constants/api_end_points.dart';
+import 'package:hackathon/services/token_manager.dart';
 import 'package:http/http.dart' as http;
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:hackathon/globals/constants/strings.dart';
 
 class ApiClient {
-  final http.Client _client;
   final String baseUrl;
+  final TokenManager tokenManager;
+  final http.Client client;
 
-  ApiClient({required http.Client client, required this.baseUrl})
-      : _client = client;
+  bool _isRefreshing = false;
+  Future<void>? _refreshFuture;
 
-  Map<String, String> _getHeaders() {
-    final empToken = Hive.box(Strings.authBox).get(Strings.employeeTokenKey);
-    final token = empToken ??
-        getIt<User>().token ??
-        Hive.box(Strings.authBox).get(Strings.tokenKey);
-    debugPrint('token: $token');
+  ApiClient({
+    required this.baseUrl,
+    required this.tokenManager,
+    required this.client,
+  });
+
+  Map<String, String> _authHeaders({Map<String, String>? extra}) {
+    final token = tokenManager.getAccessToken();
     return {
-      'Authorization': token ?? '',
       'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+      if (extra != null) ...extra,
     };
   }
 
-  Future<http.Response> get(String endpoint) async {
-    final headers = _getHeaders();
-    return await _client.get(Uri.parse('$baseUrl$endpoint'), headers: headers);
-  }
+  Map<String, String> authHeaders({Map<String, String>? extra}) =>
+      _authHeaders(extra: extra);
 
-  Future<http.Response> post(String endpoint, {dynamic body}) async {
-    final headers = _getHeaders();
-    return await _client.post(
-      Uri.parse('$baseUrl$endpoint'),
-      headers: headers,
-      body: body != null ? jsonEncode(body) : null,
-    );
-  }
-
-  Future<http.Response> put(String endpoint, {dynamic body}) async {
-    final headers = _getHeaders();
-    return await _client.put(
-      Uri.parse('$baseUrl$endpoint'),
-      headers: headers,
-      body: body != null ? jsonEncode(body) : null,
-    );
-  }
-
-  Future<http.Response> delete(String endpoint) async {
-    final headers = _getHeaders();
-    return await _client.delete(Uri.parse('$baseUrl$endpoint'),
-        headers: headers);
+  Future<http.Response> get(
+    String endpoint, {
+    Map<String, String>? headers,
+  }) async {
+    return _sendWithRetry(() => client.get(
+          Uri.parse('$baseUrl$endpoint'),
+          headers: _authHeaders(extra: headers),
+        ));
   }
 
   Future<http.StreamedResponse> sendMultipart(
       http.MultipartRequest request) async {
-    final headers = _getHeaders();
-    // Content-Type is set by MultipartRequest automatically, don't overwrite it here
-    headers.remove('Content-Type');
-    request.headers.addAll(headers);
-    return await _client.send(request);
+    http.StreamedResponse response = await client.send(request);
+
+    if (response.statusCode == 401) {
+      if (_isRefreshing) {
+        await _refreshFuture;
+      } else {
+        _isRefreshing = true;
+        _refreshFuture = _refreshToken().whenComplete(() {
+          _isRefreshing = false;
+          _refreshFuture = null;
+        });
+        await _refreshFuture;
+      }
+
+      final retryRequest = http.MultipartRequest(request.method, request.url)
+        ..headers.addAll(authHeaders())
+        ..fields.addAll(request.fields)
+        ..files.addAll(request.files);
+
+      return client.send(retryRequest);
+    }
+
+    return response;
+  }
+
+  Future<http.Response> post(
+    String endpoint, {
+    Map<String, dynamic>? body,
+    Map<String, String>? headers,
+  }) async {
+    return _sendWithRetry(() => client.post(
+          Uri.parse('$baseUrl$endpoint'),
+          headers: _authHeaders(extra: headers),
+          body: body != null ? jsonEncode(body) : null,
+        ));
+  }
+
+  Future<http.Response> put(
+    String endpoint, {
+    Map<String, dynamic>? body,
+    Map<String, String>? headers,
+  }) async {
+    return _sendWithRetry(() => client.put(
+          Uri.parse('$baseUrl$endpoint'),
+          headers: _authHeaders(extra: headers),
+          body: body != null ? jsonEncode(body) : null,
+        ));
+  }
+
+  Future<http.Response> delete(
+    String endpoint, {
+    Map<String, String>? headers,
+  }) async {
+    return _sendWithRetry(() => client.delete(
+          Uri.parse('$baseUrl$endpoint'),
+          headers: _authHeaders(extra: headers),
+        ));
+  }
+
+  Future<http.Response> _sendWithRetry(
+      Future<http.Response> Function() request) async {
+    final response = await request();
+
+    if (response.statusCode == 401) {
+      if (_isRefreshing) {
+        await _refreshFuture;
+      } else {
+        _isRefreshing = true;
+        _refreshFuture = _refreshToken().whenComplete(() {
+          _isRefreshing = false;
+          _refreshFuture = null;
+        });
+        await _refreshFuture;
+      }
+
+      return await request();
+    }
+
+    return response;
+  }
+
+  Future<void> _refreshToken() async {
+    final refreshToken = tokenManager.getRefreshToken();
+    if (refreshToken == null) {
+      debugPrint('No refresh token available — user must log in again.');
+      return;
+    }
+
+    try {
+      final response = await client.post(
+        Uri.parse('$baseUrl${ApiConstants.refresh}'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'refresh_token': refreshToken}),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final body = jsonDecode(response.body);
+        final newAccessToken = body['access_token'];
+        final newRefreshToken = body['refresh_token'];
+
+        if (newAccessToken != null) {
+          tokenManager.saveAccessToken(newAccessToken as String);
+        }
+        if (newRefreshToken != null) {
+          tokenManager.saveRefreshToken(newRefreshToken as String);
+        }
+
+        debugPrint('Token refreshed successfully.');
+      } else {
+        debugPrint('Token refresh failed: ${response.statusCode}');
+        tokenManager.clearTokens();
+      }
+    } catch (e) {
+      debugPrint('Token refresh error: $e');
+      tokenManager.clearTokens();
+    }
   }
 }

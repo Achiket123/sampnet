@@ -54,8 +54,6 @@ abstract class ResearchRemoteDataSource {
     int? folderId,
   });
   Future<void> deleteDocument(int documentId);
-
-  // Artifact Operations
   Future<List<ResearchFileModel>> getFilesByDocument(int documentId);
   Future<ResearchFileModel> uploadFile({
     required int researchId,
@@ -66,7 +64,6 @@ abstract class ResearchRemoteDataSource {
     required String mimeType,
   });
   Future<void> deleteFile(int fileId);
-
   Future<List<ResearchReferenceModel>> getReferencesByDocument(int documentId);
   Future<ResearchReferenceModel> addReference({
     required int researchId,
@@ -83,26 +80,26 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
 
   ResearchRemoteDataSourceImpl({required this.apiClient});
 
+  // ─── Entry ───────────────────────────────────────────────────────────────────
+
   @override
   Future<ResearchEntryModel> createEntry(ResearchEntryModel entry) async {
     final response = await apiClient.post('/research', body: entry.toJson());
     if (response.statusCode == 201) {
-      final data = json.decode(response.body);
-      return ResearchEntryModel.fromJson(data['data']);
-    } else {
-      throw Exception('Failed to create research entry');
+      return ResearchEntryModel.fromJson(_decode(response.body)['data']);
     }
+    throw Exception(_extractError(response.body,
+        fallback: 'Failed to create research entry'));
   }
 
   @override
   Future<ResearchEntryModel> getEntry(int id) async {
     final response = await apiClient.get('/research/$id');
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return ResearchEntryModel.fromJson(data['data']);
-    } else {
-      throw Exception('Failed to get research entry');
+      return ResearchEntryModel.fromJson(_decode(response.body)['data']);
     }
+    throw Exception(
+        _extractError(response.body, fallback: 'Failed to get research entry'));
   }
 
   @override
@@ -114,18 +111,21 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     int limit = 10,
     int offset = 0,
   }) async {
-    String endpoint = '/research?limit=$limit&offset=$offset';
-    if (status != null) endpoint += '&status=$status';
-    if (projectId != null) endpoint += '&project_id=$projectId';
-    if (teamId != null) endpoint += '&team_id=$teamId';
-    if (query != null) endpoint += '&q=$query';
-
+    final params = {
+      'limit': '$limit',
+      'offset': '$offset',
+      if (status != null) 'status': status,
+      if (projectId != null) 'project_id': '$projectId',
+      if (teamId != null) 'team_id': '$teamId',
+      if (query != null) 'q': query,
+    };
+    final endpoint = Uri(path: '/research', queryParameters: params).toString();
     final response = await apiClient.get(endpoint);
     if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to get research entries');
+      return _decode(response.body);
     }
+    throw Exception(_extractError(response.body,
+        fallback: 'Failed to get research entries'));
   }
 
   @override
@@ -133,7 +133,8 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     final response =
         await apiClient.put('/research/${entry.id}', body: entry.toJson());
     if (response.statusCode != 200) {
-      throw Exception('Failed to update research entry');
+      throw Exception(_extractError(response.body,
+          fallback: 'Failed to update research entry'));
     }
   }
 
@@ -141,28 +142,31 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
   Future<void> deleteEntry(int id) async {
     final response = await apiClient.delete('/research/$id');
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete research entry');
+      throw Exception(_extractError(response.body,
+          fallback: 'Failed to delete research entry'));
     }
   }
+
+  // ─── Folders ─────────────────────────────────────────────────────────────────
 
   @override
   Future<List<ResearchFolderModel>> getFolders({
     required int researchId,
     int? parentFolderId,
   }) async {
-    var endpoint = '/research/folders?research_id=$researchId';
-    if (parentFolderId != null) {
-      endpoint += '&parent_id=$parentFolderId';
-    }
+    final params = {
+      'research_id': '$researchId',
+      if (parentFolderId != null) 'parent_id': '$parentFolderId',
+    };
+    final endpoint =
+        Uri(path: '/research/folders', queryParameters: params).toString();
     final response = await apiClient.get(endpoint);
     if (response.statusCode != 200) {
-      throw Exception('Failed to get folders');
+      throw Exception(
+          _extractError(response.body, fallback: 'Failed to get folders'));
     }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return (data['data'] as List<dynamic>? ?? const [])
-        .map((item) =>
-            ResearchFolderModel.fromJson(item as Map<String, dynamic>))
-        .toList();
+    final data = _decode(response.body);
+    return _mapList(data['data'], ResearchFolderModel.fromJson);
   }
 
   @override
@@ -176,15 +180,14 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
       body: {
         'research_id': researchId,
         'name': name,
-        'parent_id': parentFolderId,
+        if (parentFolderId != null) 'parent_id': parentFolderId,
       },
     );
     if (response.statusCode != 201) {
       throw Exception(
           _extractError(response.body, fallback: 'Failed to create folder'));
     }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return ResearchFolderModel.fromJson(data['data'] as Map<String, dynamic>);
+    return ResearchFolderModel.fromJson(_decode(response.body)['data']);
   }
 
   @override
@@ -197,7 +200,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
       '/research/folders/$folderId',
       body: {
         'name': name,
-        'parent_id': parentFolderId,
+        if (parentFolderId != null) 'parent_id': parentFolderId,
       },
     );
     if (response.statusCode != 200) {
@@ -215,34 +218,36 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     }
   }
 
+  // ─── Documents ───────────────────────────────────────────────────────────────
+
   @override
   Future<List<ResearchDocumentModel>> getDocuments({
     required int researchId,
     int? folderId,
   }) async {
-    var endpoint = '/research/documents?research_id=$researchId';
-    if (folderId != null) {
-      endpoint += '&folder_id=$folderId';
-    }
+    final params = {
+      'research_id': '$researchId',
+      if (folderId != null) 'folder_id': '$folderId',
+    };
+    final endpoint =
+        Uri(path: '/research/documents', queryParameters: params).toString();
     final response = await apiClient.get(endpoint);
     if (response.statusCode != 200) {
-      throw Exception('Failed to get documents');
+      throw Exception(
+          _extractError(response.body, fallback: 'Failed to get documents'));
     }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return (data['data'] as List<dynamic>? ?? const [])
-        .map((item) =>
-            ResearchDocumentModel.fromJson(item as Map<String, dynamic>))
-        .toList();
+    final data = _decode(response.body);
+    return _mapList(data['data'], ResearchDocumentModel.fromJson);
   }
 
   @override
   Future<ResearchDocumentModel> getDocument(int id) async {
     final response = await apiClient.get('/research/documents/$id');
     if (response.statusCode != 200) {
-      throw Exception('Failed to get document');
+      throw Exception(
+          _extractError(response.body, fallback: 'Failed to get document'));
     }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return ResearchDocumentModel.fromJson(data['data'] as Map<String, dynamic>);
+    return ResearchDocumentModel.fromJson(_decode(response.body)['data']);
   }
 
   @override
@@ -258,15 +263,14 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
         'research_id': researchId,
         'title': title,
         'content': content,
-        'folder_id': folderId,
+        if (folderId != null) 'folder_id': folderId,
       },
     );
     if (response.statusCode != 201) {
       throw Exception(
           _extractError(response.body, fallback: 'Failed to create document'));
     }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return ResearchDocumentModel.fromJson(data['data'] as Map<String, dynamic>);
+    return ResearchDocumentModel.fromJson(_decode(response.body)['data']);
   }
 
   @override
@@ -281,7 +285,7 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
       body: {
         'title': title,
         'content': content,
-        'folder_id': folderId,
+        if (folderId != null) 'folder_id': folderId,
       },
     );
     if (response.statusCode != 200) {
@@ -299,19 +303,18 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     }
   }
 
-  // --- Artifact Operations ---
+  // ─── Files ───────────────────────────────────────────────────────────────────
 
   @override
   Future<List<ResearchFileModel>> getFilesByDocument(int documentId) async {
     final response =
         await apiClient.get('/research/files?document_id=$documentId');
     if (response.statusCode != 200) {
-      throw Exception('Failed to get document files');
+      throw Exception(_extractError(response.body,
+          fallback: 'Failed to get document files'));
     }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return (data['data'] as List<dynamic>? ?? const [])
-        .map((item) => ResearchFileModel.fromJson(item as Map<String, dynamic>))
-        .toList();
+    final data = _decode(response.body);
+    return _mapList(data['data'], ResearchFileModel.fromJson);
   }
 
   @override
@@ -328,36 +331,43 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
       Uri.parse('${apiClient.baseUrl}/research/files'),
     );
 
+    // Attach auth headers
+    request.headers.addAll(apiClient.authHeaders());
+
     request.fields['research_id'] = researchId.toString();
     if (documentId != null)
       request.fields['document_id'] = documentId.toString();
     if (folderId != null) request.fields['folder_id'] = folderId.toString();
 
-    final multipartFile = http.MultipartFile.fromBytes(
+    request.files.add(http.MultipartFile.fromBytes(
       'file',
       bytes,
       filename: fileName,
       contentType: MediaType.parse(mimeType),
-    );
-    request.files.add(multipartFile);
+    ));
 
-    final response = await apiClient.sendMultipart(request);
-    if (response.statusCode != 201) {
-      final body = await response.stream.bytesToString();
-      throw Exception(_extractError(body, fallback: 'Failed to upload file'));
+    final streamed = await apiClient.sendMultipart(request);
+
+    // Read the stream ONCE
+    final responseBody = await streamed.stream.bytesToString();
+
+    if (streamed.statusCode != 201) {
+      throw Exception(
+          _extractError(responseBody, fallback: 'Failed to upload file'));
     }
-    final data = json.decode(await response.stream.bytesToString())
-        as Map<String, dynamic>;
-    return ResearchFileModel.fromJson(data['data'] as Map<String, dynamic>);
+    return ResearchFileModel.fromJson(_decode(responseBody)['data']);
   }
 
   @override
   Future<void> deleteFile(int fileId) async {
     final response = await apiClient.delete('/research/files/$fileId');
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete file');
+      throw Exception(
+          _extractError(response.body, fallback: 'Failed to delete file'));
     }
   }
+
+  // ─── References ──────────────────────────────────────────────────────────────
 
   @override
   Future<List<ResearchReferenceModel>> getReferencesByDocument(
@@ -365,13 +375,11 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     final response =
         await apiClient.get('/research/references?document_id=$documentId');
     if (response.statusCode != 200) {
-      throw Exception('Failed to get document references');
+      throw Exception(_extractError(response.body,
+          fallback: 'Failed to get document references'));
     }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return (data['data'] as List<dynamic>? ?? const [])
-        .map((item) =>
-            ResearchReferenceModel.fromJson(item as Map<String, dynamic>))
-        .toList();
+    final data = _decode(response.body);
+    return _mapList(data['data'], ResearchReferenceModel.fromJson);
   }
 
   @override
@@ -386,18 +394,17 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
       '/research/references',
       body: {
         'research_id': researchId,
-        'document_id': documentId,
+        if (documentId != null) 'document_id': documentId,
         'title': title,
         'url': url,
-        'authors': authors,
+        if (authors != null) 'authors': authors,
       },
     );
     if (response.statusCode != 201) {
       throw Exception(
-          _extractError(response.body, fallback: 'Failed to add link'));
+          _extractError(response.body, fallback: 'Failed to add reference'));
     }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return ResearchReferenceModel.fromJson(data['data'] as Map<String, dynamic>);
+    return ResearchReferenceModel.fromJson(_decode(response.body)['data']);
   }
 
   @override
@@ -405,9 +412,23 @@ class ResearchRemoteDataSourceImpl implements ResearchRemoteDataSource {
     final response =
         await apiClient.delete('/research/references/$referenceId');
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete reference');
+      throw Exception(
+          _extractError(response.body, fallback: 'Failed to delete reference'));
     }
   }
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+  Map<String, dynamic> _decode(String body) =>
+      json.decode(body) as Map<String, dynamic>;
+
+  List<T> _mapList<T>(
+    dynamic list,
+    T Function(Map<String, dynamic>) fromJson,
+  ) =>
+      (list as List<dynamic>? ?? const [])
+          .map((item) => fromJson(item as Map<String, dynamic>))
+          .toList();
 
   String _extractError(String body, {required String fallback}) {
     try {

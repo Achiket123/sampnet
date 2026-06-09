@@ -13,6 +13,7 @@ import 'package:hackathon/globals/error_handling/error_messages.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:hackathon/globals/models/organisation_model.dart';
 import 'package:hackathon/globals/models/user_model.dart';
+import 'package:hackathon/services/api_client.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_io/jwt_io.dart';
@@ -25,15 +26,14 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl with Strings implements AuthRemoteDataSource {
-  final http.Client apiClient;
+  final ApiClient apiClient;
   AuthRemoteDataSourceImpl({required this.apiClient});
   @override
   Future<Either<ErrorModel, AuthResponseModel>> signIn(
       SignInParams params) async {
     try {
       final response = await apiClient.post(
-        Uri.parse(ApiConstants.signIn),
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        ApiConstants.signIn,
         body: {
           "email": params.email,
           "password": params.hashedPassword,
@@ -92,9 +92,8 @@ class AuthRemoteDataSourceImpl with Strings implements AuthRemoteDataSource {
       SignUpParams params) async {
     try {
       final response = await apiClient.post(
-        Uri.parse(ApiConstants.signUp),
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: params.toJson(),
+        ApiConstants.signUp,
+        body: params.toMap(),
       );
 
       debugPrint('Response Status Code: ${response.statusCode}');
@@ -174,10 +173,7 @@ class AuthRemoteDataSourceImpl with Strings implements AuthRemoteDataSource {
   Future<bool> isEmployee(String token, int userId) async {
     try {
       final isEmployeeResponse = await apiClient.get(
-        Uri.parse('${ApiConstants.isEmployee}/$userId'),
-        headers: {
-          "Authorization": token,
-        },
+        '${ApiConstants.isEmployee}/$userId',
       );
 
       if (isEmployeeResponse.statusCode == 200) {

@@ -21,7 +21,7 @@ class SignUpParams {
     required this.dateOfBirth,
   });
 
-  Map<String, String> toJson() {
+  Map<String, String> toMap() {
     return {
       "email": email,
       "password": hashedPassword,

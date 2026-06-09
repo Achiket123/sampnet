@@ -12,6 +12,7 @@ import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/data/task_data.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
+import 'package:hackathon/services/api_client.dart';
 import 'package:http/http.dart' as http;
 
 abstract class TaskRemoteDataSource {
@@ -31,16 +32,17 @@ abstract class UpdateTaskRemoteDataSource {
 }
 
 class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
-  final http.Client client;
+  final ApiClient client;
   TaskRemoteDataSourceImpl({required this.client});
   @override
   Future<Either<ErrorModel, TaskModel>> createTask(
       CreateTaskParams params) async {
     try {
-      final url = Uri.parse(ApiConstants.createTask);
-      final activeToken = getIt<User>().employeeToken ?? params.token;
-      final response = await client.post(url,
-          body: params.task.toJson(), headers: {'Authorization': activeToken});
+      final url = ApiConstants.createTask;
+      final response = await client.post(
+        url,
+        body: params.task.toMap(),
+      );
       if (response.statusCode >= 200 && response.statusCode < 300) {
         debugPrint("Tasks Resp ${response.body}");
         return right(TaskModel.fromJson(jsonDecode(response.body)["task"]));
@@ -58,9 +60,10 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
   Future<Either<ErrorModel, TaskModel>> fetchTaskById(
       String token, String id) async {
     try {
-      final url = Uri.parse("${ApiConstants.getTaskById}/$id");
-      final activeToken = getIt<User>().employeeToken ?? token;
-      final response = await client.get(url, headers: {'Authorization': activeToken});
+      final url = "${ApiConstants.getTaskById}/$id";
+      final response = await client.get(
+        url,
+      );
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return right(TaskModel.fromJson(jsonDecode(response.body)["task"]));
       }
@@ -74,9 +77,11 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
   @override
   Future<Either<ErrorModel, List<TaskModel>>> fetchTasks(String token) async {
     try {
-      final url = Uri.parse(ApiConstants.getOrganisationTasks);
+      final url = ApiConstants.getOrganisationTasks;
       final activeToken = getIt<User>().employeeToken ?? token;
-      final response = await client.get(url, headers: {'Authorization': activeToken});
+      final response = await client.get(
+        url,
+      );
       if (response.statusCode >= 200 && response.statusCode < 300) {
         debugPrint("Tasks Resp ${response.body}");
         final tasksData = jsonDecode(response.body)["tasks"];
@@ -100,10 +105,11 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
   Future<Either<ErrorModel, List<TaskModel>>> fetchTasksByOrganisationId(
       String token, String organisationId) async {
     try {
-      final url = Uri.parse(
-          "${ApiConstants.baseUrl}/tasks/organisation/$organisationId");
+      final url = "${ApiConstants.baseUrl}/tasks/organisation/$organisationId";
       final activeToken = getIt<User>().employeeToken ?? token;
-      final response = await client.get(url, headers: {'Authorization': activeToken});
+      final response = await client.get(
+        url,
+      );
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final tasksData = jsonDecode(response.body)["tasks"];
         final tasks = tasksData
@@ -122,9 +128,11 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
   Future<Either<ErrorModel, List<TaskActivityEntity>>> fetchTaskActivity(
       String token, String taskId) async {
     try {
-      final url = Uri.parse(ApiConstants.getTaskActivity(taskId));
+      final url = ApiConstants.getTaskActivity(taskId);
       final activeToken = getIt<User>().employeeToken ?? token;
-      final response = await client.get(url, headers: {'Authorization': activeToken});
+      final response = await client.get(
+        url,
+      );
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final List activityData = jsonDecode(response.body)["activities"];
         final activities = activityData
@@ -142,7 +150,7 @@ class TaskRemoteDataSourceImpl extends TaskRemoteDataSource {
 }
 
 class UpdateTaskRemoteDataSourceImpl implements UpdateTaskRemoteDataSource {
-  final http.Client client;
+  final ApiClient client;
 
   UpdateTaskRemoteDataSourceImpl({required this.client});
   @override
@@ -150,9 +158,7 @@ class UpdateTaskRemoteDataSourceImpl implements UpdateTaskRemoteDataSource {
       UpdateTaskParams params) async {
     try {
       final url = "${ApiConstants.updateTask}/${params.id}";
-      final response = await client.put(Uri.parse(url),
-          headers: {"Authorization": getIt<User>().employeeToken ?? getIt<User>().token!},
-          body: params.toJson());
+      final response = await client.put(url, body: params.toMap());
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final data = jsonDecode(response.body)['task'];
         final task = TaskModel.fromJson(data);
@@ -172,8 +178,9 @@ class UpdateTaskRemoteDataSourceImpl implements UpdateTaskRemoteDataSource {
     try {
       final url = "${ApiConstants.deleteTask}/$id";
       final activeToken = getIt<User>().employeeToken ?? token;
-      final response = await client
-          .delete(Uri.parse(url), headers: {"Authorization": activeToken});
+      final response = await client.delete(
+        url,
+      );
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return right(unit);
       }

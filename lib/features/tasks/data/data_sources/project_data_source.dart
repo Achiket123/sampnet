@@ -5,6 +5,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:hackathon/features/tasks/data/models/project_model.dart';
 import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
+import 'package:hackathon/services/api_client.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:hackathon/dependency_injection.g.dart';
@@ -15,19 +16,15 @@ abstract class ProjectDataSource {
 }
 
 class ProjectDataSourceImpl implements ProjectDataSource {
-  final http.Client client;
+  final ApiClient client;
   ProjectDataSourceImpl({required this.client});
   @override
   Future<Either<ErrorModel, List<ProjectModel>>> getProjects(
       String token) async {
     try {
-      final activeToken = getIt<User>().employeeToken ?? token;
       final response = await client.get(
-          Uri.parse(
-              "${ApiConstants.baseUrl}${ApiConstants.getProjects}"),
-          headers: {
-            'Authorization': activeToken,
-          });
+        "${ApiConstants.baseUrl}${ApiConstants.getProjects}",
+      );
       if (response.statusCode == 200) {
         final List<ProjectModel> projects = List<ProjectModel>.from(
             jsonDecode(response.body)['projects']
