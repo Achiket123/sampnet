@@ -58,6 +58,7 @@ import 'package:hackathon/widgets/error_page.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:jwt_io/jwt_io.dart';
 import 'package:hackathon/services/websocket_service.dart';
+import 'package:hackathon/services/api_client.dart';
 import 'package:hackathon/services/incoming_call_overlay_service.dart';
 import 'package:hackathon/services/webrtc_service.dart';
 import 'package:hackathon/globals/constants/globals.dart';
@@ -65,8 +66,8 @@ import 'package:hackathon/globals/constants/globals.dart';
 final GoRouter route = GoRouter(
   navigatorKey: navigatorKey,
   initialLocation: initRoute(),
-  redirect: (context, state) {
-    return handleRouteGuard(state);
+  redirect: (context, state) async {
+    return await handleRouteGuard(state);
   },
   errorBuilder: (context, state) {
     debugPrint("GLOBAL ROUTING ERROR");
@@ -427,7 +428,7 @@ Widget Function(BuildContext, GoRouterState) safeBuilder(
     }
   };
 }
-String? handleRouteGuard(GoRouterState state) {
+Future<String?> handleRouteGuard(GoRouterState state) async {
   try {
     debugPrint("ROUTE GUARD");
     debugPrint(state.fullPath);
@@ -441,8 +442,25 @@ String? handleRouteGuard(GoRouterState state) {
     }
 
     final response = getIt<GetTokenUsecase>().call(null);
+    String? tokenVal;
+    response.fold(
+      (l) => null,
+      (token) => tokenVal = token,
+    );
 
-    final path = response.fold<String>(
+    if (tokenVal != null && JwtToken.isExpired(tokenVal!)) {
+      debugPrint("Token is expired, attempting refresh inside Route Guard...");
+      try {
+        await getIt<ApiClient>().refreshToken();
+      } catch (e) {
+        debugPrint("Token refresh failed in guard: $e");
+      }
+    }
+
+    // Now check token status after the potential refresh
+    final freshResponse = getIt<GetTokenUsecase>().call(null);
+
+    final path = freshResponse.fold<String>(
       (l) {
         getIt<WebsocketService>().disconnect();
         return LandingPage.routePath;

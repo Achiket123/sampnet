@@ -6,6 +6,9 @@ import 'package:http/http.dart' as http;
 import 'package:get_it/get_it.dart';
 import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/globals/constants/user.dart';
+import 'package:jwt_io/jwt_io.dart';
+import 'package:hackathon/globals/models/user_model.dart';
+
 class ApiClient {
   final String baseUrl;
   final TokenManager tokenManager;
@@ -52,7 +55,7 @@ class ApiClient {
         await _refreshFuture;
       } else {
         _isRefreshing = true;
-        _refreshFuture = _refreshToken().whenComplete(() {
+        _refreshFuture = refreshToken().whenComplete(() {
           _isRefreshing = false;
           _refreshFuture = null;
         });
@@ -114,7 +117,7 @@ class ApiClient {
         await _refreshFuture;
       } else {
         _isRefreshing = true;
-        _refreshFuture = _refreshToken().whenComplete(() {
+        _refreshFuture = refreshToken().whenComplete(() {
           _isRefreshing = false;
           _refreshFuture = null;
         });
@@ -127,7 +130,7 @@ class ApiClient {
     return response;
   }
 
-  Future<void> _refreshToken() async {
+  Future<void> refreshToken() async {
     final refreshToken = tokenManager.getRefreshToken();
     if (refreshToken == null) {
       debugPrint('No refresh token available — user must log in again.');
@@ -148,6 +151,10 @@ class ApiClient {
 
         if (newAccessToken != null) {
           tokenManager.saveAccessToken(newAccessToken as String);
+          getIt<User>().token = newAccessToken as String;
+          try {
+            getIt<User>().user = UserModel.fromJson(JwtToken.payload(newAccessToken)['user']);
+          } catch (_) {}
         }
         if (newRefreshToken != null) {
           tokenManager.saveRefreshToken(newRefreshToken as String);

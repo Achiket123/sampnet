@@ -15,17 +15,18 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
 
   @override
   Future<OnboardingProgressModel> getOnboardingProgress(String userId) async {
-    final response = await apiClient.get("/onboarding/$userId");
+    final response = await apiClient.get("${ApiConstants.baseUrl}/onboarding/$userId");
+    debugPrint("ONBOARING:: ${response.body}");
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return OnboardingProgressModel.fromJson(jsonDecode(response.body));
     }
-    debugPrint("${response.body}");
+    debugPrint("ONBOARING:: ${response.body}");
     throw Exception("Failed to get onboarding progress: ${response.body}");
   }
 
   @override
   Future<void> updateOnboardingProgress(OnboardingProgressModel progress) async {
-    final response = await apiClient.post("/onboarding/update", body: progress.toJson());
+    final response = await apiClient.post("${ApiConstants.baseUrl}/onboarding/update", body: progress.toJson());
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return;
     }

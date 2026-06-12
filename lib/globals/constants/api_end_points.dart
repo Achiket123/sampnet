@@ -2,8 +2,8 @@ import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/globals/constants/user.dart';
 
 class ApiConstants {
-  static const String baseUrl = "http://localhost:8000/api/v1";
-  static const String websocketBaseUrl = "ws://localhost:8000/api/v1";
+  static const String baseUrl = "/api/v1";
+  static const String websocketBaseUrl = "/api/v1";
   // Authentication Endpoints
   static const String signIn = "$baseUrl/auth/signin";
   static const String signUp = "$baseUrl/auth/signup";
@@ -77,7 +77,8 @@ class ApiConstants {
   static const String markAllNotificationsRead = "$notifications/read-all";
 
   // Onboarding Endpoints
-  static String getOnboardingProgress(String userId) => "$baseUrl/onboarding/$userId";
+  static String getOnboardingProgress(String userId) =>
+      "$baseUrl/onboarding/$userId";
   static const String updateOnboardingProgress = "$baseUrl/onboarding/update";
 
   // Attendence Endpoints
@@ -110,7 +111,8 @@ class ApiConstants {
   // Leave Endpoints
   static const String leaveRequest = "$baseUrl/leave/request";
   static const String myLeaves = "$baseUrl/leave/my";
-  static String organisationLeaves(int orgId) => "$baseUrl/leave/organisation/$orgId";
+  static String organisationLeaves(int orgId) =>
+      "$baseUrl/leave/organisation/$orgId";
   static String leaveById(int id) => "$baseUrl/leave/$id";
   static String approveLeave(int id) => "$baseUrl/leave/$id/approve";
   static String rejectLeave(int id) => "$baseUrl/leave/$id/reject";
@@ -128,12 +130,16 @@ class ApiConstants {
   // Settings Endpoints
   static const String settingsOrganisation = "$baseUrl/settings/organisation";
   static const String settingsPlan = "$baseUrl/settings/plan";
-  static const String settingsRolePermissions = "$baseUrl/settings/role-permissions";
-  static const String settingsAttendancePolicy = "$baseUrl/settings/attendance-policy";
+  static const String settingsRolePermissions =
+      "$baseUrl/settings/role-permissions";
+  static const String settingsAttendancePolicy =
+      "$baseUrl/settings/attendance-policy";
   static const String settingsLeavePolicy = "$baseUrl/settings/leave-policy";
   static const String settingsTaskTypes = "$baseUrl/settings/task-types";
   static const String settingsProfile = "$baseUrl/settings/profile";
-  static const String settingsChangePassword = "$baseUrl/settings/change-password";
-  static const String settingsNotificationPreferences = "$baseUrl/settings/notification-preferences";
+  static const String settingsChangePassword =
+      "$baseUrl/settings/change-password";
+  static const String settingsNotificationPreferences =
+      "$baseUrl/settings/notification-preferences";
   static const String settingsExport = "$baseUrl/settings/export";
 }

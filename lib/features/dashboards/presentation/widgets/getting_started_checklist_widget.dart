@@ -95,19 +95,17 @@ class GettingStartedChecklistWidget extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               ...List.generate(steps.length, (index) {
+                if (state is OnboardingError){
+                  debugPrint("${state.message}");
+                }
                 return _ChecklistItem(
                   text: steps[index],
                   isDone: stepStatuses[index],
                 );
               }),
               if (state is OnboardingError)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    "Error loading progress",
-                    style: TextStyle(color: ColorPallete.error.withOpacity(0.7), fontSize: 11),
-                  ),
-                ),
+              wid(state),
+                
               const SizedBox(height: 16),
               if (state is OnboardingLoaded && completionProgress < 1.0)
                 SizedBox(
@@ -145,6 +143,16 @@ class GettingStartedChecklistWidget extends StatelessWidget {
         },
       ),
     );
+  }
+  Widget wid( OnboardingError state){
+    debugPrint("ONBOARDING:: ${state.message}");
+    return Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    "Error loading progress",
+                    style: TextStyle(color: ColorPallete.error.withOpacity(0.7), fontSize: 11),
+                  ),
+                );
   }
 }
 

@@ -85,7 +85,7 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                 } else if (index == 10) {
                   context.go('/analytics');
                 } else if (index == 11) {
-                  context.go(SettingsShellPage.routePath);
+                  context.push(SettingsShellPage.routePath);
                 } else {
                   _changeIndex(index);
                 }

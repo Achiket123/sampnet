@@ -36,7 +36,13 @@ class AuthLocalDataSourceImpl with Strings implements AuthLocalDataSource {
       if (token == null) {
         return left(ServerError(message: 'Token not found'));
       } else if (JwtToken.isExpired(token)) {
-        return left(ServerError(message: 'Token is expired'));
+        debugPrint("Token is expired, returning to let router/client refresh.");
+        try {
+          getIt<User>().user =
+              UserModel.fromJson(JwtToken.payload(token)['user']);
+          getIt<User>().token = token;
+        } catch (_) {}
+        return right(token);
       } else {
         debugPrint(JwtToken.payload(token).toString());
 

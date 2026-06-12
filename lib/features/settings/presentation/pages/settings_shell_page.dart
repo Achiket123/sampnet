@@ -5,6 +5,9 @@ import 'package:hackathon/globals/constants/settings_permissions.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/widgets/role_guard_widget.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart';
+
 // Import sub-pages
 import 'package:hackathon/features/settings/presentation/pages/profile_settings_page.dart';
 import 'package:hackathon/features/settings/presentation/pages/security_settings_page.dart';
@@ -196,7 +199,11 @@ class _SettingsShellPageState extends State<SettingsShellPage> {
                           IconButton(
                             icon: const Icon(Icons.arrow_back, color: ColorPallete.textPrimary),
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              if (context.canPop()) {
+                                context.pop();
+                              } else {
+                                context.go(Dashboard.routePath);
+                              }
                             },
                           ),
                           const SizedBox(width: 8),
