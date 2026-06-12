@@ -17,6 +17,7 @@ import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/features/employees/presentation/pages/employee_profile_page.dart';
 import 'package:hackathon/features/resources/presentation/pages/resources_page.dart';
 import 'package:hackathon/features/calendar/presentation/pages/personal_calendar_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/settings_shell_page.dart';
 
 // ignore: must_be_immutable
 class SideBarWidget extends StatefulWidget {
@@ -83,6 +84,8 @@ class _SideBarWidgetState extends State<SideBarWidget> {
                   context.go(PersonalCalendarPage.routePath);
                 } else if (index == 10) {
                   context.go('/analytics');
+                } else if (index == 11) {
+                  context.go(SettingsShellPage.routePath);
                 } else {
                   _changeIndex(index);
                 }

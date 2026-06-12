@@ -49,6 +49,7 @@ import 'package:hackathon/features/analytics/presentation/pages/employee_analyti
 import 'package:hackathon/features/auth/presentation/screens/accept_invite_page.dart';
 import 'package:hackathon/features/auth/presentation/screens/email_verification_page.dart';
 import 'package:hackathon/features/auth/presentation/screens/email_verified_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/settings_shell_page.dart';
 
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/models/organisation_model.dart';
@@ -389,6 +390,12 @@ final GoRouter route = GoRouter(
           final id = state.pathParameters['employeeId'] ?? '0';
           return EmployeeAnalyticsProfilePage(employeeId: id);
         },
+      ),
+    ),
+    GoRoute(
+      path: SettingsShellPage.routePath,
+      builder: safeBuilder(
+        (context, state) => const SettingsShellPage(),
       ),
     ),
   ],

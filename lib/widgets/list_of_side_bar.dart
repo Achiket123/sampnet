@@ -11,5 +11,6 @@ class ListOfSideBar {
     'Projects',
     'Calendar', 
     'Analytics',
+    'Settings',
   ];
 }

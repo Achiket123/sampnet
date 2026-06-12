@@ -1,20 +1,23 @@
-import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hackathon/dependency_injection.g.dart';
-import 'package:hackathon/features/tasks/presentation/blocs/task_bloc/task_bloc.dart';
-import 'package:hackathon/features/tasks/presentation/widgets/create_task_pop_up.dart';
-import 'package:hackathon/widgets/task_button.dart';
-import 'package:hackathon/features/tasks/presentation/widgets/task_horizontal_widget.dart';
-import 'package:hackathon/features/tasks/presentation/widgets/task_widget_box.dart';
-import 'package:hackathon/features/tasks/presentation/widgets/task_widget_holder.dart';
-import 'package:hackathon/globals/constants/user.dart';
-import 'package:hackathon/widgets/custom_drawer.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
-import 'package:hackathon/widgets/custom_app_bar.dart';
-import 'package:hackathon/widgets/list_of_side_bar.dart';
+import 'package:hackathon/globals/constants/settings_permissions.dart';
+import 'package:hackathon/globals/constants/user.dart';
+import 'package:hackathon/widgets/role_guard_widget.dart';
 
-final GlobalKey<ScaffoldState> _taskPageKey = GlobalKey<ScaffoldState>();
+// Import sub-pages
+import 'package:hackathon/features/settings/presentation/pages/profile_settings_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/security_settings_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/notification_preferences_settings_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/organisation_settings_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/billing_settings_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/role_permissions_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/attendance_policy_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/leave_policy_config_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/task_type_config_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/data_export_page.dart';
+import 'package:hackathon/features/settings/presentation/pages/danger_zone_page.dart';
+import 'package:hackathon/features/settings/presentation/widgets/settings_nav_item.dart';
 
 class SettingsShellPage extends StatefulWidget {
   static const String routePath = '/settings';
@@ -25,367 +28,237 @@ class SettingsShellPage extends StatefulWidget {
 }
 
 class _SettingsShellPageState extends State<SettingsShellPage> {
-  String _initialValue = 'All';
-  bool isDrawerOpen = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  SettingsSection _currentSection = SettingsSection.profile;
 
-  @override
-  void initState() {
-    super.initState();
-    // if(awaitgetIt.allReady())
-    BlocProvider.of<TaskBloc>(context).add(FetchTasksEvent(
-        token: getIt<User>().employeeToken ?? getIt<User>().token!));
-  }
+  final Map<SettingsSection, _SettingsSectionData> _sectionData = {
+    SettingsSection.profile: _SettingsSectionData(
+      icon: Icons.person_outline,
+      title: 'Profile Settings',
+      page: const ProfileSettingsPage(),
+    ),
+    SettingsSection.security: _SettingsSectionData(
+      icon: Icons.lock_outline,
+      title: 'Security',
+      page: const SecuritySettingsPage(),
+    ),
+    SettingsSection.notifications: _SettingsSectionData(
+      icon: Icons.notifications_none_outlined,
+      title: 'Notifications',
+      page: const NotificationPreferencesSettingsPage(),
+    ),
+    SettingsSection.organisation: _SettingsSectionData(
+      icon: Icons.business_outlined,
+      title: 'Organisation details',
+      page: const OrganisationSettingsPage(),
+    ),
+    SettingsSection.billing: _SettingsSectionData(
+      icon: Icons.credit_card_outlined,
+      title: 'Billing & Plans',
+      page: const BillingSettingsPage(),
+    ),
+    SettingsSection.rolePermissions: _SettingsSectionData(
+      icon: Icons.admin_panel_settings_outlined,
+      title: 'Role Permissions',
+      page: const RolePermissionsPage(),
+    ),
+    SettingsSection.attendancePolicy: _SettingsSectionData(
+      icon: Icons.access_time_outlined,
+      title: 'Attendance Policy',
+      page: const AttendancePolicyPage(),
+    ),
+    SettingsSection.leavePolicy: _SettingsSectionData(
+      icon: Icons.beach_access_outlined,
+      title: 'Leave Policy',
+      page: const LeavePolicyConfigPage(),
+    ),
+    SettingsSection.taskTypes: _SettingsSectionData(
+      icon: Icons.assignment_outlined,
+      title: 'Task Types',
+      page: const TaskTypeConfigPage(),
+    ),
+    SettingsSection.dataExport: _SettingsSectionData(
+      icon: Icons.download_outlined,
+      title: 'Data Export',
+      page: const DataExportPage(),
+    ),
+    SettingsSection.dangerZone: _SettingsSectionData(
+      icon: Icons.report_problem_outlined,
+      title: 'Danger Zone',
+      page: const DangerZonePage(),
+    ),
+  };
 
   @override
   Widget build(BuildContext context) {
-    final taskStyle = Theme.of(context).textTheme.bodySmall;
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
+    final String userRole = getIt<User>().role;
+    final List<SettingsSection> visibleSections = SettingsSection.values
+        .where((section) => canView(section, userRole))
+        .toList();
+
+    // Ensure currently selected section is viewable, fallback to profile
+    if (!visibleSections.contains(_currentSection)) {
+      _currentSection = visibleSections.first;
+    }
+
+    final double width = MediaQuery.of(context).size.width;
+    final bool isDesktop = width > 850;
+
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
             ColorPallete.backgroundPrimary,
-            ColorPallete.backgroundSecondary
+            ColorPallete.backgroundSecondary,
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
       ),
       child: Scaffold(
-        key: _taskPageKey,
-        drawer: CustomDrawer(
-          selectedIndex: ListOfSideBar.sideBarItems.indexOf('Tasks'),
-        ),
-        backgroundColor: ColorPallete.transparent,
-        body: ListView(
+        key: _scaffoldKey,
+        backgroundColor: Colors.transparent,
+        appBar: isDesktop
+            ? null
+            : AppBar(
+                backgroundColor: ColorPallete.backgroundSecondary,
+                elevation: 0,
+                title: Text(
+                  _sectionData[_currentSection]?.title ?? 'Settings',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: ColorPallete.textPrimary,
+                  ),
+                ),
+                leading: IconButton(
+                  icon: const Icon(Icons.menu, color: ColorPallete.textPrimary),
+                  onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                ),
+              ),
+        drawer: isDesktop
+            ? null
+            : Drawer(
+                backgroundColor: ColorPallete.backgroundSecondary,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 48),
+                    const Text(
+                      'SETTINGS',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: ColorPallete.redPrimary,
+                        letterSpacing: 2.0,
+                      ),
+                    ),
+                    const Divider(color: ColorPallete.divider, height: 32),
+                    Expanded(
+                      child: ListView(
+                        children: visibleSections.map((section) {
+                          final data = _sectionData[section]!;
+                          return SettingsNavItem(
+                            icon: data.icon,
+                            title: data.title,
+                            section: section,
+                            isSelected: _currentSection == section,
+                            onTap: () {
+                              setState(() {
+                                _currentSection = section;
+                              });
+                              Navigator.pop(context); // Close drawer
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+        body: Row(
           children: [
-            _appBar(context),
-            _belowAppBar(width, taskStyle),
-            _showEveryTasks(height, width, taskStyle),
-            const Center(child: Text('YOUR TASKS')),
-            _showOwnTasks(height, width),
+            if (isDesktop) ...[
+              // Left desktop sidebar
+              Container(
+                width: 280,
+                decoration: const BoxDecoration(
+                  color: ColorPallete.backgroundSecondary,
+                  border: Border(
+                    right: BorderSide(color: ColorPallete.divider),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back, color: ColorPallete.textPrimary),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'SETTINGS',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: ColorPallete.textPrimary,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(color: ColorPallete.divider, height: 1),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: ListView(
+                        physics: const BouncingScrollPhysics(),
+                        children: visibleSections.map((section) {
+                          final data = _sectionData[section]!;
+                          return SettingsNavItem(
+                            icon: data.icon,
+                            title: data.title,
+                            section: section,
+                            isSelected: _currentSection == section,
+                            onTap: () {
+                              setState(() {
+                                _currentSection = section;
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            // Main content area
+            Expanded(
+              child: RoleGuardWidget(
+                section: _currentSection,
+                child: _sectionData[_currentSection]!.page,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
+}
 
-  Container _showOwnTasks(double height, double width) {
-    return Container(
-      height: height,
-      margin: EdgeInsets.symmetric(
-          horizontal: width * 0.02, vertical: height * 0.02),
-      padding: EdgeInsets.symmetric(vertical: height * 0.012),
-      decoration: BoxDecoration(
-        color: ColorPallete.backgroundSecondary,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: BlocBuilder<TaskBloc, TaskState>(builder: (context, state) {
-        if (state is TaskSuccess) {
-          return ListView.builder(
-              itemCount: state.tasks.length,
-              itemBuilder: (context, index) {
-                if (state.tasks[index].status != "To Do" &&
-                    state.tasks[index].assignedTo == getIt<User>().user!.id) {
-                  return TaskHorizontalWidget(
-                    task: state.tasks[index],
-                  );
-                } else {
-                  return const SizedBox.shrink();
-                }
-              });
-        } else if (state is TaskError) {
-          return const Text("Internal Error");
-        } else if (state is TaskLoading) {
-          return const Center(
-            child: CircularProgressIndicator.adaptive(),
-          );
-        } else {
-          return const Text("No Tasks");
-        }
-      }),
-    );
-  }
+class _SettingsSectionData {
+  final IconData icon;
+  final String title;
+  final Widget page;
 
-  Widget _showEveryTasks(double height, double width, TextStyle? taskStyle) {
-    return Container(
-      width: double.infinity,
-      height: height * 0.7,
-      margin: EdgeInsets.symmetric(
-          horizontal: width * 0.02, vertical: height * 0.02),
-      padding: EdgeInsets.symmetric(vertical: height * 0.012),
-      decoration: BoxDecoration(
-        color: ColorPallete.backgroundSecondary,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          BlocConsumer<TaskBloc, TaskState>(
-            listener: (context, state) {
-              if (state is TaskError) {
-                ElegantNotification.error(
-                    description: const Text(
-                  "data not found",
-                  style: TextStyle(color: ColorPallete.backgroundPrimary),
-                )).show(context);
-              }
-            },
-            builder: (context, state) {
-              if (state is TaskLoading) {
-                return const Center(
-                    child: CircularProgressIndicator.adaptive());
-              }
-              if (state is TaskSuccess) {
-                debugPrint(
-                  state.tasks.toString(),
-                );
-                for (var i in state.tasks) {
-                  debugPrint(
-                    i.status,
-                  );
-                }
-                return TaskWidgetHolder(
-                  text: Text('Pending',
-                      style: taskStyle!.copyWith(fontSize: width * 0.015)),
-                  children: [
-                    for (var task in state.tasks)
-                      if (task.status == "Pending" && _initialValue == "All")
-                        TaskWidgetBox(task: task)
-                      else if (task.status == "Pending" &&
-                          _initialValue == "Team Tasks" &&
-                          task.team != null)
-                        TaskWidgetBox(
-                          task: task,
-                        )
-                      else if (task.status == "Pending" &&
-                          _initialValue == "Team Tasks" &&
-                          task.project != null)
-                        TaskWidgetBox(task: task)
-                  ],
-                );
-              } else {
-                return TaskWidgetHolder(
-                  text: Text('Pending',
-                      style: taskStyle!.copyWith(fontSize: width * 0.015)),
-                  children: const [],
-                );
-              }
-            },
-          ),
-          const VerticalDivider(
-            color: ColorPallete.textPrimary,
-            thickness: 2,
-          ),
-          BlocBuilder<TaskBloc, TaskState>(
-            builder: (context, state) {
-              if (state is TaskSuccess) {
-                return TaskWidgetHolder(
-                  text: Text('In Progress',
-                      style: taskStyle!.copyWith(fontSize: width * 0.015)),
-                  children: [
-                    for (var task in state.tasks)
-                      if (task.status == "In Progress" &&
-                          _initialValue == "All")
-                        TaskWidgetBox(task: task)
-                      else if (task.status == "In Progress" &&
-                          _initialValue == "Team Tasks" &&
-                          task.team != null)
-                        TaskWidgetBox(
-                          task: task,
-                        )
-                      else if (task.status == "In Progress" &&
-                          _initialValue == "Team Tasks" &&
-                          task.project != null)
-                        TaskWidgetBox(task: task)
-                  ],
-                );
-              }
-              return TaskWidgetHolder(
-                text: Text('In Progress',
-                    style: taskStyle!.copyWith(fontSize: width * 0.015)),
-                children: const [],
-              );
-            },
-          ),
-          const VerticalDivider(
-            color: ColorPallete.textPrimary,
-            thickness: 2,
-          ),
-          BlocBuilder<TaskBloc, TaskState>(
-            builder: (context, state) {
-              if (state is TaskSuccess) {
-                return TaskWidgetHolder(
-                  text: Text('Done',
-                      style: taskStyle!.copyWith(fontSize: width * 0.015)),
-                  children: [
-                    for (var task in state.tasks)
-                      if (task.status == "Done" && _initialValue == "All")
-                        TaskWidgetBox(task: task)
-                      else if (task.status == "Done" &&
-                          _initialValue == "Team Tasks" &&
-                          task.team != null)
-                        TaskWidgetBox(
-                          task: task,
-                        )
-                      else if (task.status == "Done" &&
-                          _initialValue == "Team Tasks" &&
-                          task.project != null)
-                        TaskWidgetBox(task: task)
-                  ],
-                );
-              }
-              return TaskWidgetHolder(
-                text: Text('Done',
-                    style: taskStyle!.copyWith(fontSize: width * 0.015)),
-                children: const [],
-              );
-            },
-          ),
-          const VerticalDivider(
-            color: ColorPallete.textPrimary,
-            thickness: 2,
-          ),
-          BlocBuilder<TaskBloc, TaskState>(
-            builder: (context, state) {
-              if (state is TaskSuccess) {
-                return TaskWidgetHolder(
-                  text: Text('Blocked',
-                      style: taskStyle!.copyWith(fontSize: width * 0.015)),
-                  children: [
-                    for (var task in state.tasks)
-                      if (task.status == "Blocked" && _initialValue == "All")
-                        TaskWidgetBox(task: task)
-                      else if (task.status == "Blocked" &&
-                          _initialValue == "Team Tasks" &&
-                          task.team != null)
-                        TaskWidgetBox(
-                          task: task,
-                        )
-                      else if (task.status == "Blocked" &&
-                          _initialValue == "Team Tasks" &&
-                          task.project != null)
-                        TaskWidgetBox(task: task)
-                  ],
-                );
-              }
-              return TaskWidgetHolder(
-                text: Text('Blocked',
-                    style: taskStyle!.copyWith(fontSize: width * 0.015)),
-                children: const [],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Padding _belowAppBar(double width, TextStyle? taskStyle) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: ColorPallete.textSecondary,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            width: width * 0.15,
-            child: DropdownButton<String>(
-              icon: const Icon(Icons.arrow_drop_down_outlined),
-              isExpanded: true,
-              focusColor: ColorPallete.transparent,
-              underline: const SizedBox(),
-              value: _initialValue,
-              style: taskStyle,
-              items: [
-                DropdownMenuItem<String>(
-                  value: 'All',
-                  onTap: () {
-                    setState(() {
-                      _initialValue = 'All';
-                    });
-                  },
-                  child: Text('All',
-                      style: taskStyle!.copyWith(fontSize: width * 0.015)),
-                ),
-                DropdownMenuItem<String>(
-                  value: 'Team Tasks',
-                  onTap: () {
-                    setState(() {
-                      _initialValue = 'Team Tasks';
-                    });
-                  },
-                  child: Text('Team Tasks',
-                      style: taskStyle.copyWith(fontSize: width * 0.015)),
-                ),
-                DropdownMenuItem<String>(
-                  value: 'Personal Tasks',
-                  onTap: () {
-                    setState(() {
-                      _initialValue = 'Personal Tasks';
-                    });
-                  },
-                  child: Text('Personal Tasks',
-                      style: taskStyle.copyWith(fontSize: width * 0.015)),
-                ),
-                DropdownMenuItem<String>(
-                  value: 'Project Tasks',
-                  onTap: () {
-                    setState(() {
-                      _initialValue = 'Project Tasks';
-                    });
-                  },
-                  child: Text('Project Tasks',
-                      style: taskStyle.copyWith(fontSize: width * 0.015)),
-                ),
-              ],
-              onChanged: (value) {},
-            ),
-          ),
-          CustomTextButton(
-            width: width * 0.15,
-            text: Text(
-              'Create Task',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: taskStyle.copyWith(fontSize: width * 0.015),
-            ),
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (context) => const Dialog(
-                      backgroundColor: ColorPallete.transparent,
-                      child: CreateTaskPopUp()));
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  CustomAppBar _appBar(BuildContext context) {
-    return CustomAppBar(
-      children: [
-        Text(
-          'TASK',
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
-        const Spacer(),
-        IconButton(
-          onPressed: () {
-            _taskPageKey.currentState?.openDrawer();
-          },
-          icon: const Icon(
-            Icons.menu,
-            color: ColorPallete.textPrimary,
-          ),
-        ),
-      ],
-    );
-  }
+  const _SettingsSectionData({
+    required this.icon,
+    required this.title,
+    required this.page,
+  });
 }

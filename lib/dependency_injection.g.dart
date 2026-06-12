@@ -213,6 +213,33 @@ import 'package:hackathon/features/analytics/domain/use_cases/get_org_employee_m
 import 'package:hackathon/features/analytics/presentation/blocs/org_analytics_bloc/org_analytics_bloc.dart';
 
 import 'package:hackathon/services/token_manager.dart';
+
+// Settings Module Imports
+import 'package:hackathon/features/settings/data/data_sources/settings_remote_data_source.dart';
+import 'package:hackathon/features/settings/data/repositories_impl/settings_repository_impl.dart';
+import 'package:hackathon/features/settings/domain/repositories/settings_repository.dart';
+import 'package:hackathon/features/settings/domain/use_cases/get_org_settings_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/update_org_settings_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/get_org_plan_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/get_role_permissions_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/update_role_permissions_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/get_attendance_policy_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/update_attendance_policy_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/get_leave_policies_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/update_leave_policies_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/get_task_types_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/create_task_type_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/update_task_type_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/delete_task_type_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/change_password_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/update_profile_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/get_notification_preferences_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/update_notification_preferences_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/export_org_data_use_case.dart';
+import 'package:hackathon/features/settings/domain/use_cases/delete_organisation_use_case.dart';
+import 'package:hackathon/features/settings/presentation/blocs/settings_bloc/settings_bloc.dart';
+import 'package:hackathon/features/settings/presentation/blocs/profile_settings_bloc/profile_settings_bloc.dart';
+
 final getIt = GetIt.instance;
 
 void initDependencies() {
@@ -929,5 +956,63 @@ void initDependencies() {
       getEmployeeAnalyticsUseCase: getIt(),
     ),
   );
+  // Settings Module Registrations
+  getIt.registerLazySingleton<SettingsRemoteDataSource>(
+    () => SettingsRemoteDataSourceImpl(apiClient: getIt()),
+  );
+  getIt.registerLazySingleton<SettingsRepository>(
+    () => SettingsRepositoryImpl(remoteDataSource: getIt()),
+  );
+
+  // Settings Use Cases
+  getIt.registerLazySingleton(() => GetOrgSettingsUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => UpdateOrgSettingsUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => GetOrgPlanUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => GetRolePermissionsUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => UpdateRolePermissionsUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => GetAttendancePolicyUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => UpdateAttendancePolicyUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => GetLeavePoliciesUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => UpdateLeavePoliciesUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => GetTaskTypesUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => CreateTaskTypeUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => UpdateTaskTypeUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => DeleteTaskTypeUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => ChangePasswordUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => UpdateProfileUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => GetNotificationPreferencesUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => UpdateNotificationPreferencesUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => ExportOrgDataUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => DeleteOrganisationUseCase(repository: getIt()));
+
+  // Settings Blocs
+  getIt.registerFactory(
+    () => SettingsBloc(
+      getOrgSettingsUseCase: getIt(),
+      updateOrgSettingsUseCase: getIt(),
+      getOrgPlanUseCase: getIt(),
+      getRolePermissionsUseCase: getIt(),
+      updateRolePermissionsUseCase: getIt(),
+      getAttendancePolicyUseCase: getIt(),
+      updateAttendancePolicyUseCase: getIt(),
+      getLeavePoliciesUseCase: getIt(),
+      updateLeavePoliciesUseCase: getIt(),
+      getTaskTypesUseCase: getIt(),
+      createTaskTypeUseCase: getIt(),
+      updateTaskTypeUseCase: getIt(),
+      deleteTaskTypeUseCase: getIt(),
+      exportOrgDataUseCase: getIt(),
+      deleteOrganisationUseCase: getIt(),
+    ),
+  );
+  getIt.registerFactory(
+    () => ProfileSettingsBloc(
+      updateProfileUseCase: getIt(),
+      changePasswordUseCase: getIt(),
+      getNotificationPreferencesUseCase: getIt(),
+      updateNotificationPreferencesUseCase: getIt(),
+    ),
+  );
+
   getIt.registerFactory<TokenManager>(()=>TokenManager());
 }
