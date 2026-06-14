@@ -23,7 +23,7 @@ class ProjectDataSourceImpl implements ProjectDataSource {
       String token) async {
     try {
       final response = await client.get(
-        "${ApiConstants.baseUrl}${ApiConstants.getProjects}",
+        "${ApiConstants.getProjects}",
       );
       if (response.statusCode == 200) {
         final List<ProjectModel> projects = List<ProjectModel>.from(

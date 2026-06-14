@@ -9,6 +9,7 @@ import 'package:hackathon/features/tasks/presentation/blocs/get_emp_bloc/get_emp
 import 'package:hackathon/features/tasks/presentation/blocs/get_project_bloc/get_project_bloc.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/task_bloc/task_bloc.dart';
 import 'package:hackathon/features/team/presentation/blocs/team_bloc/team_bloc.dart';
+import 'package:hackathon/features/settings/domain/use_cases/get_task_types_use_case.dart';
 import 'package:hackathon/widgets/task_button.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
 import 'package:hackathon/globals/constants/user.dart';
@@ -36,12 +37,46 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
   late CreateTaskParams createTaskParams;
   int? teamID;
   int? projectID;
+
+  final List<String> _taskTypes = [];
+  bool _isLoadingTypes = true;
+
   @override
   void initState() {
     super.initState();
-
+    _loadTaskTypes();
     BlocProvider.of<GetEmployeesBloc>(context)
         .add(GetEmployees(token: getIt<User>().employeeToken ?? getIt<User>().token!));
+  }
+
+  Future<void> _loadTaskTypes() async {
+    final result = await getIt<GetTaskTypesUseCase>().call();
+    result.fold(
+      (failure) {
+        setState(() {
+          _taskTypes.clear();
+          _taskTypes.addAll(['Bug', 'Feature', 'Story']);
+          type = _taskTypes.first;
+          _isLoadingTypes = false;
+        });
+      },
+      (types) {
+        setState(() {
+          _taskTypes.clear();
+          if (types.isEmpty) {
+            _taskTypes.addAll(['Bug', 'Feature', 'Story']);
+          } else {
+            _taskTypes.addAll(types.map((t) => t.name).toList());
+          }
+          type = _taskTypes.contains(type)
+              ? type
+              : _taskTypes.isNotEmpty
+                  ? _taskTypes.first
+                  : 'Bug';
+          _isLoadingTypes = false;
+        });
+      },
+    );
   }
 
   @override
@@ -119,20 +154,26 @@ class _CreateTaskPopUpState extends State<CreateTaskPopUp> {
                             return const SizedBox();
                           },
                         ),
-                        dropdownWidget(context, taskStyle, width, [
-                          const DropdownMenuItem(
-                            value: 'Bug',
-                            child: Text('Bug'),
-                          ),
-                          const DropdownMenuItem(
-                              value: 'Feature', child: Text('Feature')),
-                          const DropdownMenuItem(
-                              value: 'Story', child: Text('Story')),
-                        ], (value) {
-                          setState(() {
-                            type = value;
-                          });
-                        }, type),
+                        if (_isLoadingTypes)
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            height: 40,
+                            width: width * 0.2,
+                            child: const Center(
+                              child: CircularProgressIndicator.adaptive(),
+                            ),
+                          )
+                        else
+                          dropdownWidget(context, taskStyle, width, 
+                            _taskTypes.map((t) => DropdownMenuItem(
+                              value: t,
+                              child: Text(t),
+                            )).toList(), 
+                            (value) {
+                              setState(() {
+                                type = value;
+                              });
+                            }, type),
                         dropdownWidget(context, taskStyle, width, [
                           const DropdownMenuItem(
                               value: 'Medium', child: Text('Medium')),

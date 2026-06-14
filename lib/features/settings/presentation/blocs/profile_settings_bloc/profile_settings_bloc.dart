@@ -37,6 +37,7 @@ class ProfileSettingsBloc extends Bloc<ProfileSettingsEvent, ProfileSettingsStat
         lastName: u.lastName,
         email: u.email,
         phoneNumber: u.phoneNumber,
+        profilePic: u.profilePic ?? '',
       ));
     } else {
       emit(const ProfileSettingsError("User not logged in"));
@@ -45,7 +46,12 @@ class ProfileSettingsBloc extends Bloc<ProfileSettingsEvent, ProfileSettingsStat
 
   Future<void> _onUpdateProfile(UpdateProfileSettingsEvent event, Emitter<ProfileSettingsState> emit) async {
     emit(ProfileSettingsLoading());
-    final result = await updateProfileUseCase(event.firstName, event.lastName, event.phoneNumber);
+    final result = await updateProfileUseCase(
+      event.firstName,
+      event.lastName,
+      event.phoneNumber,
+      profilePicFileId: event.profilePicFileId,
+    );
     result.fold(
       (failure) => emit(ProfileSettingsError(failure.message)),
       (_) {
@@ -61,7 +67,7 @@ class ProfileSettingsBloc extends Bloc<ProfileSettingsEvent, ProfileSettingsStat
             phoneNumber: event.phoneNumber,
             isVerified: u.isVerified,
             hashedPassword: u.hashedPassword,
-            profilePic: u.profilePic,
+            profilePic: event.profilePicFileId ?? u.profilePic,
             city: u.city,
             country: u.country,
             lastLoginAt: u.lastLoginAt,

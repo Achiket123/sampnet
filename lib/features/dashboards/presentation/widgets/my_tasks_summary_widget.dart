@@ -90,7 +90,10 @@ class MyTasksSummaryWidget extends StatelessWidget {
                             onPressed: () {
                               showDialog(
                                 context: context,
-                                builder: (context) => const CreateTaskPopUp(),
+                                builder: (context) => const Dialog(
+                                  backgroundColor: ColorPallete.transparent,
+                                  child: CreateTaskPopUp(),
+                                ),
                               );
                             },
                             icon: const Icon(Icons.add, size: 14),

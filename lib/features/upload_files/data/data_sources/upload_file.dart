@@ -12,7 +12,7 @@ import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 
 abstract class UploadFileDataSource {
-  Future<Either<ErrorModel, int>> uploadFile(UploadFileParams file);
+  Future<Either<ErrorModel, UploadFileResponse>> uploadFile(UploadFileParams file);
 }
 
 class UploadFileDataSourceImpl
@@ -22,7 +22,7 @@ class UploadFileDataSourceImpl
   UploadFileDataSourceImpl({required this.apiClient});
 
   @override
-  Future<Either<ErrorModel, int>> uploadFile(UploadFileParams file) async {
+  Future<Either<ErrorModel, UploadFileResponse>> uploadFile(UploadFileParams file) async {
     try {
       // Create multipart request
       final request =
@@ -64,7 +64,10 @@ class UploadFileDataSourceImpl
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        return right(jsonResponse['file_id']);
+        return right(UploadFileResponse(
+          fileId: jsonResponse['file_id'],
+          url: jsonResponse['url'] ?? '',
+        ));
       } else {
         return left(ServerError(
             message: 'Server error: ${response.statusCode} ${response.body}'));

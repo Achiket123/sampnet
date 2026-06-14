@@ -21,22 +21,19 @@ class UserModel extends UserEntity {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     debugPrint('DESIRIALIZE USER $json');
 
-    ///{id: 1, first_name: Achiket, last_name: Kumar, email: , phone_number: ,
-    // is_verified: false, profile_pic: , city: , country: , date_of_birth: 0001-01-01T00:00:00Z,
-    // last_login_at: 0001-01-01T00:00:00Z}
     return UserModel(
-      /// NEVER CHANGE THE ID to id it will break
-      id: json['ID'] ?? json['id'] as int,
-      firstName: json['first_name'] as String,
-      lastName: json['last_name'] as String,
-      email: json['email'] as String,
-      phoneNumber: json['phone_number'] as String,
-      isVerified: json['is_verified'] as bool,
-      // hashedPassword: json['HashedPassword'] as String,
-      profilePic: json['profile_id'] ?? json['profile_pic'] as String,
-      city: json['city'] as String,
-      country: json['country'] as String,
-      lastLoginAt: DateTime.parse(json['last_login_at'] as String),
+      id: (json['ID'] ?? json['id'] ?? 0) as int,
+      firstName: (json['first_name'] ?? '') as String,
+      lastName: (json['last_name'] ?? '') as String,
+      email: (json['email'] ?? '') as String,
+      phoneNumber: (json['phone_number'] ?? '') as String,
+      isVerified: (json['is_verified'] ?? false) as bool,
+      profilePic: (json['profile_id'] ?? json['profile_pic'] ?? '') as String,
+      city: (json['city'] ?? '') as String,
+      country: (json['country'] ?? '') as String,
+      lastLoginAt: json['last_login_at'] != null && (json['last_login_at'] as String).isNotEmpty
+          ? DateTime.parse(json['last_login_at'] as String)
+          : DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 

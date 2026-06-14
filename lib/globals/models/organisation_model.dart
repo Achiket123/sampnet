@@ -51,29 +51,29 @@ class Organisation {
     debugPrint("Desializing Org: $json");
     return Organisation(
       id: json['id'] as int?,
-      companyName: json['company_name'] as String,
-      companyCode: json['company_code'] as String,
-      primaryContactName: json['primary_contact_name'] as String,
-      primaryEmail: json['primary_email'] as String,
-      phoneNumber: json['phone_number'] as String,
-      officeAddress: json['office_address'] as String,
-      city: json['city'] as String,
-      state: json['state'] as String,
-      postalCode: json['postal_code'] as String,
-      country: json['country'] as String,
+      companyName: (json['company_name'] ?? '') as String,
+      companyCode: (json['company_code'] ?? '') as String,
+      primaryContactName: (json['primary_contact_name'] ?? '') as String,
+      primaryEmail: (json['primary_email'] ?? '') as String,
+      phoneNumber: (json['phone_number'] ?? '') as String,
+      officeAddress: (json['office_address'] ?? '') as String,
+      city: (json['city'] ?? '') as String,
+      state: (json['state'] ?? '') as String,
+      postalCode: (json['postal_code'] ?? '') as String,
+      country: (json['country'] ?? '') as String,
       planId: json['plan_id'] as int?,
-      planStartDate: json['plan_start_date'] != null
+      planStartDate: json['plan_start_date'] != null && (json['plan_start_date'] as String).isNotEmpty
           ? DateTime.parse(json['plan_start_date'] as String)
           : null,
-      planEndDate: json['plan_end_date'] != null
+      planEndDate: json['plan_end_date'] != null && (json['plan_end_date'] as String).isNotEmpty
           ? DateTime.parse(json['plan_end_date'] as String)
           : null,
-      planStatus: json['plan_status'] as String,
-      maxEmployees: json['max_employees'] as int,
+      planStatus: (json['plan_status'] ?? '') as String,
+      maxEmployees: (json['max_employees'] ?? 0) as int,
       companyLogo: json['company_logo'] as int?,
-      industry: json['industry'] as String,
-      billingAddress: json['billing_address'] as String,
-      companySize: json['company_size'] as String,
+      industry: (json['industry'] ?? '') as String,
+      billingAddress: (json['billing_address'] ?? '') as String,
+      companySize: (json['company_size'] ?? '') as String,
     );
   }
 

@@ -5,6 +5,7 @@ import 'package:hackathon/services/websocket_service.dart';
 
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
+import 'package:hackathon/globals/constants/api_end_points.dart';
 
 class EmployeeCardWidget extends StatelessWidget {
   final EmployeeEntity employee;
@@ -52,7 +53,9 @@ class EmployeeCardWidget extends StatelessWidget {
               radius: 24,
               backgroundColor: _getAvatarColor(),
               backgroundImage: employee.user.profilePic.isNotEmpty
-                  ? NetworkImage(employee.user.profilePic)
+                  ? NetworkImage(employee.user.profilePic.startsWith('http')
+                      ? employee.user.profilePic
+                      : ApiConstants.getFileById(employee.user.profilePic))
                   : null,
               child: employee.user.profilePic.isEmpty
                   ? Text(

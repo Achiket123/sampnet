@@ -97,16 +97,36 @@ class _DashAppBarState extends State<DashAppBar> {
                           width: 10,
                         ),
                         Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                    ApiConstants.getFileById(
-                                        getIt<User>().user!.profilePic),
-                                  ),
-                                  fit: BoxFit.cover)),
                           height: 40,
                           width: 40,
+                          decoration: BoxDecoration(
+                            color: ColorPallete.backgroundPrimary,
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          child: getIt<User>().user!.profilePic.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    getIt<User>().user!.firstName.isNotEmpty
+                                        ? getIt<User>().user!.firstName[0].toUpperCase()
+                                        : '?',
+                                    style: const TextStyle(
+                                      color: ColorPallete.textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(40),
+                                      image: DecorationImage(
+                                          image: NetworkImage(
+                                            getIt<User>().user!.profilePic.startsWith('http')
+                                                ? getIt<User>().user!.profilePic
+                                                : ApiConstants.getFileById(
+                                                    getIt<User>().user!.profilePic),
+                                          ),
+                                          fit: BoxFit.cover)),
+                                ),
                         ),
                       ],
                     ),

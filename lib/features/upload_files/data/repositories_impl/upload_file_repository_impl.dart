@@ -10,6 +10,6 @@ class UploadFileRepositoryImpl with ErrorMessages implements UploadFileRepositor
   final UploadFileDataSource uploadFileDataSource;
   UploadFileRepositoryImpl({required this.uploadFileDataSource});
   @override
-  Future<Either<ErrorModel, int>> uploadFile(UploadFileParams file) async =>
+  Future<Either<ErrorModel, UploadFileResponse>> uploadFile(UploadFileParams file) async =>
       uploadFileDataSource.uploadFile(file);
 }

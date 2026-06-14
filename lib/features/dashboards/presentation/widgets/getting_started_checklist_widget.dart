@@ -28,17 +28,15 @@ class GettingStartedChecklistWidget extends StatelessWidget {
             );
           }
 
-          int currentStep = 0;
-          bool profileCompleted = false;
+          bool profileCompleted = true;
           bool orgJoined = true;
           bool teamJoined = false;
           bool taskCreated = false;
           bool inviteSent = false;
 
           if (state is OnboardingLoaded) {
-            currentStep = state.progress.currentStep;
-            profileCompleted = state.progress.profileCompleted;
-            orgJoined = state.progress.organisationId != 0;
+            profileCompleted = true;
+            orgJoined = true;
             teamJoined = state.progress.teamJoined;
             taskCreated = state.progress.taskCreated;
             inviteSent = state.progress.inviteSent;
@@ -60,7 +58,8 @@ class GettingStartedChecklistWidget extends StatelessWidget {
             inviteSent,
           ];
 
-          final completionProgress = currentStep / steps.length;
+          final completedCount = stepStatuses.where((status) => status).length;
+          final completionProgress = completedCount / steps.length;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,

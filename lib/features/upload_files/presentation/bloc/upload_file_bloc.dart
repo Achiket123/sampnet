@@ -20,7 +20,7 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
       final result = await _uploadFileUsecase(event.file);
       result.fold(
         (l) => emit(UploadFileError(error: l)),
-        (r) => emit(UploadFileSuccess(fileId: r, fileName: event.file.fileName)),
+        (r) => emit(UploadFileSuccess(fileId: r.fileId, url: r.url, fileName: event.file.fileName)),
       );
     });
   }

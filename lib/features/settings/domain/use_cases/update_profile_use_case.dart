@@ -7,7 +7,7 @@ class UpdateProfileUseCase {
 
   UpdateProfileUseCase({required this.repository});
 
-  Future<Either<ErrorModel, void>> call(String firstName, String lastName, String phoneNumber) {
-    return repository.updateProfile(firstName, lastName, phoneNumber);
+  Future<Either<ErrorModel, void>> call(String firstName, String lastName, String phoneNumber, {String? profilePicFileId}) {
+    return repository.updateProfile(firstName, lastName, phoneNumber, profilePicFileId: profilePicFileId);
   }
 }

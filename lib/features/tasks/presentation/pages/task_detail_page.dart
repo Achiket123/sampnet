@@ -10,6 +10,7 @@ import 'package:hackathon/features/tasks/presentation/widgets/task_attachment_se
 import 'package:hackathon/features/upload_files/presentation/bloc/upload_file_bloc.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
 import 'package:hackathon/globals/constants/user.dart';
+import 'package:hackathon/globals/constants/api_end_points.dart';
 import 'package:intl/intl.dart';
 
 class TaskDetailPage extends StatefulWidget {
@@ -323,7 +324,9 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
               radius: 12,
               backgroundColor: ColorPallete.textPrimary.withOpacity(0.12),
               backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
-                  ? NetworkImage(avatarUrl)
+                  ? NetworkImage(avatarUrl.startsWith('http')
+                      ? avatarUrl
+                      : ApiConstants.getFileById(avatarUrl))
                   : null,
               child: avatarUrl == null || avatarUrl.isEmpty
                   ? Text(fullName.isNotEmpty ? fullName[0].toUpperCase() : '?',

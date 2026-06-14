@@ -7,6 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/globals/constants/user.dart';
+import 'package:hackathon/globals/constants/api_end_points.dart';
+import 'package:hackathon/features/upload_files/presentation/bloc/upload_file_bloc.dart';
+import 'package:hackathon/features/upload_files/domain/use_cases/upload_file_usecase.dart';
 
 import '../../domain/entities/research_entry_entity.dart';
 import '../../domain/entities/research_status.dart';
@@ -38,8 +41,9 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
   int? _selectedProjectId;
   int? _selectedTeamId;
   List<String> _tags = [];
-  String? _base64Thumbnail;
-  Uint8List? _thumbnailBytes;
+  String? _thumbnailFileId;
+
+  bool get _isBase64Thumbnail => _thumbnailFileId != null && _thumbnailFileId!.length > 100;
 
   @override
   void initState() {
@@ -55,13 +59,7 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
     _tags = widget.entryToEdit != null
         ? List<String>.from(widget.entryToEdit!.tags)
         : [];
-    
-    if (widget.entryToEdit?.thumbnail != null) {
-      _base64Thumbnail = widget.entryToEdit!.thumbnail;
-      try {
-        _thumbnailBytes = base64Decode(_base64Thumbnail!);
-      } catch (_) {}
-    }
+    _thumbnailFileId = widget.entryToEdit?.thumbnail;
   }
 
   @override
@@ -79,10 +77,17 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
     );
 
     if (result != null && result.files.first.bytes != null) {
-      setState(() {
-        _thumbnailBytes = result.files.first.bytes;
-        _base64Thumbnail = base64Encode(_thumbnailBytes!);
-      });
+      final file = result.files.first;
+      final params = UploadFileParams(
+        file: file.bytes!,
+        fileType: file.extension ?? 'image/png',
+        fileName: file.name ?? 'thumbnail.png',
+        fileSize: file.size,
+      );
+
+      if (mounted) {
+        context.read<UploadFileBloc>().add(UploadFileBlocEvent(file: params));
+      }
     }
   }
 
@@ -93,7 +98,7 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
         id: widget.entryToEdit?.id ?? 0,
         title: _titleController.text,
         description: _descriptionController.text,
-        thumbnail: _base64Thumbnail,
+        thumbnail: _thumbnailFileId,
         status: _selectedStatus,
         authorName: widget.entryToEdit?.authorName ?? '',
         authorId: widget.entryToEdit?.authorId ?? user!.id,
@@ -132,123 +137,148 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<ResearchDetailBloc, ResearchDetailState>(
-            listener: (context, state) {
-              if (state is ResearchActionSuccess) {
-                context
-                    .read<ResearchListBloc>()
-                    .add(const LoadResearchList(isRefresh: true));
-                context.pop(true);
-              }
-            },
-          ),
-        ],
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildThumbnailSection(),
-                const SizedBox(height: 24),
-                _buildTextField(
-                  controller: _titleController,
-                  label: 'Title',
-                  validator: (v) =>
-                      v == null || v.isEmpty ? 'Title is required' : null,
+      body: BlocProvider(
+        create: (context) => getIt<UploadFileBloc>(),
+        child: BlocListener<UploadFileBloc, UploadFileState>(
+          listener: (context, uploadState) {
+            if (uploadState is UploadFileSuccess) {
+              setState(() {
+                _thumbnailFileId = uploadState.url;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Thumbnail uploaded successfully!'),
+                  backgroundColor: ColorPallete.success,
                 ),
-                const SizedBox(height: 20),
-                _buildTextField(
-                  controller: _descriptionController,
-                  label: 'Description',
-                  maxLines: 5,
+              );
+            } else if (uploadState is UploadFileError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to upload thumbnail: ${uploadState.error.message}'),
+                  backgroundColor: ColorPallete.error,
                 ),
-                const SizedBox(height: 20),
-                _buildDropdown<ResearchStatus>(
-                  label: 'Status',
-                  value: _selectedStatus,
-                  items: ResearchStatus.values
-                      .map((s) =>
-                          DropdownMenuItem(value: s, child: Text(s.label)))
-                      .toList(),
-                  onChanged: (v) => setState(() => _selectedStatus = v!),
+              );
+            }
+          },
+          child: MultiBlocListener(
+            listeners: [
+              BlocListener<ResearchDetailBloc, ResearchDetailState>(
+                listener: (context, state) {
+                  if (state is ResearchActionSuccess) {
+                    context
+                        .read<ResearchListBloc>()
+                        .add(const LoadResearchList(isRefresh: true));
+                    context.pop(true);
+                  }
+                },
+              ),
+            ],
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildThumbnailSection(),
+                    const SizedBox(height: 24),
+                    _buildTextField(
+                      controller: _titleController,
+                      label: 'Title',
+                      validator: (v) =>
+                          v == null || v.isEmpty ? 'Title is required' : null,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _descriptionController,
+                      label: 'Description',
+                      maxLines: 5,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildDropdown<ResearchStatus>(
+                      label: 'Status',
+                      value: _selectedStatus,
+                      items: ResearchStatus.values
+                          .map((s) =>
+                              DropdownMenuItem(value: s, child: Text(s.label)))
+                          .toList(),
+                      onChanged: (v) => setState(() => _selectedStatus = v!),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTagsSection(),
+                    const SizedBox(height: 20),
+                    BlocBuilder<ProjectsBloc, ProjectState>(
+                      builder: (context, state) {
+                        List<DropdownMenuItem<int?>> items = [
+                          const DropdownMenuItem(value: null, child: Text('None'))
+                        ];
+                        if (state is ProjectsLoaded) {
+                          items.addAll(state.projects.map((p) =>
+                              DropdownMenuItem(value: p.id, child: Text(p.name))));
+                        }
+                        return _buildDropdown<int?>(
+                          label: 'Link to Project (Optional)',
+                          value: _selectedProjectId,
+                          items: items,
+                          onChanged: (v) => setState(() => _selectedProjectId = v),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    BlocBuilder<TeamBloc, TeamState>(
+                      builder: (context, state) {
+                        List<DropdownMenuItem<int?>> items = [
+                          const DropdownMenuItem(value: null, child: Text('None'))
+                        ];
+                        if (state is TeamSuccessState) {
+                          items.addAll(state.teams.map((t) =>
+                              DropdownMenuItem(value: t.id, child: Text(t.name))));
+                        }
+                        return _buildDropdown<int?>(
+                          label: 'Link to Team (Optional)',
+                          value: _selectedTeamId,
+                          items: items,
+                          onChanged: (v) => setState(() => _selectedTeamId = v),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 40),
+                    BlocBuilder<ResearchDetailBloc, ResearchDetailState>(
+                      builder: (context, state) {
+                        return SizedBox(
+                          width: double.infinity,
+                          height: 54,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorPallete.textPrimary,
+                              foregroundColor: ColorPallete.textSecondary,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              elevation: 0,
+                            ),
+                            onPressed:
+                                state is ResearchDetailLoading ? null : _submit,
+                            child: state is ResearchDetailLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child:
+                                        CircularProgressIndicator(strokeWidth: 2))
+                                : Text(
+                                    widget.entryToEdit == null
+                                        ? 'CREATE ENTRY'
+                                        : 'UPDATE ENTRY',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.2),
+                                  ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                _buildTagsSection(),
-                const SizedBox(height: 20),
-                BlocBuilder<ProjectsBloc, ProjectState>(
-                  builder: (context, state) {
-                    List<DropdownMenuItem<int?>> items = [
-                      const DropdownMenuItem(value: null, child: Text('None'))
-                    ];
-                    if (state is ProjectsLoaded) {
-                      items.addAll(state.projects.map((p) =>
-                          DropdownMenuItem(value: p.id, child: Text(p.name))));
-                    }
-                    return _buildDropdown<int?>(
-                      label: 'Link to Project (Optional)',
-                      value: _selectedProjectId,
-                      items: items,
-                      onChanged: (v) => setState(() => _selectedProjectId = v),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-                BlocBuilder<TeamBloc, TeamState>(
-                  builder: (context, state) {
-                    List<DropdownMenuItem<int?>> items = [
-                      const DropdownMenuItem(value: null, child: Text('None'))
-                    ];
-                    if (state is TeamSuccessState) {
-                      items.addAll(state.teams.map((t) =>
-                          DropdownMenuItem(value: t.id, child: Text(t.name))));
-                    }
-                    return _buildDropdown<int?>(
-                      label: 'Link to Team (Optional)',
-                      value: _selectedTeamId,
-                      items: items,
-                      onChanged: (v) => setState(() => _selectedTeamId = v),
-                    );
-                  },
-                ),
-                const SizedBox(height: 40),
-                BlocBuilder<ResearchDetailBloc, ResearchDetailState>(
-                  builder: (context, state) {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 54,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorPallete.textPrimary,
-                          foregroundColor: ColorPallete.textSecondary,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          elevation: 0,
-                        ),
-                        onPressed:
-                            state is ResearchDetailLoading ? null : _submit,
-                        child: state is ResearchDetailLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2))
-                            : Text(
-                                widget.entryToEdit == null
-                                    ? 'CREATE ENTRY'
-                                    : 'UPDATE ENTRY',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.2),
-                              ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -266,54 +296,65 @@ class _CreateEditResearchPageState extends State<CreateEditResearchPage> {
                 fontSize: 12,
                 fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
-        Center(
-          child: GestureDetector(
-            onTap: _pickThumbnail,
-            child: Container(
-              width: double.infinity,
-              height: 160,
-              decoration: BoxDecoration(
-                color: ColorPallete.backgroundPrimary,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: ColorPallete.divider),
-                image: _thumbnailBytes != null
-                    ? DecorationImage(
-                        image: MemoryImage(_thumbnailBytes!),
-                        fit: BoxFit.cover,
-                      )
-                    : null,
-              ),
-              child: _thumbnailBytes == null
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.add_photo_alternate_outlined,
-                            color: ColorPallete.textPrimary.withValues(alpha: 0.3), size: 40),
-                        const SizedBox(height: 8),
-                        Text('Add File (Workspace Image)',
-                            style: TextStyle(
-                                color: ColorPallete.textPrimary.withValues(alpha: 0.3),
-                                fontSize: 12)),
-                      ],
-                    )
-                  : Stack(
-                      children: [
-                        Positioned(
-                          right: 8,
-                          top: 8,
-                          child: CircleAvatar(
-                            backgroundColor: ColorPallete.textSecondary,
-                            radius: 16,
-                            child: IconButton(
-                              icon: const Icon(Icons.edit, size: 14, color: ColorPallete.textPrimary),
-                              onPressed: _pickThumbnail,
+        BlocBuilder<UploadFileBloc, UploadFileState>(
+          builder: (context, uploadState) {
+            final isUploading = uploadState is UploadFileLoading;
+            return Center(
+              child: GestureDetector(
+                onTap: isUploading ? null : _pickThumbnail,
+                child: Container(
+                  width: double.infinity,
+                  height: 160,
+                  decoration: BoxDecoration(
+                    color: ColorPallete.backgroundPrimary,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: ColorPallete.divider),
+                    image: (_thumbnailFileId != null && _thumbnailFileId!.isNotEmpty)
+                        ? DecorationImage(
+                            image: _isBase64Thumbnail
+                                ? MemoryImage(base64Decode(_thumbnailFileId!))
+                                : NetworkImage(_thumbnailFileId!.startsWith('http')
+                                    ? _thumbnailFileId!
+                                    : ApiConstants.getFileById(_thumbnailFileId!)) as ImageProvider,
+                            fit: BoxFit.cover,
+                          )
+                        : null,
+                  ),
+                  child: isUploading
+                      ? const Center(child: CircularProgressIndicator())
+                      : (_thumbnailFileId == null || _thumbnailFileId!.isEmpty)
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add_photo_alternate_outlined,
+                                    color: ColorPallete.textPrimary.withValues(alpha: 0.3), size: 40),
+                                const SizedBox(height: 8),
+                                Text('Add File (Workspace Image)',
+                                    style: TextStyle(
+                                        color: ColorPallete.textPrimary.withValues(alpha: 0.3),
+                                        fontSize: 12)),
+                              ],
+                            )
+                          : Stack(
+                              children: [
+                                Positioned(
+                                  right: 8,
+                                  top: 8,
+                                  child: CircleAvatar(
+                                    backgroundColor: ColorPallete.textSecondary,
+                                    radius: 16,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.edit, size: 14, color: ColorPallete.textPrimary),
+                                      onPressed: _pickThumbnail,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
-          ),
+                ),
+              ),
+            );
+          },
         ),
       ],
     );

@@ -205,9 +205,9 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<Either<ErrorModel, void>> updateProfile(String firstName, String lastName, String phoneNumber) async {
+  Future<Either<ErrorModel, void>> updateProfile(String firstName, String lastName, String phoneNumber, {String? profilePicFileId}) async {
     try {
-      await remoteDataSource.updateProfile(firstName, lastName, phoneNumber);
+      await remoteDataSource.updateProfile(firstName, lastName, phoneNumber, profilePicFileId: profilePicFileId);
       return right(null);
     } catch (e) {
       return left(ErrorModel(message: e.toString()));

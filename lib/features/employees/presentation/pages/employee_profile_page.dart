@@ -10,6 +10,7 @@ import 'package:hackathon/features/employees/presentation/widgets/edit_employee_
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:intl/intl.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
+import 'package:hackathon/globals/constants/api_end_points.dart';
 
 class EmployeeProfilePage extends StatefulWidget {
   final int employeeId;
@@ -64,7 +65,9 @@ class _EmployeeProfilePageState extends State<EmployeeProfilePage> {
                         radius: 60,
                         backgroundColor: ColorPallete.redPrimary.withValues(alpha: 0.1),
                         backgroundImage: employee.user.profilePic.isNotEmpty
-                            ? NetworkImage(employee.user.profilePic)
+                            ? NetworkImage(employee.user.profilePic.startsWith('http')
+                                ? employee.user.profilePic
+                                : ApiConstants.getFileById(employee.user.profilePic))
                             : null,
                         child: employee.user.profilePic.isEmpty
                             ? Text(

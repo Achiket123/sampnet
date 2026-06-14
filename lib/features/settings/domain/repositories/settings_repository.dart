@@ -29,7 +29,7 @@ abstract class SettingsRepository {
   Future<Either<ErrorModel, void>> deleteTaskType(int id);
 
   Future<Either<ErrorModel, void>> changePassword(String oldPassword, String newPassword);
-  Future<Either<ErrorModel, void>> updateProfile(String firstName, String lastName, String phoneNumber);
+  Future<Either<ErrorModel, void>> updateProfile(String firstName, String lastName, String phoneNumber, {String? profilePicFileId});
 
   Future<Either<ErrorModel, List<NotificationPreferenceEntry>>> getNotificationPreferences();
   Future<Either<ErrorModel, void>> updateNotificationPreferences(List<NotificationPreferenceEntry> preferences);

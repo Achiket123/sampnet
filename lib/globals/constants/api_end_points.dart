@@ -2,8 +2,8 @@ import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/globals/constants/user.dart';
 
 class ApiConstants {
-  static const String baseUrl = "/api/v1";
-  static const String websocketBaseUrl = "/api/v1";
+  static const String baseUrl = "http://localhost:8000/api/v1";
+  static const String websocketBaseUrl = "ws://localhost:8000/api/v1";
   // Authentication Endpoints
   static const String signIn = "$baseUrl/auth/signin";
   static const String signUp = "$baseUrl/auth/signup";

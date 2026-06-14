@@ -3,7 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:hackathon/features/tasks/data/models/task_comment_model.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:hackathon/services/api_client.dart';
-
+import 'package:hackathon/globals/constants/api_end_points.dart';
 abstract class TaskCommentRemoteDataSource {
   Future<Either<ErrorModel, List<TaskCommentModel>>> getTaskComments(
       int taskId);
@@ -20,7 +20,7 @@ class TaskCommentRemoteDataSourceImpl implements TaskCommentRemoteDataSource {
   Future<Either<ErrorModel, List<TaskCommentModel>>> getTaskComments(
       int taskId) async {
     try {
-      final response = await apiClient.get("/tasks/$taskId/comments/");
+      final response = await apiClient.get("${ApiConstants.baseUrl}/tasks/$taskId/comments/");
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final List data = jsonDecode(response.body);
         return right(data.map((e) => TaskCommentModel.fromJson(e)).toList());

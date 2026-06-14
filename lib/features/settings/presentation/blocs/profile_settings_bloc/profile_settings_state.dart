@@ -25,16 +25,18 @@ class ProfileLoaded extends ProfileSettingsState {
   final String lastName;
   final String email;
   final String phoneNumber;
+  final String profilePic;
 
   const ProfileLoaded({
     required this.firstName,
     required this.lastName,
     required this.email,
     required this.phoneNumber,
+    required this.profilePic,
   });
 
   @override
-  List<Object?> get props => [firstName, lastName, email, phoneNumber];
+  List<Object?> get props => [firstName, lastName, email, phoneNumber, profilePic];
 }
 
 class NotificationPreferencesLoaded extends ProfileSettingsState {

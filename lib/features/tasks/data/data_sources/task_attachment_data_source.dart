@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:hackathon/features/tasks/data/models/task_attachment_model.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 import 'package:hackathon/services/api_client.dart';
+import 'package:hackathon/globals/constants/api_end_points.dart';
 
 abstract class TaskAttachmentRemoteDataSource {
   Future<Either<ErrorModel, List<TaskAttachmentModel>>> getTaskAttachments(
@@ -22,7 +23,7 @@ class TaskAttachmentRemoteDataSourceImpl
   Future<Either<ErrorModel, List<TaskAttachmentModel>>> getTaskAttachments(
       int taskId) async {
     try {
-      final response = await apiClient.get("/tasks/$taskId/attachments/");
+      final response = await apiClient.get("${ApiConstants.baseUrl}/tasks/$taskId/attachments/");
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final List data = jsonDecode(response.body);
         return right(data.map((e) => TaskAttachmentModel.fromJson(e)).toList());

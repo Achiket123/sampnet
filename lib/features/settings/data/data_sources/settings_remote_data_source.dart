@@ -31,7 +31,7 @@ abstract class SettingsRemoteDataSource {
   Future<void> deleteTaskType(int id);
   
   Future<void> changePassword(String oldPassword, String newPassword);
-  Future<void> updateProfile(String firstName, String lastName, String phoneNumber);
+  Future<void> updateProfile(String firstName, String lastName, String phoneNumber, {String? profilePicFileId});
   
   Future<List<NotificationPreferenceModel>> getNotificationPreferences();
   Future<void> updateNotificationPreferences(List<NotificationPreferenceModel> preferences);
@@ -201,13 +201,14 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
   }
 
   @override
-  Future<void> updateProfile(String firstName, String lastName, String phoneNumber) async {
+  Future<void> updateProfile(String firstName, String lastName, String phoneNumber, {String? profilePicFileId}) async {
     final response = await apiClient.put(
       '${ApiConstants.settingsProfile}',
       body: {
         'first_name': firstName,
         'last_name': lastName,
         'phone_number': phoneNumber,
+        if (profilePicFileId != null) 'profile_id': profilePicFileId,
       },
     );
     if (response.statusCode != 200) {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/leave/presentation/blocs/leave_bloc/leave_bloc.dart';
 import 'package:hackathon/features/leave/presentation/blocs/leave_bloc/leave_event.dart';
 import 'package:hackathon/features/leave/presentation/blocs/leave_bloc/leave_state.dart';
+import 'package:hackathon/features/settings/domain/use_cases/get_leave_policies_use_case.dart';
 import 'package:hackathon/globals/constants/user.dart';
 import 'package:intl/intl.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
@@ -25,14 +25,58 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now().add(const Duration(days: 1));
 
-  final List<String> _leaveTypes = [
-    'annual',
-    'sick',
-    'unpaid',
-    'maternity',
-    'paternity',
-    'emergency'
-  ];
+  final List<String> _leaveTypes = [];
+  bool _isLoadingTypes = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLeaveTypes();
+  }
+
+  Future<void> _loadLeaveTypes() async {
+    final result = await getIt<GetLeavePoliciesUseCase>().call();
+    result.fold(
+      (failure) {
+        setState(() {
+          _leaveTypes.clear();
+          _leaveTypes.addAll([
+            'annual',
+            'sick',
+            'unpaid',
+            'maternity',
+            'paternity',
+            'emergency'
+          ]);
+          _selectedLeaveType = _leaveTypes.first;
+          _isLoadingTypes = false;
+        });
+      },
+      (policies) {
+        setState(() {
+          _leaveTypes.clear();
+          if (policies.isEmpty) {
+            _leaveTypes.addAll([
+              'annual',
+              'sick',
+              'unpaid',
+              'maternity',
+              'paternity',
+              'emergency'
+            ]);
+          } else {
+            _leaveTypes.addAll(policies.map((p) => p.leaveType).toList());
+          }
+          _selectedLeaveType = _leaveTypes.contains(_selectedLeaveType)
+              ? _selectedLeaveType
+              : _leaveTypes.isNotEmpty
+                  ? _leaveTypes.first
+                  : 'annual';
+          _isLoadingTypes = false;
+        });
+      },
+    );
+  }
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
     final DateTime? picked = await showDatePicker(
@@ -96,23 +140,33 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
               physics: const BouncingScrollPhysics(),
               children: [
                 const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  value: _selectedLeaveType,
-                  dropdownColor: ColorPallete.backgroundPrimary,
-                  style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 15),
-                  decoration: const InputDecoration(
-                    labelText: 'Absence Framework Type',
-                    prefixIcon: Icon(Icons.category_rounded,
-                        color: ColorPallete.textSecondary),
+                if (_isLoadingTypes)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    ),
+                  )
+                else
+                  DropdownButtonFormField<String>(
+                    value: _selectedLeaveType,
+                    dropdownColor: ColorPallete.backgroundPrimary,
+                    style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 15),
+                    decoration: const InputDecoration(
+                      labelText: 'Absence Framework Type',
+                      prefixIcon: Icon(Icons.category_rounded,
+                          color: ColorPallete.textSecondary),
+                    ),
+                    items: _leaveTypes.map((type) {
+                      return DropdownMenuItem(
+                          value: type,
+                          child: Text(type.isNotEmpty
+                              ? type[0].toUpperCase() + type.substring(1)
+                              : ''));
+                    }).toList(),
+                    onChanged: (value) =>
+                        setState(() => _selectedLeaveType = value!),
                   ),
-                  items: _leaveTypes.map((type) {
-                    return DropdownMenuItem(
-                        value: type,
-                        child: Text(type[0].toUpperCase() + type.substring(1)));
-                  }).toList(),
-                  onChanged: (value) =>
-                      setState(() => _selectedLeaveType = value!),
-                ),
                 const SizedBox(height: 20),
 
                 // Formatted Time Selectors Containers

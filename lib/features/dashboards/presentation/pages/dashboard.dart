@@ -14,6 +14,7 @@ import 'package:hackathon/features/dashboards/presentation/widgets/greeting_widg
 import 'package:hackathon/features/dashboards/presentation/widgets/my_tasks_summary_widget.dart';
 import 'package:hackathon/features/dashboards/presentation/widgets/recent_chats_widget.dart';
 import 'package:hackathon/features/dashboards/presentation/widgets/team_quick_access_widget.dart';
+import 'package:hackathon/features/dashboards/presentation/widgets/today_schedule_widget.dart';
 import 'package:hackathon/features/onboarding/presentation/blocs/onboarding_bloc/onboarding_bloc.dart';
 import 'package:hackathon/features/onboarding/presentation/blocs/onboarding_bloc/onboarding_event.dart';
 import 'package:hackathon/features/tasks/presentation/blocs/task_bloc/task_bloc.dart';
@@ -126,6 +127,15 @@ class _DashboardState extends State<Dashboard> {
                                       Expanded(flex: 3, child: RecentChatsWidget()),
                                       const SizedBox(width: 20),
                                       Expanded(flex: 2, child: GettingStartedChecklistWidget()),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(flex: 3, child: const TodayScheduleWidget()),
+                                      const SizedBox(width: 20),
+                                      Expanded(flex: 2, child: const SizedBox()),
                                     ],
                                   ),
                                 ],

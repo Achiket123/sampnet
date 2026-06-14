@@ -5,11 +5,17 @@ import 'package:hackathon/features/upload_files/domain/repositories/upload_file_
 import 'package:hackathon/globals/constants/usecase.dart';
 import 'package:hackathon/globals/error_handling/error_model.dart';
 
-class UploadFileUsecase implements Usecase<int, UploadFileParams> {
+class UploadFileResponse {
+  final int fileId;
+  final String url;
+  UploadFileResponse({required this.fileId, required this.url});
+}
+
+class UploadFileUsecase implements Usecase<UploadFileResponse, UploadFileParams> {
   final UploadFileRepository uploadFileRepository;
   UploadFileUsecase({required this.uploadFileRepository});
   @override
-  Future<Either<ErrorModel, int>> call(UploadFileParams file) async =>
+  Future<Either<ErrorModel, UploadFileResponse>> call(UploadFileParams file) async =>
       uploadFileRepository.uploadFile(file);
 }
 
