@@ -39,7 +39,19 @@ class WebsocketService {
       return;
     }
 
-    final wsUri = Uri.parse("${ApiConstants.websocketBaseUrl}/ws?token=$token");
+    final rawUrl = "${ApiConstants.websocketBaseUrl}/ws?token=$token";
+    Uri wsUri = Uri.parse(rawUrl);
+
+    if (wsUri.scheme != 'ws' && wsUri.scheme != 'wss') {
+      if (wsUri.scheme == 'http' || wsUri.scheme == 'https') {
+        wsUri = wsUri.replace(scheme: wsUri.scheme == 'https' ? 'wss' : 'ws');
+      } else if (kIsWeb) {
+        // Resolve relative URI against Uri.base on web
+        final resolvedUri = Uri.base.resolve(rawUrl);
+        wsUri = resolvedUri.replace(scheme: resolvedUri.scheme == 'https' ? 'wss' : 'ws');
+      }
+    }
+
     debugPrint("WebsocketService: Connecting to $wsUri");
 
     try {
