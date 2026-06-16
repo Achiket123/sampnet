@@ -71,10 +71,17 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
         ),
         body: BlocListener<EmployeesListBloc, EmployeesListState>(
           listener: (context, state) {
-            if (state.status == EmployeesListStatus.deleteError || state.status == EmployeesListStatus.promoteError) {
+            if (state.status == EmployeesListStatus.deleteError || 
+                state.status == EmployeesListStatus.promoteError ||
+                state.status == EmployeesListStatus.resendInviteError) {
               ElegantNotification.error(
                 title: const Text("Error"),
                 description: Text(state.failureMessage ?? "Something went wrong"),
+              ).show(context);
+            } else if (state.status == EmployeesListStatus.resendInviteSuccess) {
+              ElegantNotification.success(
+                title: const Text("Success"),
+                description: const Text("Invitation email resent successfully"),
               ).show(context);
             }
           },
@@ -226,6 +233,9 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
             child: EditEmployeeModal(employee: employee),
           ),
         );
+        break;
+      case 'resend_invite':
+        context.read<EmployeesListBloc>().add(EmployeeResendInviteRequested(employee.user.email));
         break;
       case 'delete':
         final confirmed = await showDialog<bool>(

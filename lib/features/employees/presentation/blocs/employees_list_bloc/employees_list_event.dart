@@ -80,3 +80,11 @@ class EmployeeUpdateRequested extends EmployeesListEvent {
   @override
   List<Object?> get props => [employeeId, type, salary, firstName, lastName, phoneNumber, profilePic];
 }
+
+class EmployeeResendInviteRequested extends EmployeesListEvent {
+  final String email;
+  const EmployeeResendInviteRequested(this.email);
+
+  @override
+  List<Object?> get props => [email];
+}

@@ -51,6 +51,7 @@ class UserSummaryEntity extends Equatable {
   final String email;
   final String phoneNumber;
   final String profilePic;
+  final bool isVerified;
 
   const UserSummaryEntity({
     required this.id,
@@ -59,6 +60,7 @@ class UserSummaryEntity extends Equatable {
     required this.email,
     required this.phoneNumber,
     required this.profilePic,
+    required this.isVerified,
   });
 
   String get fullName => '$firstName $lastName';
@@ -77,5 +79,6 @@ class UserSummaryEntity extends Equatable {
         email,
         phoneNumber,
         profilePic,
+        isVerified,
       ];
 }

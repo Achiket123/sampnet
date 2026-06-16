@@ -10,6 +10,9 @@ enum EmployeesListStatus {
   deleteError,
   promotingToManager,
   promoteError,
+  resendingInvite,
+  resendInviteSuccess,
+  resendInviteError,
 }
 
 class EmployeesListState extends Equatable {

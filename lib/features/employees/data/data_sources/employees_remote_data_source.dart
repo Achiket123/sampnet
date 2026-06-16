@@ -13,6 +13,7 @@ abstract class EmployeesRemoteDataSource {
   Future<void> deleteEmployee(int employeeId);
   Future<List<EmployeeModel>> searchEmployees(String query);
   Future<void> makeManager(MakeManagerRequestModel request);
+  Future<void> resendInvite(String email);
 }
 
 class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
@@ -110,6 +111,20 @@ class EmployeesRemoteDataSourceImpl implements EmployeesRemoteDataSource {
           'Failed to promote to manager: ${response.body}');
     }
   }
+
+  @override
+  Future<void> resendInvite(String email) async {
+    final response = await apiClient.post(
+      ApiConstants.resendInvite,
+      body: {'email': email},
+    );
+
+    if (response.statusCode != 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      throw ResendInviteException(
+          data['error'] ?? data['message'] ?? 'Failed to resend invite');
+    }
+  }
 }
 
 class EmployeesFetchException implements Exception {
@@ -137,4 +152,9 @@ class DeleteEmployeeException implements Exception {
 class MakeManagerException implements Exception {
   final String message;
   MakeManagerException(this.message);
+}
+
+class ResendInviteException implements Exception {
+  final String message;
+  ResendInviteException(this.message);
 }

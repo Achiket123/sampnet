@@ -101,6 +101,7 @@ class EmployeesRepositoryImpl implements EmployeesRepository {
           email: updated.user.email,
           phoneNumber: updated.user.phoneNumber,
           profilePic: updated.user.profilePic,
+          isVerified: updated.user.isVerified,
         ),
       );
       await remoteDataSource.updateEmployee(employeeId, model);
@@ -148,6 +149,18 @@ class EmployeesRepositoryImpl implements EmployeesRepository {
       ));
       _cache.clear(); // Invalidate cache
       return const Right(null);
+    } catch (e) {
+      return Left(ServerError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ErrorModel, void>> resendInvite(String email) async {
+    try {
+      await remoteDataSource.resendInvite(email);
+      return const Right(null);
+    } on ResendInviteException catch (e) {
+      return Left(ValidationError(message: e.message));
     } catch (e) {
       return Left(ServerError(message: e.toString()));
     }

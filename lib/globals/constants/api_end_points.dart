@@ -126,6 +126,7 @@ class ApiConstants {
 
   // Invite Endpoints
   static const String acceptInvite = "$baseUrl/invites/accept";
+  static const String resendInvite = "$baseUrl/employees/invite/resend";
 
   // Settings Endpoints
   static const String settingsOrganisation = "$baseUrl/settings/organisation";

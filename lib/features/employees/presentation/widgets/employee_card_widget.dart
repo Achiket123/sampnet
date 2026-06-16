@@ -130,6 +130,8 @@ class EmployeeCardWidget extends StatelessWidget {
               if (userRole == 'boss' && employee.roleDisplayLabel != 'Manager')
                 const PopupMenuItem(value: 'make_manager', child: Text('Make Manager')),
               const PopupMenuItem(value: 'edit', child: Text('Edit')),
+              if (!employee.user.isVerified)
+                const PopupMenuItem(value: 'resend_invite', child: Text('Resend Invite')),
               if (userRole == 'boss')
                 const PopupMenuItem(
                   value: 'delete',

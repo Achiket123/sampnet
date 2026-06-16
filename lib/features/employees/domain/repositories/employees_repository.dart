@@ -21,4 +21,5 @@ abstract class EmployeesRepository {
     required String type,
     required String salary,
   });
+  Future<Either<ErrorModel, void>> resendInvite(String email);
 }

@@ -53,6 +53,7 @@ class EmployeeModel {
         'email': user.email,
         'phone_number': user.phoneNumber,
         'profile_pic': user.profilePic,
+        'is_verified': user.isVerified,
       },
     };
   }
@@ -100,6 +101,7 @@ class UserSummaryModel {
   final String email;
   final String phoneNumber;
   final String profilePic;
+  final bool isVerified;
 
   const UserSummaryModel({
     required this.id,
@@ -108,6 +110,7 @@ class UserSummaryModel {
     required this.email,
     required this.phoneNumber,
     required this.profilePic,
+    required this.isVerified,
   });
 
   factory UserSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -118,6 +121,7 @@ class UserSummaryModel {
       email: json['email'] as String? ?? '',
       phoneNumber: json['phone_number'] as String? ?? '',
       profilePic: json['profile_pic']?.toString() ?? '', // profile_id integer or string URL
+      isVerified: json['is_verified'] as bool? ?? false,
     );
   }
 
@@ -137,6 +141,7 @@ class UserSummaryModel {
       email: email,
       phoneNumber: phoneNumber,
       profilePic: profilePic,
+      isVerified: isVerified,
     );
   }
 }

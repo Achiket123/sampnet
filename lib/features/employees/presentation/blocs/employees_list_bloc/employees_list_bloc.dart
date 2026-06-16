@@ -25,6 +25,7 @@ class EmployeesListBloc extends Bloc<EmployeesListEvent, EmployeesListState> {
     on<EmployeeMakeManagerRequested>(_onMakeManagerRequested);
     on<EmployeesListRefreshRequested>(_onRefreshRequested);
     on<EmployeeUpdateRequested>(_onUpdateRequested);
+    on<EmployeeResendInviteRequested>(_onResendInviteRequested);
   }
 
   Future<void> _onLoadRequested(
@@ -148,6 +149,7 @@ class EmployeesListBloc extends Bloc<EmployeesListEvent, EmployeesListState> {
       email: employee.user.email,
       phoneNumber: event.phoneNumber ?? employee.user.phoneNumber,
       profilePic: event.profilePic ?? employee.user.profilePic,
+      isVerified: employee.user.isVerified,
     );
     final updated = EmployeeEntity(
       userId: employee.userId,
@@ -174,6 +176,25 @@ class EmployeesListBloc extends Bloc<EmployeesListEvent, EmployeesListState> {
           displayedEmployees: _filterEmployees(newAll, state.searchQuery),
         ));
       },
+    );
+  }
+
+  Future<void> _onResendInviteRequested(
+    EmployeeResendInviteRequested event,
+    Emitter<EmployeesListState> emit,
+  ) async {
+    emit(state.copyWith(status: EmployeesListStatus.resendingInvite));
+
+    final result = await repository.resendInvite(event.email);
+
+    result.fold(
+      (ErrorModel failure) => emit(state.copyWith(
+        status: EmployeesListStatus.resendInviteError,
+        failureMessage: failure.message,
+      )),
+      (_) => emit(state.copyWith(
+        status: EmployeesListStatus.resendInviteSuccess,
+      )),
     );
   }
 
