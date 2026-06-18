@@ -87,9 +87,39 @@ class EmployeeCardWidget extends StatelessWidget {
             ),
           ],
         ),
-        title: Text(
-          employee.user.fullName,
-          style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.w600, fontSize: 16),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                employee.user.fullName,
+                style: const TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.w600, fontSize: 16),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (!employee.user.isVerified) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: ColorPallete.statusColor('pending').withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: ColorPallete.statusColor('pending').withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  'Pending Invite',
+                  style: TextStyle(
+                    color: ColorPallete.statusColor('pending'),
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
