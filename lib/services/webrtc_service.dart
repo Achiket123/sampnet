@@ -38,6 +38,13 @@ class WebRtcService {
     return videoTracks.isNotEmpty && videoTracks.first.enabled;
   }
 
+  MediaStream? get localStream => _localStream;
+  MediaStream? get remoteStream => _remoteStream;
+  MediaStream? get localScreenStream => _localScreenStream;
+  MediaStream? get remoteScreenStream => _remoteScreenStream;
+  String? get currentRoomId => _currentRoomId;
+  List<String>? get targetUserIds => _targetUserIds;
+
   bool get isScreenSharing => _localScreenStream != null;
 
   WebRtcService({required this.websocketService}) {
@@ -54,6 +61,23 @@ class WebRtcService {
   bool _hasRemoteDescription = false;
 
   Future<void> startCall(String roomId, {bool isCaller = false, List<String>? targetUserIds}) async {
+    if (_peerConnection != null) {
+      debugPrint("WebRtcService: Call already active, triggering stream callbacks...");
+      if (_localStream != null && onLocalStream != null) {
+        onLocalStream!(_localStream!);
+      }
+      if (_localScreenStream != null && onLocalScreenStream != null) {
+        onLocalScreenStream!(_localScreenStream);
+      }
+      if (_remoteStream != null && onRemoteStream != null) {
+        onRemoteStream!(_remoteStream!);
+      }
+      if (_remoteScreenStream != null && onRemoteScreenStream != null) {
+        onRemoteScreenStream!(_remoteScreenStream);
+      }
+      return;
+    }
+
     _currentRoomId = roomId;
     _targetUserIds = targetUserIds;
 

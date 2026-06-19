@@ -6,6 +6,8 @@ import 'package:hackathon/features/chats/domain/entities/chat_entity.dart';
 import 'package:hackathon/features/dashboards/presentation/pages/dashboard.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
 import 'package:hackathon/services/webrtc_service.dart';
+import 'package:hackathon/services/floating_call_overlay_service.dart';
+import 'package:hackathon/globals/constants/globals.dart';
 import 'package:hackathon/widgets/custom_app_bar.dart';
 import 'package:hackathon/globals/constants/user.dart' as user;
 
@@ -30,6 +32,7 @@ class _WebRTCClientState extends State<CallPage> {
   @override
   void initState() {
     super.initState();
+    FloatingCallOverlayService.hide();
     _webRtcService = getIt<WebRtcService>();
     _initializeRenderers().then((_) {
       if (mounted) {
@@ -124,6 +127,7 @@ class _WebRTCClientState extends State<CallPage> {
 
   @override
   void dispose() {
+    final wasInCall = inCall;
     _webRtcService.onLocalStream = null;
     _webRtcService.onLocalScreenStream = null;
     _webRtcService.onRemoteStream = null;
@@ -133,6 +137,16 @@ class _WebRTCClientState extends State<CallPage> {
     localScreenRenderer.dispose();
     remoteRenderer.dispose();
     remoteScreenRenderer.dispose();
+
+    if (wasInCall) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final context = navigatorKey.currentContext;
+        if (context != null) {
+          FloatingCallOverlayService.show(context, widget.chatEntity, widget.isCalling);
+        }
+      });
+    }
+
     super.dispose();
   }
 
