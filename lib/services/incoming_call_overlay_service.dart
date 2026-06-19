@@ -24,6 +24,10 @@ class IncomingCallOverlayService {
     
     final type = data['type'];
     if (type == 'call_offer') {
+      if (data['renegotiate'] == true) return;
+      final callingId = data['calling_id']?.toString() ?? '';
+      final currentUserId = getIt<user.User>().user?.id.toString();
+      if (callingId == currentUserId) return;
       _showIncomingCallOverlay(data);
     } else if (type == 'call_ended') {
       _hideIncomingCallOverlay();

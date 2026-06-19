@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/chats/presentation/blocs/chat_bloc/chat_bloc_bloc.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
-import 'package:intl/intl.dart';
+import 'package:hackathon/globals/constants/user.dart' as user;
 
 class RecentChatsWidget extends StatelessWidget {
   const RecentChatsWidget({super.key});
@@ -85,21 +86,57 @@ class RecentChatsWidget extends StatelessWidget {
                   separatorBuilder: (context, index) => const SizedBox(height: 4),
                   itemBuilder: (context, index) {
                     final chat = chats[index];
+                    final currentUserId = getIt<user.User>().user?.id;
+                    final otherParticipants = chat.participants.where((p) => p.userId != currentUserId);
+                    final otherParticipant = otherParticipants.isNotEmpty
+                        ? otherParticipants.first
+                        : (chat.participants.isNotEmpty ? chat.participants.first : null);
+                    
                     final chatName = chat.isGroup 
                         ? (chat.name ?? "Group Chat") 
-                        : (chat.participants.isNotEmpty 
-                            ? "${chat.participants.first.firstName ?? ''} ${chat.participants.first.lastName ?? ''}".trim()
+                        : (otherParticipant != null
+                            ? "${otherParticipant.firstName ?? ''} ${otherParticipant.lastName ?? ''}".trim()
                             : "Unknown User");
                     return ListTile(
                       onTap: () => context.push('/chats'),
                       contentPadding: EdgeInsets.zero,
-                      leading: CircleAvatar(
-                        backgroundColor: ColorPallete.redPrimary.withOpacity(0.2),
-                        child: Text(
-                          chatName.isNotEmpty ? chatName[0].toUpperCase() : "?",
-                          style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14),
-                        ),
-                      ),
+                      leading: (() {
+                        final avatar = otherParticipant?.avatarUrl;
+                        if (avatar != null && avatar.isNotEmpty) {
+                          return CircleAvatar(
+                            backgroundImage: NetworkImage(avatar),
+                          );
+                        }
+                        
+                        String initials = "";
+                        if (chat.isGroup) {
+                          final groupName = chat.name ?? '';
+                          if (groupName.isNotEmpty) {
+                            final parts = groupName.trim().split(RegExp(r'\s+'));
+                            initials = parts.map((p) => p.isNotEmpty ? p[0].toUpperCase() : '').take(2).join();
+                          }
+                          if (initials.isEmpty) initials = "G";
+                        } else {
+                          final firstName = otherParticipant?.firstName ?? '';
+                          final lastName = otherParticipant?.lastName ?? '';
+                          initials = "${firstName.isNotEmpty ? firstName[0] : ''}${lastName.isNotEmpty ? lastName[0] : ''}".toUpperCase();
+                          if (initials.isEmpty) {
+                            initials = "U";
+                          }
+                        }
+                        
+                        return CircleAvatar(
+                          backgroundColor: ColorPallete.redPrimary,
+                          child: Text(
+                            initials,
+                            style: const TextStyle(
+                              color: ColorPallete.textPrimary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        );
+                      })(),
                       title: Text(
                         chatName,
                         style: const TextStyle(color: ColorPallete.textPrimary, fontSize: 14, fontWeight: FontWeight.w500),

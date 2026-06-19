@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:hackathon/services/websocket_service.dart';
@@ -13,6 +12,7 @@ class WebRtcService {
   MediaStream? _remoteStream;
 
   final Map<String, dynamic> _configuration = {
+    'sdpSemantics': 'unified-plan',
     'iceServers': [
       {'urls': 'stun:stun.l.google.com:19302'}
     ]
@@ -21,10 +21,24 @@ class WebRtcService {
   StreamSubscription? _callStreamSub;
   Function(MediaStream stream)? onLocalStream;
   Function(MediaStream stream)? onRemoteStream;
+  Function(MediaStream? stream)? onLocalScreenStream;
+  Function(MediaStream? stream)? onRemoteScreenStream;
   Function()? onCallEnded;
 
   String? _currentRoomId;
   List<String>? _targetUserIds;
+
+  MediaStream? _localScreenStream;
+  MediaStream? _remoteScreenStream;
+  RTCRtpSender? _screenVideoSender;
+
+  bool get isCameraEnabled {
+    if (_localStream == null) return false;
+    final videoTracks = _localStream!.getVideoTracks();
+    return videoTracks.isNotEmpty && videoTracks.first.enabled;
+  }
+
+  bool get isScreenSharing => _localScreenStream != null;
 
   WebRtcService({required this.websocketService}) {
     _callStreamSub = websocketService.callStream.listen(_handleSignalingMessage);
@@ -36,33 +50,87 @@ class WebRtcService {
   }
 
   Map<String, dynamic>? _pendingOffer;
-  List<RTCIceCandidate> _pendingIceCandidates = [];
+  final List<RTCIceCandidate> _pendingIceCandidates = [];
   bool _hasRemoteDescription = false;
 
   Future<void> startCall(String roomId, {bool isCaller = false, List<String>? targetUserIds}) async {
     _currentRoomId = roomId;
     _targetUserIds = targetUserIds;
 
-    _localStream = await navigator.mediaDevices.getUserMedia({
-      'video': true,
-      'audio': true,
-    });
+    try {
+      _localStream = await navigator.mediaDevices.getUserMedia({
+        'video': true,
+        'audio': true,
+      });
+    } catch (e) {
+      debugPrint("WebRtcService: Unable to get local media with video/audio: $e");
+      try {
+        _localStream = await navigator.mediaDevices.getUserMedia({
+          'video': false,
+          'audio': true,
+        });
+      } catch (ae) {
+        debugPrint("WebRtcService: Unable to get local media audio-only fallback: $ae");
+      }
+    }
     
-    if (onLocalStream != null) {
+    if (_localStream != null && onLocalStream != null) {
       onLocalStream!(_localStream!);
     }
 
+    _hasRemoteDescription = false;
     _peerConnection = await createPeerConnection(_configuration);
 
-    _localStream!.getTracks().forEach((track) {
-      _peerConnection?.addTrack(track, _localStream!);
-    });
+    _peerConnection?.onIceConnectionState = (state) {
+      debugPrint("WebRtcService: ICE Connection State changed to: $state");
+    };
+
+    _peerConnection?.onConnectionState = (state) {
+      debugPrint("WebRtcService: Connection State changed to: $state");
+    };
+
+    _peerConnection?.onSignalingState = (state) {
+      debugPrint("WebRtcService: Signaling State changed to: $state");
+    };
+
+    if (_localStream != null) {
+      _localStream!.getTracks().forEach((track) {
+        _peerConnection?.addTrack(track, _localStream!);
+      });
+    }
 
     _peerConnection?.onTrack = (event) {
       if (event.streams.isNotEmpty) {
-        _remoteStream = event.streams[0];
-        if (onRemoteStream != null) {
-          onRemoteStream!(_remoteStream!);
+        final stream = event.streams[0];
+        debugPrint("WebRtcService: Received remote track ${event.track.kind} with stream id: ${stream.id}");
+        
+        if (_remoteStream == null) {
+          _remoteStream = stream;
+          if (onRemoteStream != null) {
+            onRemoteStream!(_remoteStream!);
+          }
+        } else if (stream.id == _remoteStream!.id) {
+          if (onRemoteStream != null) {
+            onRemoteStream!(_remoteStream!);
+          }
+        } else {
+          _remoteScreenStream = stream;
+          if (onRemoteScreenStream != null) {
+            onRemoteScreenStream!(_remoteScreenStream);
+          }
+          
+          event.track.onEnded = () {
+            _remoteScreenStream = null;
+            if (onRemoteScreenStream != null) {
+              onRemoteScreenStream!(null);
+            }
+          };
+          event.track.onMute = () {
+            _remoteScreenStream = null;
+            if (onRemoteScreenStream != null) {
+              onRemoteScreenStream!(null);
+            }
+          };
         }
       }
     };
@@ -97,6 +165,17 @@ class WebRtcService {
   }
 
   Future<void> _processOffer(Map<String, dynamic> offerData, String roomId) async {
+    if (_peerConnection == null) return;
+    final sigState = _peerConnection!.signalingState;
+    if (sigState == RTCSignalingState.RTCSignalingStateClosed) {
+      return;
+    }
+    if (sigState != null && sigState != RTCSignalingState.RTCSignalingStateStable) {
+      debugPrint("WebRtcService: Ignoring offer because signaling state is not stable (current state: $sigState)");
+      return;
+    }
+
+    _hasRemoteDescription = false;
     final remoteOffer = RTCSessionDescription(offerData['sdp'], offerData['type']);
     await _peerConnection?.setRemoteDescription(remoteOffer);
     _hasRemoteDescription = true;
@@ -118,6 +197,8 @@ class WebRtcService {
     final type = data['type'];
     final roomId = data['room_id'];
     
+    debugPrint("WebRtcService: Received signaling message '$type' for room: $roomId. Connection state: ${_peerConnection?.connectionState}, Signaling state: ${_peerConnection?.signalingState}, _hasRemoteDescription: $_hasRemoteDescription");
+
     if (_currentRoomId != null && roomId != _currentRoomId) {
       return; // Ignore messages for other rooms if currently in a call
     }
@@ -131,6 +212,13 @@ class WebRtcService {
           await _processOffer(offerData, roomId);
         }
       } else if (type == 'call_answer') {
+        if (_peerConnection == null) return;
+        final sigState = _peerConnection!.signalingState;
+        if (sigState != null && sigState != RTCSignalingState.RTCSignalingStateHaveLocalOffer) {
+          debugPrint("WebRtcService: Ignoring call_answer because signaling state is not haveLocalOffer (current state: $sigState)");
+          return;
+        }
+        _hasRemoteDescription = false;
         final answerData = data['answer'];
         final remoteAnswer = RTCSessionDescription(answerData['sdp'], answerData['type']);
         await _peerConnection?.setRemoteDescription(remoteAnswer);
@@ -176,8 +264,25 @@ class WebRtcService {
     _localStream?.dispose();
     _localStream = null;
 
+    _localScreenStream?.getTracks().forEach((track) {
+      track.stop();
+    });
+    _localScreenStream?.dispose();
+    _localScreenStream = null;
+    _screenVideoSender = null;
+
     _remoteStream?.dispose();
     _remoteStream = null;
+
+    _remoteScreenStream?.dispose();
+    _remoteScreenStream = null;
+
+    if (onLocalScreenStream != null) {
+      onLocalScreenStream!(null);
+    }
+    if (onRemoteScreenStream != null) {
+      onRemoteScreenStream!(null);
+    }
 
     _currentRoomId = null;
     _pendingIceCandidates.clear();
@@ -194,38 +299,129 @@ class WebRtcService {
     }
   }
 
-  Future<void> toggleCamera(bool isVisible) async {
-    if (_localStream == null) return;
+  Future<void> toggleCamera([bool? isVisible]) async {
+    if (_localStream == null) {
+      try {
+        _localStream = await navigator.mediaDevices.getUserMedia({
+          'video': true,
+          'audio': true,
+        });
+        if (onLocalStream != null) {
+          onLocalStream!(_localStream!);
+        }
+        if (_peerConnection != null) {
+          _localStream!.getTracks().forEach((track) {
+            _peerConnection?.addTrack(track, _localStream!);
+          });
+          await _renegotiate();
+        }
+      } catch (e) {
+        debugPrint("WebRtcService: Error toggling camera on: $e");
+      }
+      return;
+    }
+    
     final videoTracks = _localStream!.getVideoTracks();
     if (videoTracks.isNotEmpty) {
-      videoTracks.first.enabled = isVisible;
+      final track = videoTracks.first;
+      track.enabled = isVisible ?? !track.enabled;
+    } else {
+      try {
+        final videoStream = await navigator.mediaDevices.getUserMedia({'video': true});
+        final videoTrack = videoStream.getVideoTracks().first;
+        _localStream!.addTrack(videoTrack);
+        if (onLocalStream != null) {
+          onLocalStream!(_localStream!);
+        }
+        if (_peerConnection != null) {
+          await _peerConnection!.addTrack(videoTrack, _localStream!);
+          await _renegotiate();
+        }
+      } catch (e) {
+        debugPrint("WebRtcService: Error adding video track: $e");
+      }
     }
   }
 
-  Future<void> shareScreen() async {
-    if (_peerConnection == null || _localStream == null) return;
-    
+  Future<void> shareScreen() => toggleScreenShare();
+
+  Future<void> toggleScreenShare() async {
+    if (_localScreenStream != null) {
+      await _stopScreenShare();
+    } else {
+      await _startScreenShare();
+    }
+  }
+
+  Future<void> _startScreenShare() async {
+    if (_peerConnection == null) return;
     try {
-      final MediaStream screenStream = await navigator.mediaDevices.getDisplayMedia({
+      _localScreenStream = await navigator.mediaDevices.getDisplayMedia({
         'video': true,
-        'audio': true,
+        'audio': false,
       });
 
-      final videoTrack = screenStream.getVideoTracks().first;
+      final videoTrack = _localScreenStream!.getVideoTracks().first;
       
-      if (onLocalStream != null) {
-        onLocalStream!(screenStream);
+      if (onLocalScreenStream != null) {
+        onLocalScreenStream!(_localScreenStream);
       }
 
-      final senders = await _peerConnection!.getSenders();
-      for (var sender in senders) {
-        if (sender.track?.kind == 'video') {
-          await sender.replaceTrack(videoTrack);
-        }
-      }
+      _screenVideoSender = await _peerConnection!.addTrack(videoTrack, _localScreenStream!);
+
+      videoTrack.onEnded = () {
+        _stopScreenShare();
+      };
       
+      await _renegotiate();
     } catch (e) {
-      debugPrint('Error sharing screen: $e');
+      debugPrint('Error starting screen share: $e');
+    }
+  }
+
+  Future<void> _stopScreenShare() async {
+    if (_localScreenStream == null) return;
+
+    final tracks = _localScreenStream!.getTracks();
+    for (var track in tracks) {
+      track.stop();
+    }
+    _localScreenStream?.dispose();
+    _localScreenStream = null;
+
+    if (onLocalScreenStream != null) {
+      onLocalScreenStream!(null);
+    }
+
+    if (_peerConnection != null && _screenVideoSender != null) {
+      try {
+        await _peerConnection!.removeTrack(_screenVideoSender!);
+      } catch (e) {
+        debugPrint("Error removing screen track: $e");
+      }
+      _screenVideoSender = null;
+      await _renegotiate();
+    }
+  }
+
+  Future<void> _renegotiate() async {
+    if (_peerConnection == null || _currentRoomId == null) return;
+    try {
+      _hasRemoteDescription = false;
+      final offer = await _peerConnection!.createOffer();
+      await _peerConnection!.setLocalDescription(offer);
+      
+      final userModel = getIt<user.User>().user;
+      _sendSignalingMessage('call_offer', {
+        'offer': offer.toMap(),
+        'room_id': _currentRoomId,
+        'calling_id': userModel?.id,
+        'calling_first_name': userModel?.firstName,
+        'calling_last_name': userModel?.lastName,
+        'renegotiate': true,
+      });
+    } catch (e) {
+      debugPrint('Error during WebRTC renegotiation: $e');
     }
   }
 

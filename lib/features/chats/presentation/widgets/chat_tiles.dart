@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 import 'package:hackathon/features/chats/domain/entities/chat_entity.dart';
-import 'package:hackathon/globals/constants/assets.dart';
 import 'package:hackathon/globals/constants/color_pallete.dart';
+import 'package:hackathon/globals/constants/user.dart';
 import 'package:intl/intl.dart';
 
 class ChatTiles extends StatelessWidget {
@@ -27,15 +28,61 @@ class ChatTiles extends StatelessWidget {
             color: ColorPallete.textPrimary.withOpacity(0.02),
             borderRadius: BorderRadius.circular(5)),
         child: ListTile(
-          leading: const CircleAvatar(
-            backgroundImage: AssetImage(ImageAssets.chat),
-          ),
+          leading: (() {
+            final currentUserId = getIt<User>().user?.id;
+            final otherParticipants = chatEntity.participants.where((p) => p.userId != currentUserId);
+            final otherParticipant = otherParticipants.isNotEmpty
+                ? otherParticipants.first
+                : (chatEntity.participants.isNotEmpty ? chatEntity.participants.first : null);
+            final avatar = otherParticipant?.avatarUrl;
+            if (avatar != null && avatar.isNotEmpty) {
+              return CircleAvatar(
+                backgroundImage: NetworkImage(avatar),
+              );
+            }
+            
+            String initials = "";
+            if (chatEntity.isGroup) {
+              final groupName = chatEntity.name ?? '';
+              if (groupName.isNotEmpty) {
+                final parts = groupName.trim().split(RegExp(r'\s+'));
+                initials = parts.map((p) => p.isNotEmpty ? p[0].toUpperCase() : '').take(2).join();
+              }
+              if (initials.isEmpty) initials = "G";
+            } else {
+              final firstName = otherParticipant?.firstName ?? '';
+              final lastName = otherParticipant?.lastName ?? '';
+              initials = "${firstName.isNotEmpty ? firstName[0] : ''}${lastName.isNotEmpty ? lastName[0] : ''}".toUpperCase();
+              if (initials.isEmpty) {
+                initials = "U";
+              }
+            }
+            
+            return CircleAvatar(
+              backgroundColor: ColorPallete.redPrimary,
+              child: Text(
+                initials,
+                style: const TextStyle(
+                  color: ColorPallete.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+          })(),
           mouseCursor: SystemMouseCursors.click,
           title: Text(
             chatEntity.isGroup 
                 ? chatEntity.name ?? "Group Chat" 
                 : (chatEntity.participants.isNotEmpty 
-                    ? "${chatEntity.participants.first.firstName ?? ''} ${chatEntity.participants.first.lastName ?? ''}".trim()
+                    ? (() {
+                        final currentUserId = getIt<User>().user?.id;
+                        final otherParticipants = chatEntity.participants.where((p) => p.userId != currentUserId);
+                        final otherParticipant = otherParticipants.isNotEmpty
+                            ? otherParticipants.first
+                            : chatEntity.participants.first;
+                        final name = "${otherParticipant.firstName ?? ''} ${otherParticipant.lastName ?? ''}".trim();
+                        return name.isNotEmpty ? name : "Unknown User";
+                      })()
                     : "Unknown User"),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

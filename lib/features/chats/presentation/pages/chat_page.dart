@@ -57,7 +57,15 @@ class _ChatPageState extends State<ChatPage> {
       selectedChatName = widget.initialChat!.isGroup
           ? (widget.initialChat!.name ?? "Group Chat")
           : (widget.initialChat!.participants.isNotEmpty
-              ? "${widget.initialChat!.participants.first.firstName ?? ''} ${widget.initialChat!.participants.first.lastName ?? ''}".trim()
+              ? (() {
+                  final currentUserId = getIt<User>().user?.id;
+                  final otherParticipants = widget.initialChat!.participants.where((p) => p.userId != currentUserId);
+                  final otherParticipant = otherParticipants.isNotEmpty
+                      ? otherParticipants.first
+                      : widget.initialChat!.participants.first;
+                  final name = "${otherParticipant.firstName ?? ''} ${otherParticipant.lastName ?? ''}".trim();
+                  return name.isNotEmpty ? name : "Unknown User";
+                })()
               : "Unknown User");
       getIt<MessageRepository>().fetchInitialMessages(widget.initialChat!.roomId);
     }
@@ -134,7 +142,15 @@ class _ChatPageState extends State<ChatPage> {
                                     selectedChatName = chats[index].isGroup
                                         ? (chats[index].name ?? "Group Chat")
                                         : (chats[index].participants.isNotEmpty
-                                            ? "${chats[index].participants.first.firstName ?? ''} ${chats[index].participants.first.lastName ?? ''}".trim()
+                                            ? (() {
+                                                final currentUserId = getIt<User>().user?.id;
+                                                final otherParticipants = chats[index].participants.where((p) => p.userId != currentUserId);
+                                                final otherParticipant = otherParticipants.isNotEmpty
+                                                    ? otherParticipants.first
+                                                    : chats[index].participants.first;
+                                                final name = "${otherParticipant.firstName ?? ''} ${otherParticipant.lastName ?? ''}".trim();
+                                                return name.isNotEmpty ? name : "Unknown User";
+                                              })()
                                             : "Unknown User");
                                     selectedChat = chats[index];
                                   });

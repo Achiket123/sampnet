@@ -33,6 +33,7 @@ class MessageRepositoryImpl implements MessageRepository {
 
   @override
   Stream<List<MessageEntity>> getMessages(String id) async* {
+    websocketService.subscribeRoom(id);
     // Yield the initial state from the box
     final initialMessages = messageBox.values.where((msg) => msg.roomId == id).toList();
     initialMessages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
@@ -75,7 +76,7 @@ class MessageRepositoryImpl implements MessageRepository {
     return result.map((msg) {
       // Save optimistic/confirmed message locally
       final hiveMsg = MessageHiveModel.fromEntity(msg);
-      localDataSource.saveMessages(message.receiverId, [hiveMsg]);
+      localDataSource.saveMessages(message.roomId, [hiveMsg]);
       return msg;
     });
   }

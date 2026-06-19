@@ -15,6 +15,8 @@ class WebsocketService {
   Timer? _reconnectTimer;
   int _reconnectDelaySeconds = 2;
 
+  final Set<String> _subscribedRooms = {};
+
   final ValueNotifier<List<int>> onlineUsersNotifier = ValueNotifier<List<int>>([]);
   final StreamController<NotificationEntity> _notificationStreamController =
       StreamController<NotificationEntity>.broadcast();
@@ -59,6 +61,15 @@ class WebsocketService {
       _isConnected = true;
       _reconnectDelaySeconds = 2; // Reset reconnect delay on connection attempt
 
+      for (final roomId in _subscribedRooms) {
+        final subMsg = jsonEncode({
+          "type": "subscribe_room",
+          "room_id": roomId,
+        });
+        _channel!.sink.add(subMsg);
+        debugPrint("WebsocketService: Resubscribed to room $roomId on connection");
+      }
+
       _channel!.stream.listen(
         (message) {
           _handleMessage(message);
@@ -86,6 +97,7 @@ class WebsocketService {
   }
 
   void subscribeRoom(String roomId) {
+    _subscribedRooms.add(roomId);
     if (_isConnected && _channel != null) {
       final subMsg = jsonEncode({
         "type": "subscribe_room",
@@ -101,7 +113,7 @@ class WebsocketService {
       final Map<String, dynamic> data = jsonDecode(message);
       
       final type = data['type'] as String?;
-      if (type == 'chat_message') {
+      if (type == 'chat_message' || type == 'new_message') {
         _messageStreamController.add(data['payload']);
         debugPrint("WebsocketService: Received chat message");
         return;

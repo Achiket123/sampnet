@@ -33,6 +33,9 @@ class ChatDataSourceImpl implements ChatDataSource {
           final dynamic decoded = jsonDecode(response.body);
           final List<dynamic> data = decoded is Map && decoded.containsKey('chats') ? decoded['chats'] : [];
           final List<ChatModel> chatList = data.map<ChatModel>((doc) => ChatModel.fromMap(doc)).toList();
+          for (final chat in chatList) {
+            getIt<WebsocketService>().subscribeRoom(chat.roomId);
+          }
           chatList.sort((a, b) {
             final aTime = a.lastMessageAt;
             final bTime = b.lastMessageAt;
@@ -79,7 +82,9 @@ class ChatDataSourceImpl implements ChatDataSource {
       await apiClient.post(ApiConstants.upsertCall, body: callData);
       
       final data = jsonDecode(res.body)['chat'];
-      return right(ChatModel.fromMap(data));
+      final model = ChatModel.fromMap(data);
+      getIt<WebsocketService>().subscribeRoom(model.roomId);
+      return right(model);
     } catch (e) {
       debugPrint(e.toString());
       return left(ErrorModel(message: e.toString()));
