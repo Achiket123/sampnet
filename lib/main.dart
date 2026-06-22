@@ -42,7 +42,7 @@ import 'package:hackathon/features/upload_files/domain/use_cases/upload_file_use
 import 'package:hackathon/features/upload_files/presentation/bloc/upload_file_bloc.dart';
 import 'package:hackathon/features/notifications/presentation/blocs/notifications_bloc/notifications_bloc.dart';
 import 'package:hackathon/firebase_options.dart';
- //hello world how are you?? I am doing great what about you??
+//hello world how are you?? I am doing great what about you??
 import 'package:hackathon/globals/constants/globals.dart';
 import 'package:hackathon/globals/constants/strings.dart';
 import 'package:hackathon/globals/constants/styles.dart';
@@ -64,7 +64,7 @@ main() async {
 
   // Initialize the Hive Flutter database
   await Hive.initFlutter();
-  
+
   // Register Hive adapters
   Hive.registerAdapter(MessageHiveModelAdapter());
   Hive.registerAdapter(ChatHiveModelAdapter());
@@ -220,7 +220,7 @@ class _MyAppState extends State<MyApp> {
             elevation: 0,
             iconTheme: IconThemeData(color: ColorPallete.textPrimary),
           ),
-          cardTheme: CardTheme(
+          cardTheme: CardThemeData(
             color: ColorPallete.backgroundSecondary,
             elevation: 0,
             shape: RoundedRectangleBorder(
@@ -238,7 +238,8 @@ class _MyAppState extends State<MyApp> {
             ).copyWith(
               overlayColor: WidgetStateProperty.resolveWith<Color?>(
                 (Set<WidgetState> states) {
-                  if (states.contains(WidgetState.pressed)) return ColorPallete.redDark;
+                  if (states.contains(WidgetState.pressed))
+                    return ColorPallete.redDark;
                   return null;
                 },
               ),
@@ -305,14 +306,15 @@ class _MyAppState extends State<MyApp> {
             backgroundColor: ColorPallete.backgroundTertiary,
             contentTextStyle: TextStyle(color: ColorPallete.textPrimary),
           ),
-          dialogTheme: const DialogTheme(
+          dialogTheme: const DialogThemeData(
             backgroundColor: ColorPallete.backgroundTertiary,
-            titleTextStyle: TextStyle(color: ColorPallete.textPrimary, fontWeight: FontWeight.bold),
+            titleTextStyle: TextStyle(
+                color: ColorPallete.textPrimary, fontWeight: FontWeight.bold),
           ),
           bottomSheetTheme: const BottomSheetThemeData(
             backgroundColor: ColorPallete.backgroundTertiary,
           ),
-          tabBarTheme: const TabBarTheme(
+          tabBarTheme: const TabBarThemeData(
             labelColor: ColorPallete.redPrimary,
             unselectedLabelColor: ColorPallete.textSecondary,
             indicator: UnderlineTabIndicator(

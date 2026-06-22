@@ -9,16 +9,14 @@ part 'get_project_state.dart';
 
 class GetProjectBloc extends Bloc<GetProjectEvent, GetProjectState> {
   final GetProjectUseCase _getProjectUseCase;
-  GetProjectBloc({required GetProjectUseCase getProjectUseCase}) : 
-    _getProjectUseCase = getProjectUseCase,
-  super(GetProjectInitial()) {
-    on<GetProjectEvent>((event, emit) {
-      
-      emit(GetProjectsLoading());
-    });
+  GetProjectBloc({required GetProjectUseCase getProjectUseCase})
+      : _getProjectUseCase = getProjectUseCase,
+        super(GetProjectInitial()) {
     on<GetProjects>((event, emit) async {
+      emit(GetProjectsLoading());
       final result = await _getProjectUseCase.call(event.token);
-      result.fold((l) => emit(GetProjectsFailure(error: l)), (r) => emit(GetProjectsSuccess(projects: r)));
+      result.fold((l) => emit(GetProjectsFailure(error: l)),
+          (r) => emit(GetProjectsSuccess(projects: r)));
     });
   }
 }

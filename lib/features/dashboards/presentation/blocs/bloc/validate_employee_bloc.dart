@@ -6,18 +6,17 @@ import 'package:meta/meta.dart';
 part 'validate_employee_event.dart';
 part 'validate_employee_state.dart';
 
-class ValidateEmployeeBloc extends Bloc<ValidateEmployeeEvent, ValidateEmployeeState> {
+class ValidateEmployeeBloc
+    extends Bloc<ValidateEmployeeEvent, ValidateEmployeeState> {
   final ValidateEmpUsecase _usecase;
-  ValidateEmployeeBloc({required ValidateEmpUsecase usecase}) :
-  _usecase = usecase,
-  super(ValidateEmployeeInitial()) {
-    on<ValidateEmployeeEvent>((event, emit) {
+  ValidateEmployeeBloc({required ValidateEmpUsecase usecase})
+      : _usecase = usecase,
+        super(ValidateEmployeeInitial()) {
+    on<ValidateEmployee>((event, emit) async {
       emit(ValidateEmployeeLoading());
-      });
-
-      on<ValidateEmployee>((event, emit) async {
-        final result = await _usecase(event.token);
-        result.fold((l) => emit(ValidateEmployeeFailure(error: l)), (r) => emit(ValidateEmployeeSuccess(isValid: r)));
-      });
+      final result = await _usecase(event.token);
+      result.fold((l) => emit(ValidateEmployeeFailure(error: l)),
+          (r) => emit(ValidateEmployeeSuccess(isValid: r)));
+    });
   }
 }

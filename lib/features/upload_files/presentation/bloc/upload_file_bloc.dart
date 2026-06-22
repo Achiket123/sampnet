@@ -8,19 +8,16 @@ part 'upload_file_state.dart';
 
 class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
   final UploadFileUsecase _uploadFileUsecase;
-  UploadFileBloc({required UploadFileUsecase uploadFileUsecase}) :
-    _uploadFileUsecase = uploadFileUsecase,
-    super(UploadFileInitial()) {
-    on<UploadFileEvent>((event, emit) {
-      // TODO: implement event handler
-      emit(UploadFileLoading());
-    });
+  UploadFileBloc({required UploadFileUsecase uploadFileUsecase})
+      : _uploadFileUsecase = uploadFileUsecase,
+        super(UploadFileInitial()) {
     on<UploadFileBlocEvent>((event, emit) async {
       emit(UploadFileLoading());
       final result = await _uploadFileUsecase(event.file);
       result.fold(
         (l) => emit(UploadFileError(error: l)),
-        (r) => emit(UploadFileSuccess(fileId: r.fileId, url: r.url, fileName: event.file.fileName)),
+        (r) => emit(UploadFileSuccess(
+            fileId: r.fileId, url: r.url, fileName: event.file.fileName)),
       );
     });
   }

@@ -9,13 +9,11 @@ part 'project_state.dart';
 
 class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
   final TeamGetProjectUsecase _teamGetProjectUsecase;
-  ProjectBloc({required TeamGetProjectUsecase teamGetProjectUsecase}) :
-  _teamGetProjectUsecase = teamGetProjectUsecase,
-   super(ProjectInitial()) {
-    on<ProjectEvent>((event, emit) {
-      emit(ProjectLoadingState());
-    });
+  ProjectBloc({required TeamGetProjectUsecase teamGetProjectUsecase})
+      : _teamGetProjectUsecase = teamGetProjectUsecase,
+        super(ProjectInitial()) {
     on<GetProjectEvent>((event, emit) async {
+      emit(ProjectLoadingState());
       final result = await _teamGetProjectUsecase.call(event.token);
       result.fold((error) {
         emit(ProjectErrorState(error: error));

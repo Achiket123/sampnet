@@ -13,22 +13,25 @@ part 'get_employees_state.dart';
 class GetEmployeesBloc extends Bloc<GetEmployeesEvent, GetEmployeesState> {
   final GetEmployeesUseCase _getEmployeesUseCase;
   final TaskGetTeamUsecase _getTeamUseCase;
-  GetEmployeesBloc({required GetEmployeesUseCase getEmployeesUseCase, required GetProjectUseCase getProjectUseCase, required TaskGetTeamUsecase getTeamUseCase}) :
-    _getEmployeesUseCase = getEmployeesUseCase,
-    _getTeamUseCase = getTeamUseCase,
-    super(GetEmployeesInitial()) {
-    on<GetEmployeesEvent>((event, emit) {
-    
-      emit(GetEmployeesLoading());
-    });
+  GetEmployeesBloc(
+      {required GetEmployeesUseCase getEmployeesUseCase,
+      required GetProjectUseCase getProjectUseCase,
+      required TaskGetTeamUsecase getTeamUseCase})
+      : _getEmployeesUseCase = getEmployeesUseCase,
+        _getTeamUseCase = getTeamUseCase,
+        super(GetEmployeesInitial()) {
     on<GetEmployees>((event, emit) async {
+      emit(GetEmployeesLoading());
       final result = await _getEmployeesUseCase.call(event.token);
-      result.fold((l) => emit(GetEmployeesFailure(error: l)), (r) => emit(GetEmployeesSuccess(employees: r)));
+      result.fold((l) => emit(GetEmployeesFailure(error: l)),
+          (r) => emit(GetEmployeesSuccess(employees: r)));
     });
-   
+
     on<GetTeams>((event, emit) async {
+      emit(GetEmployeesLoading());
       final result = await _getTeamUseCase.call(event.token);
-      result.fold((l) => emit(GetTeamsFailure(error: l)), (r) => emit(GetTeamsSuccess(teams: r)));
+      result.fold((l) => emit(GetTeamsFailure(error: l)),
+          (r) => emit(GetTeamsSuccess(teams: r)));
     });
   }
 }

@@ -12,10 +12,8 @@ class TeamidBloc extends Bloc<TeamidEvent, TeamidState> {
   TeamidBloc({required GetTeamByIdUseCase getTeamByIdUseCase})
       : _getTeamByIdUseCase = getTeamByIdUseCase,
         super(TeamidInitial()) {
-    on<TeamidEvent>((event, emit) {
-      emit(TeamLoadingState());
-    });
     on<GetTeamIdEvent>((event, emit) async {
+      emit(TeamLoadingState());
       final res = await _getTeamByIdUseCase.call(event.id);
       res.fold((l) => emit(TeamFailureState(errorModel: l)),
           (r) => emit(TeamSuccessState(teamMemory: r)));

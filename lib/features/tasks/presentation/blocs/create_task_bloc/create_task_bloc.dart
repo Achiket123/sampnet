@@ -13,10 +13,6 @@ class CreateTaskBloc extends Bloc<CreateTaskEvent, CreateTaskState> {
   CreateTaskBloc({required CreateTaskUseCase createTaskUsecase})
       : _createTaskUsecase = createTaskUsecase,
         super(CreateTaskInitial()) {
-    on<CreateTaskEvent>((event, emit) {
-      // TODO: implement event handler
-      emit(CreateTaskLoading());
-    });
     on<CreateTask>((event, emit) async {
       emit(CreateTaskLoading());
       final result = await _createTaskUsecase.call(event.params);

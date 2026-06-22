@@ -11,20 +11,21 @@ part 'team_state.dart';
 class TeamBloc extends Bloc<TeamEvent, TeamState> {
   final CreateTeamUsecase _createTeamUsecase;
   final GetTeamUseCase _getTeamUseCase;
-  TeamBloc({required CreateTeamUsecase createTeamUsecase,required GetTeamUseCase getTeamUseCase})
+  TeamBloc(
+      {required CreateTeamUsecase createTeamUsecase,
+      required GetTeamUseCase getTeamUseCase})
       : _createTeamUsecase = createTeamUsecase,
         _getTeamUseCase = getTeamUseCase,
         super(TeamInitial()) {
-    on<TeamEvent>((event, emit) {
-      emit(TeamLoadingState());
-    });
     on<GetTeamEvent>((event, emit) async {
+      emit(TeamLoadingState());
       final result = await _getTeamUseCase.call(event.token);
       result.fold((l) => emit(TeamErrorState(error: l)),
           (r) => emit(TeamSuccessState(teams: r)));
     });
 
     on<CreateTeamEvent>((event, emit) async {
+      emit(TeamLoadingState());
       final result = await _createTeamUsecase.call(event.params);
       result.fold((l) => emit(TeamErrorState(error: l)),
           (r) => emit(TeamSuccessState(teams: r)));

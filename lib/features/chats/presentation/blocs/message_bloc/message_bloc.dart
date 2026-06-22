@@ -8,15 +8,12 @@ part 'message_state.dart';
 
 class MessageBloc extends Bloc<MessageEvent, MessageState> {
   final MessageUsecase _messageUseCase;
-  MessageBloc({required MessageUsecase messageUseCase}) :
-  _messageUseCase = messageUseCase,
-   super(MessageInitial()) {
-    on<MessageEvent>((event, emit) {
-      // TODO: implement event handler
-      emit(SendingMessageState());
-    });
+  MessageBloc({required MessageUsecase messageUseCase})
+      : _messageUseCase = messageUseCase,
+        super(MessageInitial()) {
     on<SendMessageEvent>(
-      (event, emit) async{
+      (event, emit) async {
+        emit(SendingMessageState());
         final result = await _messageUseCase.call(event.messageParams);
         result.fold(
           (l) => emit(MessageErrorState(errorModel: l)),

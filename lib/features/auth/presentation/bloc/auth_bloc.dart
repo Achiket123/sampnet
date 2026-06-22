@@ -2,6 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hackathon/features/auth/domain/entity/user_entity.dart';
 import 'package:hackathon/features/auth/domain/usecase/auth_params.dart';
 import 'package:hackathon/features/auth/domain/usecase/auth_usecase.dart';
+import 'package:hackathon/globals/constants/user.dart' as app_user;
+import 'package:hackathon/services/token_manager.dart';
+import 'package:hackathon/dependency_injection.g.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -31,29 +34,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _verifyEmailUsecase = verifyEmailUsecase,
         _getMeUsecase = getMeUsecase,
         super(AuthInitial()) {
-    on<AuthEvent>((event, emit) {
-      emit(AuthLoading());
-    });
     on<SignUpEvent>((event, emit) async {
+      emit(AuthLoading());
       final resolve = await _signUpUsecase.call(event.signUpParams);
-      resolve.fold((l) => emit(AuthFailure(message: l.message)), (r) {
+      await resolve.fold((l) async => emit(AuthFailure(message: l.message)),
+          (r) async {
         emit(AuthSignUpSuccess(auth: r));
-        _saveTokenUsecase.call(r.token);
+        await _saveTokenUsecase.call(r.token);
       });
     });
     on<SignInEvent>((event, emit) async {
+      emit(AuthLoading());
       final resolve = await _signInUsecase.call(event.signInParams);
-      resolve.fold((l) => emit(AuthFailure(message: l.message)), (r) {
+      await resolve.fold((l) async => emit(AuthFailure(message: l.message)),
+          (r) async {
         emit(AuthSignInSuccess(auth: r));
-        _saveTokenUsecase.call(r.token);
+        await _saveTokenUsecase.call(r.token);
       });
     });
     on<GetTokenEvent>((event, emit) async {
+      emit(AuthLoading());
       final resolve = _getTokenUsecase.call(null);
       resolve.fold((l) => emit(AuthFailure(message: l.message)),
           (r) => emit(AuthGetTokenSuccess(token: r)));
     });
     on<SendVerificationEmailEvent>((event, emit) async {
+      emit(AuthLoading());
       final resolve = await _sendVerificationEmailUsecase.call(null);
       resolve.fold(
         (l) => emit(AuthFailure(message: l.message)),
@@ -61,6 +67,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     });
     on<VerifyEmailEvent>((event, emit) async {
+      emit(AuthLoading());
       final resolve = await _verifyEmailUsecase.call(event.token);
       await resolve.fold(
         (l) async => emit(AuthFailure(message: l.message)),
@@ -72,10 +79,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             },
             (token) async {
               final meRes = await _getMeUsecase.call(null);
-              meRes.fold(
-                (l) => emit(AuthFailure(message: l.message)),
-                (res) {
-                  _saveTokenUsecase.call(res.token);
+              await meRes.fold(
+                (l) async => emit(AuthFailure(message: l.message)),
+                (res) async {
+                  await _saveTokenUsecase.call(res.token);
                   emit(AuthVerifyEmailSuccess());
                 },
               );
@@ -85,14 +92,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     });
     on<GetMeEvent>((event, emit) async {
+      emit(AuthLoading());
       final resolve = await _getMeUsecase.call(null);
-      resolve.fold(
-        (l) => emit(AuthFailure(message: l.message)),
-        (r) {
-          _saveTokenUsecase.call(r.token);
+      await resolve.fold(
+        (l) async => emit(AuthFailure(message: l.message)),
+        (r) async {
+          await _saveTokenUsecase.call(r.token);
           emit(AuthGetMeSuccess(auth: r));
         },
       );
+    });
+    on<SignOutEvent>((event, emit) async {
+      emit(AuthLoading());
+      getIt<TokenManager>().clearTokens();
+      final user = getIt<app_user.User>();
+      user.user = null;
+      user.token = null;
+      user.organisation = null;
+      user.employee = null;
+      user.employeeToken = null;
+      emit(AuthSignOutSuccess(message: 'Signed out'));
     });
   }
 }
